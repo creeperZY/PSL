@@ -9,6 +9,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "PSL/PSLComponents/CombatComponent.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -49,6 +50,9 @@ APSLCharacter::APSLCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
+
+	Combat = CreateDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
+
 }
 
 void APSLCharacter::BeginPlay()
@@ -66,6 +70,20 @@ void APSLCharacter::BeginPlay()
 	}
 }
 
+void APSLCharacter::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+}
+
+void APSLCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	if (Combat)
+	{
+		Combat->Character = this;
+	}
+}
+
 //////////////////////////////////////////////////////////////////////////
 // Input
 
@@ -76,14 +94,13 @@ void APSLCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInput
 		
 		//Jumping
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
-
+		//EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 		//Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APSLCharacter::Move);
-
 		//Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APSLCharacter::Look);
 
+		EnhancedInputComponent->BindAction(EquipAction, ETriggerEvent::Triggered, this, &APSLCharacter::EquipButtonPressed);
 	}
 
 }
@@ -124,6 +141,16 @@ void APSLCharacter::Look(const FInputActionValue& Value)
 	}
 }
 
+void APSLCharacter::EquipButtonPressed()
+{
+	if (Combat)
+	{
+		if (OverlappingWeapon)
+		{
+			Combat->EquipWeapon(OverlappingWeapon);
+		}
+	}
+}
 
 
 
