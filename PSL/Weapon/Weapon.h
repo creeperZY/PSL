@@ -11,7 +11,7 @@ UENUM(BlueprintType)
 enum class EWeaponState : uint8
 {
 	EWS_Initial UMETA(DisplayName = "Initial State"),
-	EWS_Equipped UMETA(DisplayName = "Equipped"),
+	EWS_UsingNow UMETA(DisplayName = "Using Now"),
 	EWS_EquippedSecondary UMETA(DisplayName = "Equipped Secondary"),
 	EWS_Dropped UMETA(DisplayName = "Dropped"),
 	
@@ -36,10 +36,11 @@ class PSL_API AWeapon : public AActor
 public:	
 	AWeapon();
 	virtual void Tick(float DeltaTime) override;
+	virtual void SetOwner(AActor* NewOwner) override;
 	void SetHUDAmmo();
 	void ShowPickupWidget(bool bShowWidget);
-	//virtual void Fire(const FVector& HitTarget);
-	//virtual void Dropped();
+	virtual void Fire(const FVector& HitTarget);
+	virtual void Dropped();
 	void AddAmmo(int32 AmmoToAdd);
 	FVector TraceEndWithScatter(const FVector& HitTarget);
 
@@ -74,9 +75,9 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void OnWeaponStateSet();
-	//virtual void OnEquipped();
-	//virtual void OnDropped();
-	//virtual void OnEquippedSecondary();
+	virtual void OnEquippedUsingNow();
+	virtual void OnDropped();
+	virtual void OnEquippedSecondary();
 	
 	UFUNCTION()
 	virtual void OnSphereOverlap(
@@ -114,8 +115,8 @@ protected:
 
 	UPROPERTY()
 	class APSLCharacter* PSLOwnerCharacter;
-	//UPROPERTY()
-	//class APSLPlayerController* PSLOwnerController;
+	UPROPERTY()
+	class APSLPlayerController* PSLOwnerController;
 	
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
@@ -136,25 +137,30 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	class UAnimationAsset* FireAnimation;
 
-	//UPROPERTY(EditAnywhere)
-	//TSubclassOf<class ACasing> CasingClass;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class ACasing> CasingClass;
 
 	UPROPERTY(EditAnywhere);
 	int32 CurrentAmmo;
 
 	UPROPERTY(EditAnywhere)
 	int32 MagCapacity;
-
-	//UFUNCTION(Client, Reliable)
-	//void ClientUpdateAmmo(int32 ServerAmmo);
-	
-	//UFUNCTION(Client, Reliable)
-	//void ClientAddAmmo(int32 AmmoToAdd);
 	
 	void SpendRound();
-	
 
 	
 public:
 	void SetWeaponState(EWeaponState State);
+	bool IsEmpty();
+	bool IsFull();
+	FORCEINLINE USphereComponent* GetAreaSphere() const { return AreaSphere; }
+	FORCEINLINE USkeletalMeshComponent* GetWeaponMesh() const { return WeaponMesh; }
+	FORCEINLINE UWidgetComponent* GetPickupWidget() const { return PickupWidget; }
+	FORCEINLINE float GetZoomedFOV() const { return ZoomedFOV; }
+	FORCEINLINE float GetZoomInterpSpeed() const { return ZoomInterpSpeed; }
+	FORCEINLINE EWeaponType GetWeaponType() const { return WeaponType; }
+	FORCEINLINE int32 GetAmmo() const { return CurrentAmmo; }
+	FORCEINLINE int32 GetMagCapacity() const { return MagCapacity; }
+	FORCEINLINE float GetDamage() const { return Damage; }
+	FORCEINLINE float GetHeadShotDamage() const { return HeadShotDamage; }
 };

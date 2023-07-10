@@ -29,6 +29,11 @@ protected:
 	virtual void PostInitializeComponents() override;
 
 	void EquipButtonPressed();
+	void EquipFirstButtonPressed();
+	void EquipSecondButtonPressed();
+	void SwapButtonPressed();
+	void DropButtonPressed();
+	
 	
 private:
 	
@@ -54,6 +59,18 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* EquipAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* DropAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* EquipFirstAction;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* EquipSecondAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* SwapAction;
+	
 	
 	UPROPERTY()
 	class AWeapon* OverlappingWeapon;

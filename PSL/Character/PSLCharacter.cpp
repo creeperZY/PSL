@@ -101,6 +101,15 @@ void APSLCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInput
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APSLCharacter::Look);
 
 		EnhancedInputComponent->BindAction(EquipAction, ETriggerEvent::Triggered, this, &APSLCharacter::EquipButtonPressed);
+
+		EnhancedInputComponent->BindAction(DropAction, ETriggerEvent::Triggered, this, &APSLCharacter::DropButtonPressed);
+
+		EnhancedInputComponent->BindAction(EquipFirstAction, ETriggerEvent::Triggered, this, &APSLCharacter::EquipFirstButtonPressed);
+
+		EnhancedInputComponent->BindAction(EquipSecondAction, ETriggerEvent::Triggered, this, &APSLCharacter::EquipSecondButtonPressed);
+
+		EnhancedInputComponent->BindAction(SwapAction, ETriggerEvent::Triggered, this, &APSLCharacter::SwapButtonPressed);
+
 	}
 
 }
@@ -149,6 +158,38 @@ void APSLCharacter::EquipButtonPressed()
 		{
 			Combat->EquipWeapon(OverlappingWeapon);
 		}
+	}
+}
+
+void APSLCharacter::EquipFirstButtonPressed()
+{
+	if (Combat)
+	{
+		Combat->EquipFirstWeapon();
+	}
+}
+
+void APSLCharacter::EquipSecondButtonPressed()
+{
+	if (Combat)
+	{
+		Combat->EquipSecondWeapon();
+	}
+}
+
+void APSLCharacter::SwapButtonPressed()
+{
+	if (Combat->ShouldSwapWeapons())
+	{
+		Combat->SwapWeapons();
+	}
+}
+
+void APSLCharacter::DropButtonPressed()
+{
+	if (Combat)
+	{
+		Combat->DropEquippedWeapon();
 	}
 }
 
