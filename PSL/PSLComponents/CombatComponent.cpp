@@ -3,6 +3,7 @@
 
 #include "CombatComponent.h"
 
+#include "AbilityComponent.h"
 #include "Camera/CameraComponent.h"
 #include "PSL/EasyMacros.h"
 #include "PSL/Weapon/Weapon.h"
@@ -15,7 +16,6 @@
 UCombatComponent::UCombatComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
-
 }
 
 
@@ -55,7 +55,7 @@ void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 			if (EquippedWeapon == SecondWeapon) SecondWeapon = WeaponToEquip;
 			EquipWeaponToRightHand(WeaponToEquip);
 		}
-		else // drop first weapon
+		else // drop first weapon, of course we can drop second 
 		{
 			EquippedWeapon = FirstWeapon;
 			DropEquippedWeapon();
@@ -175,7 +175,7 @@ void UCombatComponent::DropEquippedWeapon()
 {
 	if (Character == nullptr || EquippedWeapon == nullptr) return;
 	EquippedWeapon->Dropped();
-	EquippedWeapon->GetWeaponMesh()->AddImpulse((Character->GetActorForwardVector() + FVector(0.f, 0.f, 2.f)) * WeaponDropImpulse);
+	EquippedWeapon->GetWeaponMesh()->AddImpulse(Character->GetActorForwardVector() * EquippedWeapon->DropFactor);
 	if (EquippedWeapon == FirstWeapon) FirstWeapon = nullptr;
 	if (EquippedWeapon == SecondWeapon) SecondWeapon = nullptr;
 	EquippedWeapon = nullptr;
@@ -269,6 +269,18 @@ void UCombatComponent::FinishSwapAttachWeapons()
 
 	SecondaryWeapon->SetWeaponState(EWeaponState::EWS_EquippedSecondary);
 	AttachActorToBack(SecondaryWeapon);*/
+}
+
+void UCombatComponent::SetAiming(bool bIsAiming)
+{
+	if (Character == nullptr || EquippedWeapon == nullptr) return;
+	bAiming = bIsAiming;
+	
+	if (Character && Character->GetAbility())
+	{
+		Character->GetCharacterMovement()->MaxWalkSpeed = bIsAiming ? Character->GetAbility()->AimWalkSpeed : Character->GetAbility()->BaseWalkSpeed;
+		Character->GetCharacterMovement()->MaxWalkSpeedCrouched = bIsAiming ? Character->GetAbility()->AimWalkSpeedCrouched : Character->GetAbility()->BaseWalkSpeedCrouched;
+	}
 }
 
 void UCombatComponent::ThrowGrenadeFinished()

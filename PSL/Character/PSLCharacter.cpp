@@ -10,6 +10,10 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "PSL/PSLComponents/CombatComponent.h"
+#include "PSL/PSLTypes/EquippedPoses.h"
+#include "PSL/Weapon/Weapon.h"
+#include "PSL/EasyMacros.h"
+#include "PSL/PSLComponents/AbilityComponent.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -39,7 +43,7 @@ APSLCharacter::APSLCharacter()
 
 	// Create a camera boom (pulls in towards the player if there is a collision)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
-	CameraBoom->SetupAttachment(RootComponent);
+	CameraBoom->SetupAttachment(GetMesh());
 	CameraBoom->TargetArmLength = 400.0f; // The camera follows at this distance behind the character	
 	CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
 
@@ -52,6 +56,7 @@ APSLCharacter::APSLCharacter()
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 
 	Combat = CreateDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
+	Ability = CreateDefaultSubobject<UAbilityComponent>(TEXT("AbilityComponent"));
 
 }
 
@@ -82,6 +87,10 @@ void APSLCharacter::PostInitializeComponents()
 	{
 		Combat->Character = this;
 	}
+	if (Ability)
+	{
+		Ability->Character = this;
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -108,8 +117,13 @@ void APSLCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInput
 
 		EnhancedInputComponent->BindAction(EquipSecondAction, ETriggerEvent::Triggered, this, &APSLCharacter::EquipSecondButtonPressed);
 
-		EnhancedInputComponent->BindAction(SwapAction, ETriggerEvent::Triggered, this, &APSLCharacter::SwapButtonPressed);
+		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Triggered, this, &APSLCharacter::CrouchButtonPressed);
 
+		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Triggered, this, &APSLCharacter::AimButtonPressed);
+		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Completed, this, &APSLCharacter::AimButtonReleased);
+
+		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &APSLCharacter::FireButtonPressed);
+		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, &APSLCharacter::FireButtonReleased);
 	}
 
 }
@@ -177,13 +191,6 @@ void APSLCharacter::EquipSecondButtonPressed()
 	}
 }
 
-void APSLCharacter::SwapButtonPressed()
-{
-	if (Combat->ShouldSwapWeapons())
-	{
-		Combat->SwapWeapons();
-	}
-}
 
 void APSLCharacter::DropButtonPressed()
 {
@@ -193,5 +200,63 @@ void APSLCharacter::DropButtonPressed()
 	}
 }
 
+void APSLCharacter::CrouchButtonPressed()
+{
+	if (bIsCrouched)
+	{
+		UnCrouch();
+	}
+	else
+	{
+		Crouch();
+	}
+}
 
+void APSLCharacter::AimButtonPressed()
+{
+	if (Combat)
+	{
+		Combat->SetAiming(true);
+	}
+}
+
+void APSLCharacter::AimButtonReleased()
+{
+	if (Combat)
+	{
+		Combat->SetAiming(false);
+	}
+}
+
+void APSLCharacter::FireButtonPressed()
+{
+}
+
+void APSLCharacter::FireButtonReleased()
+{
+}
+
+bool APSLCharacter::IsWeaponEquipped()
+{
+	return (Combat && Combat->EquippedWeapon);
+}
+
+EEquippedPoseType APSLCharacter::GetEquippedPoseType()
+{
+	if (Combat && Combat->EquippedWeapon)
+		return Combat->EquippedWeapon->GetEquippedPoseType();
+	return EEquippedPoseType::EEPT_PistolPose;
+	
+}
+
+bool APSLCharacter::IsAiming()
+{
+	return (Combat && Combat->bAiming);
+}
+
+AWeapon* APSLCharacter::GetEquippedWeapon()
+{
+	if (Combat == nullptr) return nullptr;
+	return Combat->EquippedWeapon;
+}
 

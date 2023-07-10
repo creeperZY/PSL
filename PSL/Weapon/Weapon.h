@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "WeaponTypes.h"
+#include "PSL/PSLTypes/EquippedPoses.h"
 #include "Weapon.generated.h"
 
 UENUM(BlueprintType)
@@ -45,28 +46,31 @@ public:
 	FVector TraceEndWithScatter(const FVector& HitTarget);
 
 	// Zoomed FOV while aiming
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Weapon Aim")
 	float ZoomedFOV = 30.f;
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Weapon Aim")
 	float ZoomInterpSpeed = 20.f;
 	
 	// Automatic Fire
-	UPROPERTY(EditAnywhere, Category = Combat)
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	float FireDelay = 0.15f;
 	
-	UPROPERTY(EditAnywhere, Category = Combat)
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	bool bAutomatic = true;
 	
 	//Enable or disable custom depth
 	void EnableCustomDepth(bool bEnable);
 
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Weapon FX")
 	class USoundCue* EquipSound;
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	EFireType FireType;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
+	float DropFactor = 200.f; // Throw impulse factor
 	
 	// Weapon Scatter
 	UPROPERTY(EditAnywhere, Category="Weapon Scatter")
@@ -99,19 +103,19 @@ protected:
 
 
 	// Weapon Scatter
-	UPROPERTY(EditAnywhere, Category="Weapon Scatter")
+	UPROPERTY(EditAnywhere, Category = "Weapon Scatter")
 	float DistanceToSphere = 800.f;
 	
-	UPROPERTY(EditAnywhere, Category="Weapon Scatter")
+	UPROPERTY(EditAnywhere, Category = "Weapon Scatter")
 	float SphereRadius = 75.f;
 
 	// Weapon Properties
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	float Damage = 20.f;
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	float HeadShotDamage = 40.f;
-
+	
 
 	UPROPERTY()
 	class APSLCharacter* PSLOwnerCharacter;
@@ -128,22 +132,25 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
 	EWeaponState WeaponState;
 
-	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
+	UPROPERTY(EditAnywhere, Category = "Weapon Type")
 	EWeaponType WeaponType;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Type")
+	EEquippedPoseType EquippedPoseType;
 	
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
 	class UWidgetComponent* PickupWidget;
 	
-	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
+	UPROPERTY(EditAnywhere, Category = "Weapon FX")
 	class UAnimationAsset* FireAnimation;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	TSubclassOf<class ACasing> CasingClass;
 
-	UPROPERTY(EditAnywhere);
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	int32 CurrentAmmo;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	int32 MagCapacity;
 	
 	void SpendRound();
@@ -163,4 +170,5 @@ public:
 	FORCEINLINE int32 GetMagCapacity() const { return MagCapacity; }
 	FORCEINLINE float GetDamage() const { return Damage; }
 	FORCEINLINE float GetHeadShotDamage() const { return HeadShotDamage; }
+	FORCEINLINE EEquippedPoseType GetEquippedPoseType() const { return EquippedPoseType; }
 };

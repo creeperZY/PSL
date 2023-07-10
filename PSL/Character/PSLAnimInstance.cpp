@@ -30,5 +30,8 @@ void UPSLAnimInstance::NativeUpdateAnimation(float DeltaTime)
 
 	bIsInAir = PSLCharacter->GetCharacterMovement()->IsFalling();
 	bIsAccelerating = PSLCharacter->GetCharacterMovement()->GetCurrentAcceleration().Size() > 0.f ? true : false;
-	
+	bWeaponEquipped = PSLCharacter->IsWeaponEquipped();
+	EquippedPoseType = PSLCharacter->GetEquippedPoseType();
+	bIsCrouched = PSLCharacter->bIsCrouched;
+	bAiming = PSLCharacter->IsAiming();
 }

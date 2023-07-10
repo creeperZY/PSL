@@ -17,6 +17,7 @@ public:
 	UCombatComponent();
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	friend class APSLCharacter;
+	friend class UAbilityComponent;
 
 protected:
 	virtual void BeginPlay() override;
@@ -75,11 +76,9 @@ private:
 	AWeapon* FirstWeapon;
 	UPROPERTY()
 	AWeapon* SecondWeapon;
-	
-	UPROPERTY(EditAnywhere)
-	float WeaponDropImpulse = 200.f;
 
-
+	UPROPERTY()
+	bool bAiming = false;
 
 
 	UPROPERTY()
