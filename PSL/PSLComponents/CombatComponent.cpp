@@ -35,7 +35,7 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 {
 	if (Character == nullptr || WeaponToEquip == nullptr) return;
-	if (CombatState != ECombatState::ECS_EquipUnoccupied) return;
+	if (CombatState != ECombatState::ECS_Unoccupied) return;
 
 	if (FirstWeapon != nullptr && SecondWeapon == nullptr)
 	{
@@ -248,7 +248,7 @@ void UCombatComponent::FinishSwap()
 {
 	if (Character)
 	{
-		CombatState = ECombatState::ECS_EquipUnoccupied;
+		CombatState = ECombatState::ECS_Unoccupied;
 	}
 	//if (Character) Character->bFinishedSwapping = true;
 	//if (SecondaryWeapon) SecondaryWeapon->EnableCustomDepth(true);

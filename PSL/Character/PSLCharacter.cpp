@@ -9,8 +9,8 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "PSL/PSLComponents/CombatComponent.h"
-#include "PSL/PSLTypes/EquippedPoses.h"
 #include "PSL/Weapon/Weapon.h"
 #include "PSL/EasyMacros.h"
 #include "PSL/PSLComponents/AbilityComponent.h"
@@ -23,6 +23,8 @@ APSLCharacter::APSLCharacter()
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+	GetMesh()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 		
 	// Don't rotate when the controller rotates. Let that just affect the camera.
 	bUseControllerRotationPitch = false;
@@ -40,6 +42,7 @@ APSLCharacter::APSLCharacter()
 	GetCharacterMovement()->MaxWalkSpeed = 500.f;
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
+	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 
 	// Create a camera boom (pulls in towards the player if there is a collision)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -78,6 +81,8 @@ void APSLCharacter::BeginPlay()
 void APSLCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+
+	AimOffset(DeltaSeconds);
 }
 
 void APSLCharacter::PostInitializeComponents()
@@ -234,6 +239,73 @@ void APSLCharacter::FireButtonPressed()
 
 void APSLCharacter::FireButtonReleased()
 {
+}
+
+/*
+void ABlasterCharacter::TurnInPlace(float DelatTime)
+{
+	if (AO_Yaw > 87.5f)
+	{
+		TurningInPlace = ETurningInPlace::ETIP_Right;
+	}
+	else if (AO_Yaw < -87.5f)
+	{
+		TurningInPlace = ETurningInPlace::ETIP_Left;
+	}
+	if (TurningInPlace != ETurningInPlace::ETIP_NotTurning)
+	{
+		InterpAO_Yaw = FMath::FInterpTo(InterpAO_Yaw, 0.f, DelatTime, 4.f);
+		AO_Yaw = InterpAO_Yaw;
+		if (FMath::Abs(AO_Yaw) < 15.f)
+		{
+			TurningInPlace = ETurningInPlace::ETIP_NotTurning;
+			StartingAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
+		}
+	}
+}*/
+
+float APSLCharacter::CalculateSpeed()
+{
+	FVector Velocity = GetVelocity();
+	Velocity.Z = 0.f;
+	return Velocity.Size();
+}
+
+void APSLCharacter::AimOffset(float DeltaTime)
+{
+	if (Combat && Combat->EquippedWeapon == nullptr) return;
+	float Speed = CalculateSpeed();
+	bool bIsInAir = GetCharacterMovement()->IsFalling();
+
+	if (Speed == 0.f && !bIsInAir) // standing still, not jumping
+		{
+	//	bRotateRootBone = true;
+		FRotator CurrentAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
+		FRotator DeltaAimRotation = UKismetMathLibrary::NormalizedDeltaRotator(CurrentAimRotation, StartingAimRotation);
+		AO_Yaw = DeltaAimRotation.Yaw;
+	//	if (TurningInPlace == ETurningInPlace::ETIP_NotTurning)
+		{
+			InterpAO_Yaw = AO_Yaw;
+		}
+		bUseControllerRotationYaw = true;
+	//	TurnInPlace(DeltaTime);
+		}
+	if (Speed > 0.f || bIsInAir) // running, or jumping
+		{
+	//	bRotateRootBone = false;
+		StartingAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
+		AO_Yaw = 0.f;
+		bUseControllerRotationYaw = true;
+	//	TurningInPlace = ETurningInPlace::ETIP_NotTurning;
+		}
+	
+	AO_Pitch = GetBaseAimRotation().Pitch;
+}
+
+ECombatState APSLCharacter::GetCombatState() const
+{
+	if(Combat == nullptr) return ECombatState::ECS_MAX;
+	return Combat->CombatState;
 }
 
 bool APSLCharacter::IsWeaponEquipped()

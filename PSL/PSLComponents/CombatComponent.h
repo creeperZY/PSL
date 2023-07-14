@@ -82,7 +82,7 @@ private:
 
 
 	UPROPERTY()
-	ECombatState CombatState = ECombatState::ECS_EquipUnoccupied;
+	ECombatState CombatState = ECombatState::ECS_Unoccupied;
 
 public:	
 	//FORCEINLINE int32 GetGrenades() const {return Grenades;}

@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
 #include "PSL/PSLTypes/EquippedPoses.h"
+#include "PSL/PSLTypes/CombatState.h"
 #include "PSLCharacter.generated.h"
 
 
@@ -38,6 +39,8 @@ protected:
 	void AimButtonReleased();
 	void FireButtonPressed();
 	void FireButtonReleased();
+	float CalculateSpeed();
+	void AimOffset(float DeltaTime);
 	
 	
 private:
@@ -81,7 +84,6 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* AimAction;
-
 	
 	UPROPERTY()
 	class AWeapon* OverlappingWeapon;
@@ -91,12 +93,21 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	class UAbilityComponent* Ability;
+
+	float AO_Yaw;
+	float InterpAO_Yaw;
+	float AO_Pitch;
+	FRotator StartingAimRotation;
+	
 public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 	FORCEINLINE UCombatComponent* GetCombat() const { return Combat; }
+	ECombatState GetCombatState() const;
 	FORCEINLINE UAbilityComponent* GetAbility() const { return Ability; }
 	FORCEINLINE void SetOverlappingWeapon(AWeapon* Weapon) { OverlappingWeapon = Weapon; }
+	FORCEINLINE float GetAO_Yaw() const { return AO_Yaw; }
+	FORCEINLINE float GetAO_Pitch() const { return AO_Pitch; }
 	bool IsWeaponEquipped();
 	EEquippedPoseType GetEquippedPoseType();
 	bool IsAiming();

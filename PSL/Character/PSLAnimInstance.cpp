@@ -4,6 +4,9 @@
 #include "PSLAnimInstance.h"
 #include "PSLCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "PSL/PSLTypes/CombatState.h"
+#include "PSL/Weapon/Weapon.h"
 
 
 void UPSLAnimInstance::NativeInitializeAnimation()
@@ -34,4 +37,60 @@ void UPSLAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	EquippedPoseType = PSLCharacter->GetEquippedPoseType();
 	bIsCrouched = PSLCharacter->bIsCrouched;
 	bAiming = PSLCharacter->IsAiming();
+	//TurningInPlace = BlasterCharacter->GetTurningInPlace();
+	//bRotateRootBone = BlasterCharacter->ShouldRotateRootBone();
+	//bElimmed = BlasterCharacter->IsElimmed();
+
+	// Offset Yaw for Strafing
+	FRotator AimRotation = PSLCharacter->GetBaseAimRotation();
+	FRotator MovementRotation = UKismetMathLibrary::MakeRotFromX(PSLCharacter->GetVelocity());
+	FRotator DeltaRot = UKismetMathLibrary::NormalizedDeltaRotator(MovementRotation, AimRotation);
+	DeltaRotation = FMath::RInterpTo(DeltaRotation, DeltaRot, DeltaTime, 6.f);
+	YawOffset = DeltaRotation.Yaw;
+
+	
+	CharacterRotationLastFrame = CharacterRotation;
+	CharacterRotation = PSLCharacter->GetActorRotation();
+	const FRotator Delta = UKismetMathLibrary::NormalizedDeltaRotator(CharacterRotation, CharacterRotationLastFrame);
+	const float Target = Delta.Yaw / DeltaTime;
+	const float Interp = FMath::FInterpTo(Lean, Target, DeltaTime, 6.f);
+	Lean = FMath::Clamp(Interp, -60.f, 60.f);
+
+	AO_Yaw = PSLCharacter->GetAO_Yaw();
+	AO_Pitch = PSLCharacter->GetAO_Pitch();
+
+//	if (bWeaponEquipped && EquippedWeapon && EquippedWeapon->GetWeaponMesh() && PSLCharacter->GetMesh())
+	{
+//		LeftHandTransform = EquippedWeapon->GetWeaponMesh()->GetSocketTransform(FName("LeftHandSocket"), ERelativeTransformSpace::RTS_World);
+//		FVector OutPosition;
+//		FRotator OutRotation;
+//		PSLCharacter->GetMesh()->TransformToBoneSpace(FName("hand_r"), LeftHandTransform.GetLocation(), FRotator::ZeroRotator, OutPosition, OutRotation);
+//		LeftHandTransform.SetLocation(OutPosition);
+//		LeftHandTransform.SetRotation(FQuat(OutRotation));
+
+		if(PSLCharacter->IsLocallyControlled())
+		{
+			//bLocallyControlled = true;
+			
+		//	FTransform RightHandTransform = EquippedWeapon->GetWeaponMesh()->GetSocketTransform(FName("Hand_R"), ERelativeTransformSpace::RTS_World);
+		//	FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(RightHandTransform.GetLocation(), RightHandTransform.GetLocation() + (RightHandTransform.GetLocation() - PSLCharacter->GetHitTarget()));
+		//	RightHandRotation = FMath::RInterpTo(RightHandRotation, LookAtRotation, DeltaTime, 30.f);
+		} 
+		
+		//FTransform MuzzleTipTransform = EquippedWeapon->GetWeaponMesh()->GetSocketTransform(FName("MuzzleFlash"), ERelativeTransformSpace::RTS_World);
+		//FVector MuzzleX(FRotationMatrix(MuzzleTipTransform.GetRotation().Rotator()).GetUnitAxis(EAxis::X));
+		//DrawDebugLine(GetWorld(), MuzzleTipTransform.GetLocation(), MuzzleTipTransform.GetLocation() + MuzzleX * 1000.f, FColor::Red);
+		//DrawDebugLine(GetWorld(), MuzzleTipTransform.GetLocation(), BlasterCharacter->GetHitTarget(), FColor::Orange);
+	}
+
+	//bUseFABRIK = PSLCharacter->GetCombatState() == ECombatState::ECS_Unoccupied;
+	//bool bFABRIKOverride = 	PSLCharacter->IsLocallyControlled() &&
+	//	PSLCharacter->GetCombatState() != ECombatState::ECS_ThrowingGrenade &&
+	//	PSLCharacter->bFinishedSwapping;
+	//if (bFABRIKOverride)
+	{
+//		bUseFABRIK = !PSLCharacter->IsLocallyReloading();
+	}
+	//bUseAimOffset =  PSLCharacter->GetCombatState() == ECombatState::ECS_EquipUnoccupied && !PSLCharacter->GetDisableGameplay();
+//	bTransformRightHand = PSLCharacter->GetCombatState() == ECombatState::ECS_EquipUnoccupied && !PSLCharacter->GetDisableGameplay();
 }
