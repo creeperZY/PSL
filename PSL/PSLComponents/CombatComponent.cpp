@@ -138,14 +138,14 @@ void UCombatComponent::EquipFirstWeapon()
 		{
 			HolsterWeapon();
 		}
-		else if (EquippedWeapon == SecondWeapon && EquippedWeapon)
+		else if (EquippedWeapon == SecondWeapon && EquippedWeapon) // need swap animation
 		{
 			EquipWeaponToBack2(EquippedWeapon);
 			EquipWeaponToRightHand(FirstWeapon);
 		}
 		else
 		{
-			EquipWeaponToRightHand(FirstWeapon);
+			EquipWeaponToRightHand(FirstWeapon); // on back
 		}
 	}
 }
@@ -278,8 +278,8 @@ void UCombatComponent::SetAiming(bool bIsAiming)
 	
 	if (Character && Character->GetAbility())
 	{
-		Character->GetCharacterMovement()->MaxWalkSpeed = bIsAiming ? Character->GetAbility()->AimWalkSpeed : Character->GetAbility()->BaseWalkSpeed;
-		Character->GetCharacterMovement()->MaxWalkSpeedCrouched = bIsAiming ? Character->GetAbility()->AimWalkSpeedCrouched : Character->GetAbility()->BaseWalkSpeedCrouched;
+		Character->GetCharacterMovement()->MaxWalkSpeed = bIsAiming ? Character->GetAbility()->EquippedAimWalkSpeed : Character->GetAbility()->EquippedWalkSpeed;
+		Character->GetCharacterMovement()->MaxWalkSpeedCrouched = bIsAiming ? Character->GetAbility()->EquippedAimWalkSpeedCrouched : Character->GetAbility()->UnequippedWalkSpeedCrouched;
 	}
 }
 

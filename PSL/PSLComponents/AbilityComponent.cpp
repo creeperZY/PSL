@@ -19,8 +19,8 @@ void UAbilityComponent::BeginPlay()
 
 	if (Character == nullptr) return;
 	Character->GetCharacterMovement()->JumpZVelocity = JumpZVelocity;
-	Character->GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
-	Character->GetCharacterMovement()->MaxWalkSpeedCrouched = BaseWalkSpeedCrouched;
+	Character->GetCharacterMovement()->MaxWalkSpeed = UnequippedWalkSpeed;
+	Character->GetCharacterMovement()->MaxWalkSpeedCrouched = UnequippedWalkSpeedCrouched;
 }
 
 

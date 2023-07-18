@@ -304,6 +304,7 @@ void APSLCharacter::TurnInPlace(float DeltaTime)
 	}
 }
 
+
 ECombatState APSLCharacter::GetCombatState() const
 {
 	if(Combat == nullptr) return ECombatState::ECS_MAX;
