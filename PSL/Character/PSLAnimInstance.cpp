@@ -34,10 +34,11 @@ void UPSLAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	bIsInAir = PSLCharacter->GetCharacterMovement()->IsFalling();
 	bIsAccelerating = PSLCharacter->GetCharacterMovement()->GetCurrentAcceleration().Size() > 0.f ? true : false;
 	bWeaponEquipped = PSLCharacter->IsWeaponEquipped();
+	EquippedWeapon = PSLCharacter->GetEquippedWeapon();
 	EquippedPoseType = PSLCharacter->GetEquippedPoseType();
 	bIsCrouched = PSLCharacter->bIsCrouched;
 	bAiming = PSLCharacter->IsAiming();
-	//TurningInPlace = BlasterCharacter->GetTurningInPlace();
+	TurningInPlace = PSLCharacter->GetTurningInPlace();
 	//bRotateRootBone = BlasterCharacter->ShouldRotateRootBone();
 	//bElimmed = BlasterCharacter->IsElimmed();
 
@@ -59,14 +60,14 @@ void UPSLAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	AO_Yaw = PSLCharacter->GetAO_Yaw();
 	AO_Pitch = PSLCharacter->GetAO_Pitch();
 
-//	if (bWeaponEquipped && EquippedWeapon && EquippedWeapon->GetWeaponMesh() && PSLCharacter->GetMesh())
+	if (bWeaponEquipped && EquippedWeapon && EquippedWeapon->GetWeaponMesh() && PSLCharacter->GetMesh())
 	{
-//		LeftHandTransform = EquippedWeapon->GetWeaponMesh()->GetSocketTransform(FName("LeftHandSocket"), ERelativeTransformSpace::RTS_World);
-//		FVector OutPosition;
-//		FRotator OutRotation;
-//		PSLCharacter->GetMesh()->TransformToBoneSpace(FName("hand_r"), LeftHandTransform.GetLocation(), FRotator::ZeroRotator, OutPosition, OutRotation);
-//		LeftHandTransform.SetLocation(OutPosition);
-//		LeftHandTransform.SetRotation(FQuat(OutRotation));
+		LeftHandTransform = EquippedWeapon->GetWeaponMesh()->GetSocketTransform(FName("LeftHandSocket"), ERelativeTransformSpace::RTS_World);
+		FVector OutPosition;
+		FRotator OutRotation;
+		PSLCharacter->GetMesh()->TransformToBoneSpace(FName("hand_r"), LeftHandTransform.GetLocation(), FRotator::ZeroRotator, OutPosition, OutRotation);
+		LeftHandTransform.SetLocation(OutPosition);
+		LeftHandTransform.SetRotation(FQuat(OutRotation));
 
 		if(PSLCharacter->IsLocallyControlled())
 		{

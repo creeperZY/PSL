@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
 #include "PSL/PSLTypes/EquippedPoses.h"
+#include "PSL/PSLTypes/TurningInPlace.h"
 #include "PSL/PSLTypes/CombatState.h"
 #include "PSLCharacter.generated.h"
 
@@ -98,6 +99,9 @@ private:
 	float InterpAO_Yaw;
 	float AO_Pitch;
 	FRotator StartingAimRotation;
+
+	ETurningInPlace TurningInPlace;
+	void TurnInPlace(float DeltaTime);
 	
 public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
@@ -106,6 +110,7 @@ public:
 	ECombatState GetCombatState() const;
 	FORCEINLINE UAbilityComponent* GetAbility() const { return Ability; }
 	FORCEINLINE void SetOverlappingWeapon(AWeapon* Weapon) { OverlappingWeapon = Weapon; }
+	FORCEINLINE ETurningInPlace GetTurningInPlace() const { return TurningInPlace; }
 	FORCEINLINE float GetAO_Yaw() const { return AO_Yaw; }
 	FORCEINLINE float GetAO_Pitch() const { return AO_Pitch; }
 	bool IsWeaponEquipped();

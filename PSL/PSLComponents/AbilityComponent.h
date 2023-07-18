@@ -36,7 +36,7 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	float BaseWalkSpeedCrouched = 300.f;
-	
+
 	UPROPERTY(EditAnywhere)
 	float AimWalkSpeed = 450.f;
 
