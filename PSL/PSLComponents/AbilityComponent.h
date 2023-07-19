@@ -35,7 +35,7 @@ private:
 	UPROPERTY(EditAnywhere)
 	float UnequippedWalkSpeedCrouched = 350.f;
 	UPROPERTY(EditAnywhere)
-	float UnequippedJogSpeed = 700.f;
+	float UnequippedJogSpeed = 800.f;
 
 	UPROPERTY(EditAnywhere)
 	float EquippedWalkSpeed = 500.f;
@@ -46,7 +46,7 @@ private:
 	UPROPERTY(EditAnywhere)
 	float EquippedAimWalkSpeedCrouched = 300.f;
 	UPROPERTY(EditAnywhere)
-	float EquippedJogSpeed = 800.f;
+	float EquippedJogSpeed = 700.f;
 
 
 };

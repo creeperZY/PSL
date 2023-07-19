@@ -48,18 +48,17 @@ void UPSLAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	FRotator DeltaRot = UKismetMathLibrary::NormalizedDeltaRotator(MovementRotation, AimRotation);
 	DeltaRotation = FMath::RInterpTo(DeltaRotation, DeltaRot, DeltaTime, 6.f);
 	YawOffset = DeltaRotation.Yaw;
-
 	
 	CharacterRotationLastFrame = CharacterRotation;
 	CharacterRotation = PSLCharacter->GetActorRotation();
 	const FRotator Delta = UKismetMathLibrary::NormalizedDeltaRotator(CharacterRotation, CharacterRotationLastFrame);
 	const float Target = Delta.Yaw / DeltaTime;
-	const float Interp = FMath::FInterpTo(Lean, Target, DeltaTime, 6.f);
+	const float Interp = FMath::FInterpTo(Lean, Target, DeltaTime, 4.f);
 	Lean = FMath::Clamp(Interp, -60.f, 60.f);
 
 	AO_Yaw = PSLCharacter->GetAO_Yaw();
 	AO_Pitch = PSLCharacter->GetAO_Pitch();
-
+	
 	if (bWeaponEquipped && EquippedWeapon && EquippedWeapon->GetWeaponMesh() && PSLCharacter->GetMesh())
 	{
 		LeftHandTransform = EquippedWeapon->GetWeaponMesh()->GetSocketTransform(FName("LeftHandSocket"), ERelativeTransformSpace::RTS_World);

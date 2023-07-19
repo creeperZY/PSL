@@ -42,6 +42,7 @@ protected:
 	void FireButtonReleased();
 	float CalculateSpeed();
 	void AimOffset(float DeltaTime);
+	virtual void Jump() override;
 	
 	
 private:
