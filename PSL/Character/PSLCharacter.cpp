@@ -171,6 +171,19 @@ void APSLCharacter::Look(const FInputActionValue& Value)
 	}
 }
 
+void APSLCharacter::Jump()
+{
+	if (bIsCrouched)
+	{
+		UnCrouch();
+	}
+	else
+	{
+		Super::Jump();
+	}
+}
+
+
 void APSLCharacter::EquipButtonPressed()
 {
 	if (Combat)
@@ -282,17 +295,6 @@ void APSLCharacter::AimOffset(float DeltaTime)
 	AO_Pitch = GetBaseAimRotation().Pitch;
 }
 
-void APSLCharacter::Jump()
-{
-	if (bIsCrouched)
-	{
-		UnCrouch();
-	}
-	else
-	{
-		Super::Jump();
-	}
-}
 
 void APSLCharacter::TurnInPlace(float DeltaTime)
 {
@@ -315,6 +317,7 @@ void APSLCharacter::TurnInPlace(float DeltaTime)
 		}
 	}
 }
+
 
 
 ECombatState APSLCharacter::GetCombatState() const

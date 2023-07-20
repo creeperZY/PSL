@@ -31,6 +31,7 @@ protected:
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void PostInitializeComponents() override;
 
+	virtual void Jump() override;
 	void EquipButtonPressed();
 	void EquipFirstButtonPressed();
 	void EquipSecondButtonPressed();
@@ -42,7 +43,7 @@ protected:
 	void FireButtonReleased();
 	float CalculateSpeed();
 	void AimOffset(float DeltaTime);
-	virtual void Jump() override;
+	
 	
 	
 private:
@@ -104,6 +105,7 @@ private:
 	ETurningInPlace TurningInPlace;
 	void TurnInPlace(float DeltaTime);
 
+	
 public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
