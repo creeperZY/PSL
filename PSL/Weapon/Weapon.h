@@ -12,8 +12,8 @@ UENUM(BlueprintType)
 enum class EWeaponState : uint8
 {
 	EWS_Initial UMETA(DisplayName = "Initial State"),
-	EWS_UsingNow UMETA(DisplayName = "Using Now"),
-	EWS_EquippedSecondary UMETA(DisplayName = "Equipped Secondary"),
+	EWS_Equipped UMETA(DisplayName = "Equipped Using Now"),
+	EWS_EquippedBack UMETA(DisplayName = "Equipped Back"),
 	EWS_Dropped UMETA(DisplayName = "Dropped"),
 	
 	EWS_MAX UMETA(DisplayName = "DefaultMAX")
@@ -79,9 +79,9 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void OnWeaponStateSet();
-	virtual void OnEquippedUsingNow();
+	virtual void OnEquipped();
 	virtual void OnDropped();
-	virtual void OnEquippedSecondary();
+	virtual void OnEquippedBack();
 	
 	UFUNCTION()
 	virtual void OnSphereOverlap(

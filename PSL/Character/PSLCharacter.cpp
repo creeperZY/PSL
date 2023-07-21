@@ -78,12 +78,19 @@ void APSLCharacter::BeginPlay()
 			Subsystem->AddMappingContext(InputMappingContext, 0);
 		}
 	}
+
+	SetTurnDelegate();
 }
 
 void APSLCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
+	if (TurnBeforeEquipTimeline.IsPlaying())
+	{
+		TurnBeforeEquipTimeline.TickTimeline(DeltaSeconds);
+	}
+	
 	AimOffset(DeltaSeconds);
 }
 
@@ -186,6 +193,7 @@ void APSLCharacter::Jump()
 
 void APSLCharacter::EquipButtonPressed()
 {
+	if (GetCharacterMovement()->IsFalling()) return;
 	if (Combat)
 	{
 		if (OverlappingWeapon)
@@ -197,16 +205,20 @@ void APSLCharacter::EquipButtonPressed()
 
 void APSLCharacter::EquipFirstButtonPressed()
 {
-	if (Combat)
+	if (GetCharacterMovement()->IsFalling()) return;
+	if (Combat && Combat->FirstWeapon)
 	{
+		TurnBeforeEquip();
 		Combat->EquipFirstWeapon();
 	}
 }
 
 void APSLCharacter::EquipSecondButtonPressed()
 {
-	if (Combat)
+	if (GetCharacterMovement()->IsFalling()) return;
+	if (Combat && Combat->SecondWeapon)
 	{
+		TurnBeforeEquip();
 		Combat->EquipSecondWeapon();
 	}
 }
@@ -267,6 +279,7 @@ float APSLCharacter::CalculateSpeed()
 void APSLCharacter::AimOffset(float DeltaTime)
 {
 	if (Combat && Combat->EquippedWeapon == nullptr) return;
+	if (!bTurnFinished) return;
 	float Speed = CalculateSpeed();
 	bool bIsInAir = GetCharacterMovement()->IsFalling();
 
@@ -318,6 +331,42 @@ void APSLCharacter::TurnInPlace(float DeltaTime)
 	}
 }
 
+void APSLCharacter::SetTurnDelegate()
+{
+	FOnTimelineFloat TurnTrack;
+	FOnTimelineEvent TurnTrackFinished;
+	TurnTrack.BindDynamic(this, &APSLCharacter::TurnProgress);
+	TurnTrackFinished.BindDynamic(this, &APSLCharacter::OnTurnFinished);
+	TurnBeforeEquipTimeline.AddInterpFloat(TurnCurve, TurnTrack);
+	TurnBeforeEquipTimeline.SetTimelineFinishedFunc(TurnTrackFinished);
+}
+
+
+void APSLCharacter::TurnBeforeEquip()
+{
+	//if (IsWeaponEquipped()) return;
+	if (bUseControllerRotationYaw) return;
+	if (TurnCurve == nullptr) return;
+	
+	bTurnFinished = false;
+	StartingRotation = GetActorRotation();
+	AimRotation = StartingRotation;
+	AimRotation.Yaw = GetBaseAimRotation().Yaw;
+	TurnBeforeEquipTimeline.PlayFromStart();
+}
+
+void APSLCharacter::TurnProgress(float Alpha)
+{
+	FRotator TurnRotation = FMath::Lerp(StartingRotation, AimRotation, Alpha);
+	SetActorRotation(TurnRotation);
+}
+
+void APSLCharacter::OnTurnFinished()
+{
+	bTurnFinished = true;
+	bUseControllerRotationYaw = true;
+	GetCharacterMovement()->bOrientRotationToMovement = false;
+}
 
 
 ECombatState APSLCharacter::GetCombatState() const

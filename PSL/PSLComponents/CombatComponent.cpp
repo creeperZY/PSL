@@ -100,13 +100,13 @@ void UCombatComponent::EquipWeaponToRightHand(AWeapon* WeaponToEquip)
 	//DropEquippedWeapon();
 	EquippedWeapon = WeaponToEquip;
 	EquippedWeapon->SetOwner(Character);
-	EquippedWeapon->SetWeaponState(EWeaponState::EWS_UsingNow);
+	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
 	AttachActorToRightHand(WeaponToEquip);
 	PlayEquipWeaponSound(WeaponToEquip);
 	ReloadEmptyWeapon();
 	//EquippedWeapon->EnableCustomDepth(false);
-	Character->GetCharacterMovement()->bOrientRotationToMovement = false;
-	Character->bUseControllerRotationYaw = true;
+	//Character->GetCharacterMovement()->bOrientRotationToMovement = false;
+	//Character->bUseControllerRotationYaw = true;
 }
 
 void UCombatComponent::EquipWeaponToBack1(AWeapon* WeaponToEquip)
@@ -114,7 +114,7 @@ void UCombatComponent::EquipWeaponToBack1(AWeapon* WeaponToEquip)
 	if (WeaponToEquip == nullptr) return; 
 	FirstWeapon = WeaponToEquip;
 	FirstWeapon->SetOwner(Character);
-	FirstWeapon->SetWeaponState(EWeaponState::EWS_EquippedSecondary);
+	FirstWeapon->SetWeaponState(EWeaponState::EWS_EquippedBack);
 	AttachActorToBack1(WeaponToEquip);
 	PlayEquipWeaponSound(WeaponToEquip);
 }
@@ -125,7 +125,7 @@ void UCombatComponent::EquipWeaponToBack2(AWeapon* WeaponToEquip)
 	if (WeaponToEquip == nullptr) return; 
 	SecondWeapon = WeaponToEquip;
 	SecondWeapon->SetOwner(Character);
-	SecondWeapon->SetWeaponState(EWeaponState::EWS_EquippedSecondary);
+	SecondWeapon->SetWeaponState(EWeaponState::EWS_EquippedBack);
 	AttachActorToBack2(WeaponToEquip);
 	PlayEquipWeaponSound(WeaponToEquip);
 }

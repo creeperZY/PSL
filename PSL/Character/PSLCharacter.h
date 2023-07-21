@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
+#include "Components/TimelineComponent.h"
 #include "PSL/PSLTypes/EquippedPoses.h"
 #include "PSL/PSLTypes/TurningInPlace.h"
 #include "PSL/PSLTypes/CombatState.h"
@@ -97,6 +98,9 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	class UAbilityComponent* Ability;
 
+	/*
+	 * Turn in place and AO_Yaw
+	 */
 	float AO_Yaw;
 	float InterpAO_Yaw;
 	float AO_Pitch;
@@ -104,8 +108,27 @@ private:
 
 	ETurningInPlace TurningInPlace;
 	void TurnInPlace(float DeltaTime);
-
 	
+	/*
+	 * Turn before equip weapon 
+	 */
+	FRotator StartingRotation;
+	FRotator AimRotation;
+	bool bTurnFinished = false;
+	FTimeline TurnBeforeEquipTimeline;
+	UPROPERTY(EditAnywhere)
+	UCurveFloat* TurnCurve;
+	void SetTurnDelegate();
+	UFUNCTION()
+	void TurnProgress(float Alpha);
+	UFUNCTION()
+	void OnTurnFinished();
+
+
+public:
+	void TurnBeforeEquip();
+
+
 public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }

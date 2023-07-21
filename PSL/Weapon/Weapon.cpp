@@ -117,11 +117,11 @@ void AWeapon::OnWeaponStateSet()
 {
 	switch (WeaponState)
 	{
-	case EWeaponState::EWS_UsingNow:
-		OnEquippedUsingNow();
+	case EWeaponState::EWS_Equipped:
+		OnEquipped();
 		break;
-	case EWeaponState::EWS_EquippedSecondary:
-		OnEquippedSecondary();
+	case EWeaponState::EWS_EquippedBack:
+		OnEquippedBack();
 		break;
 	case EWeaponState::EWS_Dropped:
 		OnDropped();
@@ -130,7 +130,7 @@ void AWeapon::OnWeaponStateSet()
 }
 
 
-void AWeapon::OnEquippedUsingNow()
+void AWeapon::OnEquipped()
 {
 	ShowPickupWidget(false);
 	AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -151,7 +151,7 @@ void AWeapon::OnEquippedUsingNow()
 	}
 }
 
-void AWeapon::OnEquippedSecondary()
+void AWeapon::OnEquippedBack()
 {
 	ShowPickupWidget(false);
 	AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
