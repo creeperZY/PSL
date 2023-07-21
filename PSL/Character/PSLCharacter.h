@@ -98,6 +98,38 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	class UAbilityComponent* Ability;
 
+
+	/*
+	 * FOV
+	 */
+	UPROPERTY(EditAnywhere, Category="Game Camera")
+	float UnequippedFOV = 90.f;
+	UPROPERTY(EditAnywhere, Category="Game Camera")
+	float EquippedFOV = 80.f;
+	UPROPERTY(EditAnywhere, Category="Game Camera")
+	float AimFOV = 60.f;
+	float CurrentFOV = 90.f;
+	
+	UPROPERTY(EditAnywhere, Category="Game Camera")
+	float UnequippedTargetArmLength = 320.f;
+	UPROPERTY(EditAnywhere, Category="Game Camera")
+	float EquippedTargetArmLength = 320.f;
+	float CurrentTargetArmLength = 320.f;
+	
+	UPROPERTY(EditAnywhere, Category="Game Camera")
+	FVector UnequippedSocketOffset = FVector(0.f, 25.f, 65.f);
+	UPROPERTY(EditAnywhere, Category="Game Camera")
+	FVector EquippedSocketOffset = FVector(0.f, 25.f, 65.f);
+	FVector CurrentSocketOffset = FVector(0.f, 25.f, 65.f);
+
+	UPROPERTY(EditAnywhere, Category="Game Camera")
+	float InterpSpeed = 6.f;
+	void SetCamera(float DeltaSeconds);
+	UPROPERTY(EditAnywhere, Category="Game Camera")
+	float CameraThreshold = 200.f;
+	void HideCharacterIfCameraClose();
+
+	
 	/*
 	 * Turn in place and AO_Yaw
 	 */

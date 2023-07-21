@@ -47,13 +47,15 @@ APSLCharacter::APSLCharacter()
 	// Create a camera boom (pulls in towards the player if there is a collision)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(GetMesh());
-	CameraBoom->TargetArmLength = 400.0f; // The camera follows at this distance behind the character	
+	CameraBoom->TargetArmLength = UnequippedTargetArmLength; // The camera follows at this distance behind the character
+	CameraBoom->SocketOffset = UnequippedSocketOffset;
 	CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
 
 	// Create a follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+	FollowCamera->FieldOfView = UnequippedFOV;
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
@@ -92,6 +94,8 @@ void APSLCharacter::Tick(float DeltaSeconds)
 	}
 	
 	AimOffset(DeltaSeconds);
+	SetCamera(DeltaSeconds);
+	HideCharacterIfCameraClose();
 }
 
 void APSLCharacter::PostInitializeComponents()
@@ -308,6 +312,69 @@ void APSLCharacter::AimOffset(float DeltaTime)
 	AO_Pitch = GetBaseAimRotation().Pitch;
 }
 
+
+void APSLCharacter::SetCamera(float DeltaSeconds)
+{
+	if (IsWeaponEquipped())
+	{
+		CurrentFOV = FMath::FInterpTo(CurrentFOV, EquippedFOV, DeltaSeconds, InterpSpeed);
+		CurrentSocketOffset = FMath::VInterpTo(CurrentSocketOffset, EquippedSocketOffset, DeltaSeconds, InterpSpeed);
+		CurrentTargetArmLength = FMath::FInterpTo(CurrentTargetArmLength, EquippedTargetArmLength, DeltaSeconds, InterpSpeed);
+		if (IsAiming())
+		{
+			CurrentFOV = FMath::FInterpTo(CurrentFOV, AimFOV, DeltaSeconds, InterpSpeed);
+		}
+		else
+		{
+			CurrentFOV = FMath::FInterpTo(CurrentFOV, EquippedFOV, DeltaSeconds, InterpSpeed);
+		}
+	}
+	else
+	{
+		CurrentFOV = FMath::FInterpTo(CurrentFOV, UnequippedFOV, DeltaSeconds, InterpSpeed);
+		CurrentSocketOffset = FMath::VInterpTo(CurrentSocketOffset, UnequippedSocketOffset, DeltaSeconds, InterpSpeed);
+		CurrentTargetArmLength = FMath::FInterpTo(CurrentTargetArmLength, UnequippedTargetArmLength, DeltaSeconds, InterpSpeed);
+	}
+	FollowCamera->FieldOfView = CurrentFOV;
+	CameraBoom->SocketOffset = CurrentSocketOffset;
+	CameraBoom->TargetArmLength = CurrentTargetArmLength;
+}
+
+void APSLCharacter::HideCharacterIfCameraClose()
+{
+	if ((FollowCamera->GetComponentLocation() - GetActorLocation()).Size() < CameraThreshold)
+	{
+		GetMesh()->SetVisibility(false);
+		if(Combat && Combat->EquippedWeapon && Combat->EquippedWeapon->GetWeaponMesh())
+		{
+			Combat->EquippedWeapon->GetWeaponMesh()->bOwnerNoSee = true; 
+		}
+		if(Combat && Combat->FirstWeapon && Combat->FirstWeapon->GetWeaponMesh())
+		{
+			Combat->FirstWeapon->GetWeaponMesh()->bOwnerNoSee = true; 
+		}
+		if(Combat && Combat->SecondWeapon && Combat->SecondWeapon->GetWeaponMesh())
+		{
+			Combat->SecondWeapon->GetWeaponMesh()->bOwnerNoSee = true; 
+		}
+	}
+	else
+	{
+		GetMesh()->SetVisibility(true);
+		if(Combat && Combat->EquippedWeapon && Combat->EquippedWeapon->GetWeaponMesh())
+		{
+			Combat->EquippedWeapon->GetWeaponMesh()->bOwnerNoSee = false; 
+		}
+		if(Combat && Combat->FirstWeapon && Combat->FirstWeapon->GetWeaponMesh())
+		{
+			Combat->FirstWeapon->GetWeaponMesh()->bOwnerNoSee = false; 
+		}
+		if(Combat && Combat->SecondWeapon && Combat->SecondWeapon->GetWeaponMesh())
+		{
+			Combat->SecondWeapon->GetWeaponMesh()->bOwnerNoSee = false; 
+		}
+	}
+}
 
 void APSLCharacter::TurnInPlace(float DeltaTime)
 {
