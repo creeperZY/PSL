@@ -19,7 +19,12 @@ class APSLCharacter : public ACharacter
 
 public:
 	APSLCharacter();
-
+	void PlayFireMontage(bool bAiming);
+	void PlayReloadMontage();
+	void PlayElimMontage();
+	void PlayThrowGrenadeMontage();
+	void PlaySwapMontage();
+	
 protected:
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
@@ -98,6 +103,7 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	class UAbilityComponent* Ability;
 
+	
 
 	/*
 	 * FOV
@@ -137,9 +143,9 @@ private:
 	float InterpAO_Yaw;
 	float AO_Pitch;
 	FRotator StartingAimRotation;
-
 	ETurningInPlace TurningInPlace;
 	void TurnInPlace(float DeltaTime);
+
 	
 	/*
 	 * Turn before equip weapon 
@@ -148,19 +154,37 @@ private:
 	FRotator AimRotation;
 	bool bTurnFinished = false;
 	FTimeline TurnBeforeEquipTimeline;
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="Game Camera")
 	UCurveFloat* TurnCurve;
 	void SetTurnDelegate();
 	UFUNCTION()
 	void TurnProgress(float Alpha);
 	UFUNCTION()
 	void OnTurnFinished();
-
-
-public:
 	void TurnBeforeEquip();
 
 
+	/*
+	 * Animation montages
+	 */
+	UPROPERTY(EditAnywhere, Category = "Combat Montage")
+	class UAnimMontage* FireWeaponMontage;
+
+	UPROPERTY(EditAnywhere, Category = "Combat Montage")
+	class UAnimMontage* ReloadMontage;
+	
+	UPROPERTY(EditAnywhere, Category = "Combat Montage")
+	class UAnimMontage* HitReactMontage;
+
+	UPROPERTY(EditAnywhere, Category = "Combat Montage")
+	class UAnimMontage* ElimMontage;
+
+	UPROPERTY(EditAnywhere, Category = "Combat Montage")
+	class UAnimMontage* ThrowGrenadeMontage;
+	
+	UPROPERTY(EditAnywhere, Category = "Combat Montage")
+	class UAnimMontage* SwapMontage;
+	
 public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }

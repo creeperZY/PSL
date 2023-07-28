@@ -21,8 +21,10 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-
-	// Weapon
+	
+	/*
+	 * Weapon equip
+	 */
 	void EquipWeapon(class AWeapon* WeaponToEquip);
 	void HolsterWeapon();
 	void DropEquippedWeapon();
@@ -31,39 +33,44 @@ protected:
 	void AttachActorToBack1(AActor* ActorToAttach); // maybe need 2?
 	void AttachActorToBack2(AActor* ActorToAttach);
 	void PlayEquipWeaponSound(AWeapon* WeaponToEquip);
-	void ShowAttachedGrenade(bool bShowGrenade);
 	void EquipWeaponToRightHand(AWeapon* WeaponToEquip);
 	void EquipWeaponToBack1(AWeapon* WeaponToEquip);
 	void EquipWeaponToBack2(AWeapon* WeaponToEquip);
 	void EquipFirstWeapon();
 	void EquipSecondWeapon();
-	void Reload();
-	void ReloadEmptyWeapon();
-	UFUNCTION(BlueprintCallable) // those function names confused
-	void FinishReloading();
-
+	
 	void SwapWeapons();
 	UFUNCTION(BlueprintCallable)
 	void FinishSwap();
 	UFUNCTION(BlueprintCallable)
 	void FinishSwapAttachWeapons();
-	void Fire(bool bPressed);
+
 	void SetAiming(bool bIsAiming);
 
 	
-	// Grenade
-	UFUNCTION(BlueprintCallable)
-	void ThrowGrenadeFinished();
-	UFUNCTION(BlueprintCallable)
-	void ThrowGrenade();
-
-
+	/*
+	 * Fire
+	 */
+	void FireButtonPressed(bool bPressed);
 	void Fire();
 	void FireProjectileWeapon();
 	void FireHitScanWeapon();
 	void FireShotgun();
-	
+	void Reload();
+	void ReloadEmptyWeapon();
+	UFUNCTION(BlueprintCallable) // those function names confused
+	void FinishReloading();
+	void TraceUnderCrosshairs(FHitResult& TraceHitResult);
 
+	
+	/*
+	 * Grenade
+	 */
+	void ShowAttachedGrenade(bool bShowGrenade);
+	UFUNCTION(BlueprintCallable)
+	void ThrowGrenadeFinished();
+	UFUNCTION(BlueprintCallable)
+	void ThrowGrenade();
 
 
 	
@@ -77,11 +84,26 @@ private:
 	UPROPERTY()
 	AWeapon* SecondWeapon;
 
-	UPROPERTY()
+	FVector TraceEnd;
+	FVector HitTarget;
+	
+	/*
+	 * Aiming (FOV set up in character)
+	*/
 	bool bAiming = false;
 
-
-	UPROPERTY()
+	
+	/*
+	* Automatic fire
+	*/
+	bool bFireButtonPressed;
+	FTimerHandle FireTimer;
+	bool bTimeUpCanFire = true;
+	void StartFireTimer();
+	void FireTimerFinished();
+	bool CanFire();
+	
+	
 	ECombatState CombatState = ECombatState::ECS_Unoccupied;
 
 public:	

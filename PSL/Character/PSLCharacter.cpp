@@ -67,6 +67,46 @@ APSLCharacter::APSLCharacter()
 
 }
 
+void APSLCharacter::PlayFireMontage(bool bAiming)
+{
+	if(Combat == nullptr || Combat->EquippedWeapon == nullptr) return;
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && FireWeaponMontage)
+	{
+		AnimInstance->Montage_Play(FireWeaponMontage);
+		FName SectionName;
+		
+		switch (Combat->EquippedWeapon->GetEquippedPoseType())
+		{
+		case EEquippedPoseType::EEPT_RiflePose:
+			SectionName = bAiming ? FName("RifleAim") : FName("RifleHip");
+			break;
+		case EEquippedPoseType::EEPT_PistolPose:
+			SectionName = bAiming ? FName("PistolAim") : FName("PistolHip");
+			break;
+		}
+
+		AnimInstance->Montage_JumpToSection(SectionName);
+	}
+}
+
+void APSLCharacter::PlayReloadMontage()
+{
+}
+
+void APSLCharacter::PlayElimMontage()
+{
+}
+
+void APSLCharacter::PlayThrowGrenadeMontage()
+{
+}
+
+void APSLCharacter::PlaySwapMontage()
+{
+}
+
 void APSLCharacter::BeginPlay()
 {
 	// Call the base class  
@@ -198,12 +238,10 @@ void APSLCharacter::Jump()
 void APSLCharacter::EquipButtonPressed()
 {
 	if (GetCharacterMovement()->IsFalling()) return;
-	if (Combat)
+	if (Combat && OverlappingWeapon)
 	{
-		if (OverlappingWeapon)
-		{
-			Combat->EquipWeapon(OverlappingWeapon);
-		}
+		TurnBeforeEquip();
+		Combat->EquipWeapon(OverlappingWeapon);
 	}
 }
 
@@ -266,51 +304,21 @@ void APSLCharacter::AimButtonReleased()
 
 void APSLCharacter::FireButtonPressed()
 {
+	if (Combat)
+	{
+		Combat->FireButtonPressed(true);
+	}
 }
 
 void APSLCharacter::FireButtonReleased()
 {
-}
-
-
-float APSLCharacter::CalculateSpeed()
-{
-	FVector Velocity = GetVelocity();
-	Velocity.Z = 0.f;
-	return Velocity.Size();
-}
-
-void APSLCharacter::AimOffset(float DeltaTime)
-{
-	if (Combat && Combat->EquippedWeapon == nullptr) return;
-	if (!bTurnFinished) return;
-	float Speed = CalculateSpeed();
-	bool bIsInAir = GetCharacterMovement()->IsFalling();
-
-	if (Speed == 0.f && !bIsInAir) // standing still, not jumping
+	if (Combat)
 	{
-	//	bRotateRootBone = true;
-		FRotator CurrentAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
-		FRotator DeltaAimRotation = UKismetMathLibrary::NormalizedDeltaRotator(CurrentAimRotation, StartingAimRotation);
-		AO_Yaw = DeltaAimRotation.Yaw;
-		if (TurningInPlace == ETurningInPlace::ETIP_NotTurning)
-		{
-			InterpAO_Yaw = AO_Yaw;
-		}
-		bUseControllerRotationYaw = true;
-		TurnInPlace(DeltaTime);
+		Combat->FireButtonPressed(false);
 	}
-	if (Speed > 0.f || bIsInAir) // running, or jumping
-	{
-     //	bRotateRootBone = false;
-        StartingAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
-        AO_Yaw = 0.f;
-        bUseControllerRotationYaw = true;
-        TurningInPlace = ETurningInPlace::ETIP_NotTurning;
-	}
-		
-	AO_Pitch = GetBaseAimRotation().Pitch;
 }
+
+
 
 
 void APSLCharacter::SetCamera(float DeltaSeconds)
@@ -374,6 +382,47 @@ void APSLCharacter::HideCharacterIfCameraClose()
 			Combat->SecondWeapon->GetWeaponMesh()->bOwnerNoSee = false; 
 		}
 	}
+}
+
+
+
+float APSLCharacter::CalculateSpeed()
+{
+	FVector Velocity = GetVelocity();
+	Velocity.Z = 0.f;
+	return Velocity.Size();
+}
+
+void APSLCharacter::AimOffset(float DeltaTime)
+{
+	if (Combat && Combat->EquippedWeapon == nullptr) return;
+	if (!bTurnFinished) return;
+	float Speed = CalculateSpeed();
+	bool bIsInAir = GetCharacterMovement()->IsFalling();
+
+	if (Speed == 0.f && !bIsInAir) // standing still, not jumping
+	{
+	//	bRotateRootBone = true;
+		FRotator CurrentAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
+		FRotator DeltaAimRotation = UKismetMathLibrary::NormalizedDeltaRotator(CurrentAimRotation, StartingAimRotation);
+		AO_Yaw = DeltaAimRotation.Yaw;
+		if (TurningInPlace == ETurningInPlace::ETIP_NotTurning)
+		{
+			InterpAO_Yaw = AO_Yaw;
+		}
+		bUseControllerRotationYaw = true;
+		TurnInPlace(DeltaTime);
+	}
+	if (Speed > 0.f || bIsInAir) // running, or jumping
+	{
+     //	bRotateRootBone = false;
+        StartingAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
+        AO_Yaw = 0.f;
+        bUseControllerRotationYaw = true;
+        TurningInPlace = ETurningInPlace::ETIP_NotTurning;
+	}
+		
+	AO_Pitch = GetBaseAimRotation().Pitch;
 }
 
 void APSLCharacter::TurnInPlace(float DeltaTime)

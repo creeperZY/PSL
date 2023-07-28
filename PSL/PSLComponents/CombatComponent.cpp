@@ -15,7 +15,7 @@
 
 UCombatComponent::UCombatComponent()
 {
-	PrimaryComponentTick.bCanEverTick = false;
+	PrimaryComponentTick.bCanEverTick = true;
 }
 
 
@@ -30,6 +30,14 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	if (Character)
+	{
+		FHitResult HitResult;
+		TraceUnderCrosshairs(HitResult);
+		if(HitResult.bBlockingHit) HitTarget = HitResult.ImpactPoint;
+		else HitTarget = TraceEnd; 
+		DRAW_SPHERE_AT_LOCATION(HitTarget)
+	}
 }
 
 void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
@@ -65,17 +73,6 @@ void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 			EquippedWeapon = nullptr;
 		}
 	}
-	if (EquippedWeapon)
-	{
-		Character->GetCharacterMovement()->bOrientRotationToMovement = false;
-		Character->bUseControllerRotationYaw = true;
-	}
-	else
-	{
-		Character->GetCharacterMovement()->bOrientRotationToMovement = true;
-		Character->bUseControllerRotationYaw = false;
-	}
-
 }
 
 void UCombatComponent::HolsterWeapon()
@@ -170,7 +167,6 @@ void UCombatComponent::EquipSecondWeapon()
 	}
 }
 
-
 void UCombatComponent::DropEquippedWeapon()
 {
 	if (Character == nullptr || EquippedWeapon == nullptr) return;
@@ -232,6 +228,18 @@ void UCombatComponent::PlayEquipWeaponSound(AWeapon* WeaponToEquip)
 	}
 }
 
+
+void UCombatComponent::FireButtonPressed(bool bPressed)
+{
+	bFireButtonPressed = bPressed;
+
+	if (bFireButtonPressed)
+	{
+		Fire();
+	}
+}
+
+
 void UCombatComponent::SwapWeapons()
 {
 	/*if (CombatState != ECombatState::ECS_Unoccupied || Character == nullptr) return;
@@ -283,12 +291,118 @@ void UCombatComponent::SetAiming(bool bIsAiming)
 	}
 }
 
-void UCombatComponent::ThrowGrenadeFinished()
+void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 {
+	FVector2d ViewPortSize;
+	if(GEngine && GEngine->GameViewport)
+	{
+		GEngine->GameViewport->GetViewportSize(ViewPortSize);
+	}
+
+	FVector2d CrossHairLocation(ViewPortSize.X / 2.f, ViewPortSize.Y / 2.f);
+	FVector CrosshairWorldPosition;
+	FVector CrosshairWorldDirection;
+	bool bScreenToWorld = UGameplayStatics::DeprojectScreenToWorld(
+		UGameplayStatics::GetPlayerController(this, 0),
+		CrossHairLocation,
+		CrosshairWorldPosition,
+		CrosshairWorldDirection
+	);
+
+	if(bScreenToWorld)
+	{
+		FVector Start = CrosshairWorldPosition;
+
+		if (Character)
+		{
+			float DistanceToCharacter = (Character->GetActorLocation() - Start).Size();
+			Start += CrosshairWorldDirection * (DistanceToCharacter + 100.f);
+			//DrawDebugSphere(GetWorld(), Start, 16.f, 12, FColor::Red, false);
+		}
+		
+		FVector End = Start + CrosshairWorldDirection * TRACE_LENGTH;
+		TraceEnd = End; //xxx
+
+		//FCollisionQueryParams Params;
+		//Params.AddIgnoredActor(Character);
+		GetWorld()->LineTraceSingleByChannel(
+			TraceHitResult,
+			Start,
+			End,
+			ECollisionChannel::ECC_Visibility
+			//,Params
+		);
+	}
 }
 
-void UCombatComponent::ThrowGrenade()
+void UCombatComponent::Fire()
 {
+	if (CanFire())
+	{
+		bTimeUpCanFire = false;
+		if(EquippedWeapon)
+		{
+			switch (EquippedWeapon->FireType)
+			{
+			case EFireType::EFT_Projectile:
+				FireProjectileWeapon();
+				break;
+			case EFireType::EFT_HitScan:
+				FireHitScanWeapon();
+				break;
+			case EFireType::EFT_Shotgun:
+				FireShotgun();
+				break;
+			}
+		}
+		StartFireTimer();
+	}
+}
+
+void UCombatComponent::FireProjectileWeapon()
+{
+
+}
+
+void UCombatComponent::FireHitScanWeapon()
+{
+
+}
+
+void UCombatComponent::FireShotgun()
+{
+
+}
+
+
+
+
+void UCombatComponent::StartFireTimer()
+{
+	if (EquippedWeapon == nullptr || Character == nullptr) return;
+	Character->GetWorldTimerManager().SetTimer(
+		FireTimer,
+		this,
+		&UCombatComponent::FireTimerFinished,
+		EquippedWeapon->FireDelay
+	);
+}
+
+void UCombatComponent::FireTimerFinished()
+{
+	if (EquippedWeapon == nullptr) return;
+	bTimeUpCanFire = true;
+	if (bFireButtonPressed && EquippedWeapon->bAutomatic)
+	{
+		Fire();
+	}
+	//ReloadEmptyWeapon();
+}
+
+bool UCombatComponent::CanFire()
+{
+	if (EquippedWeapon == nullptr) return false;
+	return !EquippedWeapon->IsEmpty() && bTimeUpCanFire && CombatState == ECombatState::ECS_Unoccupied;
 }
 
 bool UCombatComponent::ShouldSwapWeapons()
@@ -305,4 +419,12 @@ void UCombatComponent::FinishReloading()
 {
 }
 
+
+void UCombatComponent::ThrowGrenadeFinished()
+{
+}
+
+void UCombatComponent::ThrowGrenade()
+{
+}
 
