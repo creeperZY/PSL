@@ -103,7 +103,8 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	class UAbilityComponent* Ability;
 
-	
+	UPROPERTY(VisibleAnywhere)
+	class UPostProcessComponent* PostProcess;	
 
 	/*
 	 * FOV
@@ -184,6 +185,13 @@ private:
 	
 	UPROPERTY(EditAnywhere, Category = "Combat Montage")
 	class UAnimMontage* SwapMontage;
+	
+	/*
+	 * Render X-ray on screen
+	 */
+	void ShowXRayWhenCharacterOccluded();
+	float CharacterLastOnScreenTime = 0.f;
+	float WeaponLastOnScreenTime = 0.f;
 	
 public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }

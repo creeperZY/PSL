@@ -13,6 +13,9 @@ class APSLGameMode : public AGameMode
 
 public:
 	APSLGameMode();
+	
+protected:
+	virtual void Tick(float DeltaSeconds) override;
 };
 
 

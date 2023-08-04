@@ -8,3 +8,8 @@ APSLGameMode::APSLGameMode()
 {
 
 }
+
+void APSLGameMode::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+}

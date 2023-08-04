@@ -40,6 +40,7 @@ public:
 	virtual void SetOwner(AActor* NewOwner) override;
 	void SetHUDAmmo();
 	void ShowPickupWidget(bool bShowWidget);
+	void ShowOutlineColor(int32 ColorStencilValue);
 	virtual void Fire(const FVector& HitTarget);
 	virtual void Dropped();
 	void AddAmmo(int32 AmmoToAdd);

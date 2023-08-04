@@ -31,6 +31,9 @@ AWeapon::AWeapon()
 
 	PickupWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("PickupWidget"));
 	PickupWidget->SetupAttachment(RootComponent);
+
+	EnableCustomDepth(true);
+	ShowOutlineColor(0);
 }
 
 void AWeapon::BeginPlay()
@@ -70,6 +73,7 @@ void AWeapon::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
 	{
 		PSLCharacter->SetOverlappingWeapon(this);
 		ShowPickupWidget(true);
+		ShowOutlineColor(1);
 	}
 }
 
@@ -81,6 +85,7 @@ void AWeapon::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 	{
 		PSLCharacter->SetOverlappingWeapon(nullptr);
 		ShowPickupWidget(false);
+		ShowOutlineColor(0);
 	}
 }
 
@@ -89,6 +94,19 @@ void AWeapon::ShowPickupWidget(bool bShowWidget)
 	if (PickupWidget)
 	{
 		PickupWidget->SetVisibility(bShowWidget);
+	}
+}
+
+void AWeapon::ShowOutlineColor(int32 ColorStencilValue)
+{
+	/*
+	 * 0 No Outline
+	 * 1 2 3 colors
+	 */
+	if (WeaponMesh)
+	{
+		WeaponMesh->SetCustomDepthStencilValue(ColorStencilValue);
+		WeaponMesh->MarkRenderStateDirty();
 	}
 }
 
@@ -143,7 +161,8 @@ void AWeapon::OnEquipped()
 		WeaponMesh->SetEnableGravity(true);
 		WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	}
-	//EnableCustomDepth(false);
+
+	ShowOutlineColor(0);
 	PSLOwnerCharacter = PSLOwnerCharacter == nullptr ? Cast<APSLCharacter>(GetOwner()) : PSLOwnerCharacter;
 	if (PSLOwnerCharacter)
 	{
@@ -164,11 +183,8 @@ void AWeapon::OnEquippedBack()
 		WeaponMesh->SetEnableGravity(true);
 		WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	}
-	//if (WeaponMesh)
-	//{
-	//WeaponMesh->SetCustomDepthStencilValue(CUSTOM_DEPTH_TAN);
-	//WeaponMesh->MarkRenderStateDirty();
-	//}
+
+	ShowOutlineColor(0);
 	PSLOwnerCharacter = PSLOwnerCharacter == nullptr ? Cast<APSLCharacter>(GetOwner()) : PSLOwnerCharacter;
 	if (PSLOwnerCharacter)
 	{
@@ -186,9 +202,7 @@ void AWeapon::OnDropped()
 	WeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);//for drop weapon
 	WeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);//for drop weapon
 		
-	//WeaponMesh->SetCustomDepthStencilValue(CUSTOM_DEPTH_BLUE);
-	//WeaponMesh->MarkRenderStateDirty();
-	//EnableCustomDepth(true);
+	ShowOutlineColor(0);
 	PSLOwnerCharacter = PSLOwnerCharacter == nullptr ? Cast<APSLCharacter>(GetOwner()) : PSLOwnerCharacter;
 	if (PSLOwnerCharacter)
 	{
@@ -242,6 +256,14 @@ FVector AWeapon::TraceEndWithScatter(const FVector& HitTarget)
 	*/
 	
 	return FVector(TraceStart + ToEndLoc * TRACE_LENGTH / ToEndLoc.Size());
+}
+
+void AWeapon::EnableCustomDepth(bool bEnable)
+{
+	if (WeaponMesh)
+	{
+		WeaponMesh->SetRenderCustomDepth(bEnable);
+	}
 }
 
 void AWeapon::Dropped()

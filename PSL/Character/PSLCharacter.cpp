@@ -9,11 +9,14 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "PrimitiveSceneInfo.h"
+#include "Components/PostProcessComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "PSL/PSLComponents/CombatComponent.h"
 #include "PSL/Weapon/Weapon.h"
 #include "PSL/EasyMacros.h"
 #include "PSL/PSLComponents/AbilityComponent.h"
+#include "Components/PrimitiveComponent.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -62,7 +65,8 @@ APSLCharacter::APSLCharacter()
 
 	Combat = CreateDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
 	Ability = CreateDefaultSubobject<UAbilityComponent>(TEXT("AbilityComponent"));
-
+	PostProcess = CreateDefaultSubobject<UPostProcessComponent>(TEXT("PostProcessComponent"));
+	
 	TurningInPlace = ETurningInPlace::ETIP_NotTurning;
 
 }
@@ -136,6 +140,9 @@ void APSLCharacter::Tick(float DeltaSeconds)
 	AimOffset(DeltaSeconds);
 	SetCamera(DeltaSeconds);
 	HideCharacterIfCameraClose();
+	ShowXRayWhenCharacterOccluded();
+
+
 }
 
 void APSLCharacter::PostInitializeComponents()
@@ -460,7 +467,6 @@ void APSLCharacter::SetTurnDelegate()
 
 void APSLCharacter::TurnBeforeEquip()
 {
-	//if (IsWeaponEquipped()) return;
 	if (bUseControllerRotationYaw) return;
 	if (TurnCurve == nullptr) return;
 	
@@ -474,16 +480,38 @@ void APSLCharacter::TurnBeforeEquip()
 void APSLCharacter::TurnProgress(float Alpha)
 {
 	FRotator TurnRotation = FMath::Lerp(StartingRotation, AimRotation, Alpha);
-	SetActorRotation(TurnRotation);
+	if (GetEquippedWeapon()) SetActorRotation(TurnRotation);
 }
 
 void APSLCharacter::OnTurnFinished()
 {
 	bTurnFinished = true;
-	bUseControllerRotationYaw = true;
-	GetCharacterMovement()->bOrientRotationToMovement = false;
+	if (GetEquippedWeapon())
+	{
+		bUseControllerRotationYaw = true;
+		GetCharacterMovement()->bOrientRotationToMovement = false;
+	}
+	else
+	{
+		bUseControllerRotationYaw = false;
+		GetCharacterMovement()->bOrientRotationToMovement = true;
+	}
 }
 
+
+void APSLCharacter::ShowXRayWhenCharacterOccluded()
+{
+	if (CharacterLastOnScreenTime > GetLastRenderTime()) { 
+		CharacterLastOnScreenTime = GetLastRenderTime();
+		GetMesh()->SetRenderCustomDepth(false);
+	}
+	else
+	{
+		GetMesh()->SetRenderCustomDepth(true);
+		GetMesh()->SetCustomDepthStencilValue(255);
+		GetMesh()->MarkRenderStateDirty();
+	}
+}
 
 ECombatState APSLCharacter::GetCombatState() const
 {
