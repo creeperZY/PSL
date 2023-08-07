@@ -33,7 +33,7 @@ AWeapon::AWeapon()
 	PickupWidget->SetupAttachment(RootComponent);
 
 	EnableCustomDepth(true);
-	ShowOutlineColor(0);
+	ShowStencilColor(0);
 }
 
 void AWeapon::BeginPlay()
@@ -73,7 +73,7 @@ void AWeapon::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
 	{
 		PSLCharacter->SetOverlappingWeapon(this);
 		ShowPickupWidget(true);
-		ShowOutlineColor(1);
+		ShowStencilColor(1);
 	}
 }
 
@@ -85,7 +85,7 @@ void AWeapon::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 	{
 		PSLCharacter->SetOverlappingWeapon(nullptr);
 		ShowPickupWidget(false);
-		ShowOutlineColor(0);
+		ShowStencilColor(0);
 	}
 }
 
@@ -97,11 +97,12 @@ void AWeapon::ShowPickupWidget(bool bShowWidget)
 	}
 }
 
-void AWeapon::ShowOutlineColor(int32 ColorStencilValue)
+void AWeapon::ShowStencilColor(int32 ColorStencilValue)
 {
 	/*
 	 * 0 No Outline
 	 * 1 2 3 colors
+	 * 255 xray
 	 */
 	if (WeaponMesh)
 	{
@@ -162,7 +163,7 @@ void AWeapon::OnEquipped()
 		WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	}
 
-	ShowOutlineColor(0);
+	ShowStencilColor(255);
 	PSLOwnerCharacter = PSLOwnerCharacter == nullptr ? Cast<APSLCharacter>(GetOwner()) : PSLOwnerCharacter;
 	if (PSLOwnerCharacter)
 	{
@@ -184,7 +185,7 @@ void AWeapon::OnEquippedBack()
 		WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	}
 
-	ShowOutlineColor(0);
+	ShowStencilColor(255);
 	PSLOwnerCharacter = PSLOwnerCharacter == nullptr ? Cast<APSLCharacter>(GetOwner()) : PSLOwnerCharacter;
 	if (PSLOwnerCharacter)
 	{
@@ -202,7 +203,7 @@ void AWeapon::OnDropped()
 	WeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);//for drop weapon
 	WeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);//for drop weapon
 		
-	ShowOutlineColor(0);
+	ShowStencilColor(0);
 	PSLOwnerCharacter = PSLOwnerCharacter == nullptr ? Cast<APSLCharacter>(GetOwner()) : PSLOwnerCharacter;
 	if (PSLOwnerCharacter)
 	{

@@ -1,6 +1,8 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "PSLCharacter.h"
+
+#include "AbilitySystemComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
@@ -17,6 +19,9 @@
 #include "PSL/EasyMacros.h"
 #include "PSL/PSLComponents/AbilityComponent.h"
 #include "Components/PrimitiveComponent.h"
+#include "PSL/AbilitySystem/PSLAbilitySystemComponent.h"
+#include "PSL/AbilitySystem/PSLAttributeSet.h"
+#include "PSL/PlayerController/PSLPlayerController.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -67,8 +72,10 @@ APSLCharacter::APSLCharacter()
 	Ability = CreateDefaultSubobject<UAbilityComponent>(TEXT("AbilityComponent"));
 	PostProcess = CreateDefaultSubobject<UPostProcessComponent>(TEXT("PostProcessComponent"));
 	
-	TurningInPlace = ETurningInPlace::ETIP_NotTurning;
+	AbilitySystemComponent = CreateDefaultSubobject<UPSLAbilitySystemComponent>("AbilitySystemComponent");
+	AttributeSet = CreateDefaultSubobject<UPSLAttributeSet>("AttributeSet");
 
+	TurningInPlace = ETurningInPlace::ETIP_NotTurning;
 }
 
 void APSLCharacter::PlayFireMontage(bool bAiming)
@@ -124,7 +131,8 @@ void APSLCharacter::BeginPlay()
 			Subsystem->AddMappingContext(InputMappingContext, 0);
 		}
 	}
-
+	
+	SetShowXRayWhenCharacterOccluded();
 	SetTurnDelegate();
 }
 
@@ -140,9 +148,7 @@ void APSLCharacter::Tick(float DeltaSeconds)
 	AimOffset(DeltaSeconds);
 	SetCamera(DeltaSeconds);
 	HideCharacterIfCameraClose();
-	ShowXRayWhenCharacterOccluded();
-
-
+	
 }
 
 void APSLCharacter::PostInitializeComponents()
@@ -499,17 +505,36 @@ void APSLCharacter::OnTurnFinished()
 }
 
 
-void APSLCharacter::ShowXRayWhenCharacterOccluded()
+void APSLCharacter::SetShowXRayWhenCharacterOccluded()
 {
-	if (CharacterLastOnScreenTime > GetLastRenderTime()) { 
-		CharacterLastOnScreenTime = GetLastRenderTime();
-		GetMesh()->SetRenderCustomDepth(false);
+	APSLPlayerController* PSLController = Cast<APSLPlayerController>(GetController());
+	if(PSLController)
+	{
+		GetMesh()->SetRenderCustomDepth(true);
+		GetMesh()->SetCustomDepthStencilValue(0);
+		GetMesh()->MarkRenderStateDirty();
+		if (Combat && Combat->FirstWeapon)
+		{
+			Combat->FirstWeapon->ShowStencilColor(0);
+		}
+		if (Combat && Combat->SecondWeapon)
+		{
+			Combat->SecondWeapon->ShowStencilColor(0);
+		}
 	}
 	else
 	{
 		GetMesh()->SetRenderCustomDepth(true);
 		GetMesh()->SetCustomDepthStencilValue(255);
 		GetMesh()->MarkRenderStateDirty();
+		if (Combat && Combat->FirstWeapon)
+		{
+			Combat->FirstWeapon->ShowStencilColor(255);
+		}
+		if (Combat && Combat->SecondWeapon)
+		{
+			Combat->SecondWeapon->ShowStencilColor(255);
+		}
 	}
 }
 

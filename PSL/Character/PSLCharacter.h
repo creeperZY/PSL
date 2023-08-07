@@ -12,6 +12,7 @@
 #include "PSLCharacter.generated.h"
 
 
+
 UCLASS(config=Game)
 class APSLCharacter : public ACharacter
 {
@@ -104,8 +105,13 @@ private:
 	class UAbilityComponent* Ability;
 
 	UPROPERTY(VisibleAnywhere)
-	class UPostProcessComponent* PostProcess;	
+	class UPostProcessComponent* PostProcess;
 
+	UPROPERTY()
+	TObjectPtr<class UAbilitySystemComponent> AbilitySystemComponent;
+
+	UPROPERTY()
+	TObjectPtr<class UAttributeSet> AttributeSet;
 	/*
 	 * FOV
 	 */
@@ -189,9 +195,8 @@ private:
 	/*
 	 * Render X-ray on screen
 	 */
-	void ShowXRayWhenCharacterOccluded();
-	float CharacterLastOnScreenTime = 0.f;
-	float WeaponLastOnScreenTime = 0.f;
+	void SetShowXRayWhenCharacterOccluded();
+
 	
 public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
