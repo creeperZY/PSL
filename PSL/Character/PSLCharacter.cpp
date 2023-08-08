@@ -19,9 +19,12 @@
 #include "PSL/EasyMacros.h"
 #include "PSL/PSLComponents/AbilityComponent.h"
 #include "Components/PrimitiveComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "PSL/AbilitySystem/PSLAbilitySystemComponent.h"
 #include "PSL/AbilitySystem/PSLAttributeSet.h"
+#include "PSL/GameMode/PSLGameMode.h"
 #include "PSL/PlayerController/PSLPlayerController.h"
+#include "PSL/PlayerState/PSLPlayerState.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -76,6 +79,26 @@ APSLCharacter::APSLCharacter()
 	AttributeSet = CreateDefaultSubobject<UPSLAttributeSet>("AttributeSet");
 
 	TurningInPlace = ETurningInPlace::ETIP_NotTurning;
+}
+
+UAbilitySystemComponent* APSLCharacter::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
+}
+
+void APSLCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	//APSLGameMode* GameModeRef = Cast<APSLGameMode>(GetWorld()->GetAuthGameMode());
+	//check(GameModeRef);
+	
+	APSLPlayerState* PSLPlayerState = GetPlayerState<APSLPlayerState>();
+	if(!PSLPlayerState) return;
+	PSLPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(PSLPlayerState, this);
+	//AbilitySystemComponent = PSLPlayerState->GetAbilitySystemComponent();
+	//AttributeSet = PSLPlayerState->GetAttributeSet();
+	
 }
 
 void APSLCharacter::PlayFireMontage(bool bAiming)
@@ -134,6 +157,8 @@ void APSLCharacter::BeginPlay()
 	
 	SetShowXRayWhenCharacterOccluded();
 	SetTurnDelegate();
+
+	AbilitySystemComponent->InitAbilityActorInfo(this, this);
 }
 
 void APSLCharacter::Tick(float DeltaSeconds)

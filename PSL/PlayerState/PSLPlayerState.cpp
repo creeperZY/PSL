@@ -2,7 +2,6 @@
 
 
 #include "PSLPlayerState.h"
-
 #include "PSL/AbilitySystem/PSLAbilitySystemComponent.h"
 #include "PSL/AbilitySystem/PSLAttributeSet.h"
 
@@ -10,4 +9,9 @@ APSLPlayerState::APSLPlayerState()
 {
 	AbilitySystemComponent = CreateDefaultSubobject<UPSLAbilitySystemComponent>("AbilitySystemComponent");
 	AttributeSet = CreateDefaultSubobject<UPSLAttributeSet>("AttributeSet");
+}
+
+UAbilitySystemComponent* APSLPlayerState::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
 }

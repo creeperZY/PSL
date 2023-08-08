@@ -6,20 +6,26 @@
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
 #include "Components/TimelineComponent.h"
+#include "AbilitySystemInterface.h"
 #include "PSL/PSLTypes/EquippedPoses.h"
 #include "PSL/PSLTypes/TurningInPlace.h"
 #include "PSL/PSLTypes/CombatState.h"
 #include "PSLCharacter.generated.h"
 
-
+class UAbilitySystemComponent;
+class UAttributeSet;
 
 UCLASS(config=Game)
-class APSLCharacter : public ACharacter
+class APSLCharacter : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
 public:
 	APSLCharacter();
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
+	virtual void PossessedBy(AController* NewController) override;
+public:
 	void PlayFireMontage(bool bAiming);
 	void PlayReloadMontage();
 	void PlayElimMontage();
@@ -108,10 +114,10 @@ private:
 	class UPostProcessComponent* PostProcess;
 
 	UPROPERTY()
-	TObjectPtr<class UAbilitySystemComponent> AbilitySystemComponent;
+	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
 
 	UPROPERTY()
-	TObjectPtr<class UAttributeSet> AttributeSet;
+	TObjectPtr<UAttributeSet> AttributeSet;
 	/*
 	 * FOV
 	 */

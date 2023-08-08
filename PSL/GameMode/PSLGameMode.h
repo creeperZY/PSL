@@ -6,6 +6,7 @@
 #include "GameFramework/GameMode.h"
 #include "PSLGameMode.generated.h"
 
+
 UCLASS(minimalapi)
 class APSLGameMode : public AGameMode
 {
@@ -13,9 +14,14 @@ class APSLGameMode : public AGameMode
 
 public:
 	APSLGameMode();
+
 	
 protected:
 	virtual void Tick(float DeltaSeconds) override;
+
+
+
+	
 };
 
 
