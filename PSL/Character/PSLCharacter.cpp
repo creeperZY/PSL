@@ -1,8 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "PSLCharacter.h"
-
-#include "AbilitySystemComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
@@ -11,7 +9,6 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "PrimitiveSceneInfo.h"
 #include "Components/PostProcessComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "PSL/PSLComponents/CombatComponent.h"
@@ -19,12 +16,9 @@
 #include "PSL/EasyMacros.h"
 #include "PSL/PSLComponents/AbilityComponent.h"
 #include "Components/PrimitiveComponent.h"
-#include "Kismet/GameplayStatics.h"
-#include "PSL/AbilitySystem/PSLAbilitySystemComponent.h"
-#include "PSL/AbilitySystem/PSLAttributeSet.h"
-#include "PSL/GameMode/PSLGameMode.h"
 #include "PSL/PlayerController/PSLPlayerController.h"
-#include "PSL/PlayerState/PSLPlayerState.h"
+
+
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -74,17 +68,11 @@ APSLCharacter::APSLCharacter()
 	Combat = CreateDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
 	Ability = CreateDefaultSubobject<UAbilityComponent>(TEXT("AbilityComponent"));
 	PostProcess = CreateDefaultSubobject<UPostProcessComponent>(TEXT("PostProcessComponent"));
-	
-	AbilitySystemComponent = CreateDefaultSubobject<UPSLAbilitySystemComponent>("AbilitySystemComponent");
-	AttributeSet = CreateDefaultSubobject<UPSLAttributeSet>("AttributeSet");
 
 	TurningInPlace = ETurningInPlace::ETIP_NotTurning;
+
 }
 
-UAbilitySystemComponent* APSLCharacter::GetAbilitySystemComponent() const
-{
-	return AbilitySystemComponent;
-}
 
 void APSLCharacter::PossessedBy(AController* NewController)
 {
@@ -92,13 +80,7 @@ void APSLCharacter::PossessedBy(AController* NewController)
 
 	//APSLGameMode* GameModeRef = Cast<APSLGameMode>(GetWorld()->GetAuthGameMode());
 	//check(GameModeRef);
-	
-	APSLPlayerState* PSLPlayerState = GetPlayerState<APSLPlayerState>();
-	if(!PSLPlayerState) return;
-	PSLPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(PSLPlayerState, this);
-	//AbilitySystemComponent = PSLPlayerState->GetAbilitySystemComponent();
-	//AttributeSet = PSLPlayerState->GetAttributeSet();
-	
+
 }
 
 void APSLCharacter::PlayFireMontage(bool bAiming)
@@ -158,7 +140,6 @@ void APSLCharacter::BeginPlay()
 	SetShowXRayWhenCharacterOccluded();
 	SetTurnDelegate();
 
-	AbilitySystemComponent->InitAbilityActorInfo(this, this);
 }
 
 void APSLCharacter::Tick(float DeltaSeconds)
@@ -368,7 +349,7 @@ void APSLCharacter::SetCamera(float DeltaSeconds)
 		CurrentTargetArmLength = FMath::FInterpTo(CurrentTargetArmLength, EquippedTargetArmLength, DeltaSeconds, InterpSpeed);
 		if (IsAiming())
 		{
-			CurrentFOV = FMath::FInterpTo(CurrentFOV, AimFOV, DeltaSeconds, InterpSpeed);
+			CurrentFOV = FMath::FInterpTo(CurrentFOV, GetEquippedWeapon()->GetZoomedFOV(), DeltaSeconds, InterpSpeed);
 		}
 		else
 		{
@@ -437,7 +418,11 @@ void APSLCharacter::AimOffset(float DeltaTime)
 	if (!bTurnFinished) return;
 	float Speed = CalculateSpeed();
 	bool bIsInAir = GetCharacterMovement()->IsFalling();
-
+	if (bIsInAir)
+	{
+		AO_Pitch = FMath::FInterpTo(AO_Pitch, 0.f, DeltaTime, 15.f);
+		return;
+	}
 	if (Speed == 0.f && !bIsInAir) // standing still, not jumping
 	{
 	//	bRotateRootBone = true;
@@ -459,17 +444,17 @@ void APSLCharacter::AimOffset(float DeltaTime)
         bUseControllerRotationYaw = true;
         TurningInPlace = ETurningInPlace::ETIP_NotTurning;
 	}
-		
-	AO_Pitch = GetBaseAimRotation().Pitch;
+	AO_Pitch = FMath::FInterpTo(AO_Pitch, GetBaseAimRotation().Pitch, DeltaTime, 15.f);
+	
 }
 
 void APSLCharacter::TurnInPlace(float DeltaTime)
 {
-	if (AO_Yaw > 90.0f)	
+	if (AO_Yaw > 85.f)	//90.f?
 	{
 		TurningInPlace = ETurningInPlace::ETIP_Right;
 	}
-	else if (AO_Yaw < -90.0f)
+	else if (AO_Yaw < -85.f)
 	{
 		TurningInPlace = ETurningInPlace::ETIP_Left;
 	}
@@ -567,6 +552,13 @@ ECombatState APSLCharacter::GetCombatState() const
 {
 	if(Combat == nullptr) return ECombatState::ECS_MAX;
 	return Combat->CombatState;
+}
+
+FVector APSLCharacter::GetHitTarget() const
+{
+	if(Combat == nullptr) return FVector();
+	//return Combat->HitTarget;
+	return Combat->TraceEnd;//xxx
 }
 
 bool APSLCharacter::IsWeaponEquipped()

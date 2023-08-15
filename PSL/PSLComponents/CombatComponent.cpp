@@ -189,7 +189,25 @@ void UCombatComponent::AttachActorToLeftHand(AActor* ActorToAttach)
 void UCombatComponent::AttachActorToRightHand(AActor* ActorToAttach)
 {
 	if (Character == nullptr || Character->GetMesh() == nullptr || ActorToAttach == nullptr) return;
-	const USkeletalMeshSocket* HandSocket = Character->GetMesh()->GetSocketByName(FName("RightHandSocket"));
+
+	const USkeletalMeshSocket* HandSocket = nullptr;
+	
+	AWeapon* AttachedWeapon = Cast<AWeapon>(ActorToAttach);
+	if(AttachedWeapon)
+	{
+		switch (AttachedWeapon->GetEquippedPoseType())
+		{
+		case EEquippedPoseType::EEPT_PistolPose:
+			HandSocket = Character->GetMesh()->GetSocketByName(FName("RightHandSocketPistol"));
+			break;
+		case EEquippedPoseType::EEPT_RiflePose:
+			HandSocket = Character->GetMesh()->GetSocketByName(FName("RightHandSocketRifle"));
+			break;
+		case EEquippedPoseType::EEPT_MeleePose:
+			HandSocket = Character->GetMesh()->GetSocketByName(FName("RightHandSocketMelee"));
+			break;
+		}
+	}
 	if (HandSocket)
 	{
 		HandSocket->AttachActor(ActorToAttach, Character->GetMesh());
@@ -342,6 +360,7 @@ void UCombatComponent::Fire()
 		bTimeUpCanFire = false;
 		if(EquippedWeapon)
 		{
+			Character->PlayFireMontage(bAiming);
 			switch (EquippedWeapon->FireType)
 			{
 			case EFireType::EFT_Projectile:

@@ -48,7 +48,7 @@ public:
 
 	// Zoomed FOV while aiming
 	UPROPERTY(EditAnywhere, Category = "Weapon Aim")
-	float ZoomedFOV = 30.f;
+	float ZoomedFOV = 60.f;
 	
 	UPROPERTY(EditAnywhere, Category = "Weapon Aim")
 	float ZoomInterpSpeed = 20.f;
@@ -149,7 +149,7 @@ private:
 	TSubclassOf<class ACasing> CasingClass;
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
-	int32 CurrentAmmo;
+	int32 CurrentAmmo = 1;
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	int32 MagCapacity;

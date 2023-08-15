@@ -6,24 +6,19 @@
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
 #include "Components/TimelineComponent.h"
-#include "AbilitySystemInterface.h"
 #include "PSL/PSLTypes/EquippedPoses.h"
 #include "PSL/PSLTypes/TurningInPlace.h"
 #include "PSL/PSLTypes/CombatState.h"
 #include "PSLCharacter.generated.h"
 
-class UAbilitySystemComponent;
-class UAttributeSet;
 
 UCLASS(config=Game)
-class APSLCharacter : public ACharacter, public IAbilitySystemInterface
+class APSLCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
 public:
 	APSLCharacter();
-	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
 	virtual void PossessedBy(AController* NewController) override;
 public:
 	void PlayFireMontage(bool bAiming);
@@ -112,12 +107,8 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	class UPostProcessComponent* PostProcess;
-
-	UPROPERTY()
-	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
-
-	UPROPERTY()
-	TObjectPtr<UAttributeSet> AttributeSet;
+	
+	
 	/*
 	 * FOV
 	 */
@@ -125,8 +116,8 @@ private:
 	float UnequippedFOV = 90.f;
 	UPROPERTY(EditAnywhere, Category="Game Camera")
 	float EquippedFOV = 80.f;
-	UPROPERTY(EditAnywhere, Category="Game Camera")
-	float AimFOV = 60.f;
+	//UPROPERTY(EditAnywhere, Category="Game Camera") //Use Weapon FOV
+	//float AimFOV = 60.f;
 	float CurrentFOV = 90.f;
 	
 	UPROPERTY(EditAnywhere, Category="Game Camera")
@@ -214,6 +205,7 @@ public:
 	FORCEINLINE ETurningInPlace GetTurningInPlace() const { return TurningInPlace; }
 	FORCEINLINE float GetAO_Yaw() const { return AO_Yaw; }
 	FORCEINLINE float GetAO_Pitch() const { return AO_Pitch; }
+	FVector GetHitTarget() const;
 	bool IsWeaponEquipped();
 	EEquippedPoseType GetEquippedPoseType();
 	bool IsAiming();

@@ -13,5 +13,8 @@ UCLASS()
 class PSL_API APSLPlayerController : public APlayerController
 {
 	GENERATED_BODY()
-	
+public:
+	APSLPlayerController();
+protected:
+	virtual void BeginPlay() override;
 };
