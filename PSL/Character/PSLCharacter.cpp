@@ -55,6 +55,8 @@ APSLCharacter::APSLCharacter()
 	CameraBoom->TargetArmLength = UnequippedTargetArmLength; // The camera follows at this distance behind the character
 	CameraBoom->SocketOffset = UnequippedSocketOffset;
 	CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
+	CameraBoom->bEnableCameraLag = true;
+	CameraBoom->CameraLagSpeed = 16.f;
 
 	// Create a follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
@@ -80,7 +82,6 @@ void APSLCharacter::PossessedBy(AController* NewController)
 
 	//APSLGameMode* GameModeRef = Cast<APSLGameMode>(GetWorld()->GetAuthGameMode());
 	//check(GameModeRef);
-
 }
 
 void APSLCharacter::PlayFireMontage(bool bAiming)
@@ -418,14 +419,13 @@ void APSLCharacter::AimOffset(float DeltaTime)
 	if (!bTurnFinished) return;
 	float Speed = CalculateSpeed();
 	bool bIsInAir = GetCharacterMovement()->IsFalling();
-	if (bIsInAir)
-	{
-		AO_Pitch = FMath::FInterpTo(AO_Pitch, 0.f, DeltaTime, 15.f);
-		return;
-	}
+	//if (bIsInAir)
+	//{
+		//AO_Pitch = FMath::FInterpTo(AO_Pitch, 0.f, DeltaTime, 15.f);
+		//return;
+	//}
 	if (Speed == 0.f && !bIsInAir) // standing still, not jumping
 	{
-	//	bRotateRootBone = true;
 		FRotator CurrentAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
 		FRotator DeltaAimRotation = UKismetMathLibrary::NormalizedDeltaRotator(CurrentAimRotation, StartingAimRotation);
 		AO_Yaw = DeltaAimRotation.Yaw;
@@ -438,14 +438,13 @@ void APSLCharacter::AimOffset(float DeltaTime)
 	}
 	if (Speed > 0.f || bIsInAir) // running, or jumping
 	{
-     //	bRotateRootBone = false;
         StartingAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
         AO_Yaw = 0.f;
         bUseControllerRotationYaw = true;
         TurningInPlace = ETurningInPlace::ETIP_NotTurning;
 	}
 	AO_Pitch = FMath::FInterpTo(AO_Pitch, GetBaseAimRotation().Pitch, DeltaTime, 15.f);
-	
+	//AO_Pitch = GetBaseAimRotation().Pitch;
 }
 
 void APSLCharacter::TurnInPlace(float DeltaTime)

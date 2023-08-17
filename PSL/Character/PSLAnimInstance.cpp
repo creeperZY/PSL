@@ -80,7 +80,7 @@ void UPSLAnimInstance::NativeUpdateAnimation(float DeltaTime)
 		DrawDebugLine(GetWorld(), MuzzleTipTransform.GetLocation(), PSLCharacter->GetHitTarget(), FColor::Orange);
 	}
 
-	//bUseFABRIK = PSLCharacter->GetCombatState() == ECombatState::ECS_Unoccupied;
+	bUseFABRIK = PSLCharacter->GetCombatState() == ECombatState::ECS_Unoccupied;
 	//bool bFABRIKOverride = 	PSLCharacter->IsLocallyControlled() &&
 	//	PSLCharacter->GetCombatState() != ECombatState::ECS_ThrowingGrenade &&
 	//	PSLCharacter->bFinishedSwapping;
@@ -88,6 +88,6 @@ void UPSLAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	{
 //		bUseFABRIK = !PSLCharacter->IsLocallyReloading();
 	}
-	//bUseAimOffset =  PSLCharacter->GetCombatState() == ECombatState::ECS_EquipUnoccupied && !PSLCharacter->GetDisableGameplay();
-//	bTransformRightHand = PSLCharacter->GetCombatState() == ECombatState::ECS_EquipUnoccupied && !PSLCharacter->GetDisableGameplay();
+	bUseAimOffset =  PSLCharacter->GetCombatState() == ECombatState::ECS_Unoccupied && !bIsInAir;// && !PSLCharacter->GetDisableGameplay();
+	bTransformRightHand = PSLCharacter->GetCombatState() == ECombatState::ECS_Unoccupied && !bIsInAir;// && !PSLCharacter->GetDisableGameplay();
 }
