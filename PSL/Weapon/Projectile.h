@@ -18,12 +18,12 @@ public:
 	UPROPERTY(EditAnywhere)
 	float InitialSpeed = 15000.f;
 
-	// Only set this for Grenades and Rockets
-	UPROPERTY(EditAnywhere)
+	// Only set this for Grenades and Rockets. Set only in Weapon.
+	UPROPERTY(VisibleAnywhere)
 	float Damage = 20.f;
 
-	// Doesn't matter for Grenades and Rockets
-	UPROPERTY(EditAnywhere)
+	// Doesn't matter for Grenades and Rockets. Set only in Weapon.
+	UPROPERTY(VisibleAnywhere)
 	float HeadShotDamage = 40.f;
 	
 protected:

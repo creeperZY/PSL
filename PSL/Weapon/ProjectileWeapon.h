@@ -17,6 +17,6 @@ public:
 	virtual void Fire(const FVector& HitTarget) override;
 
 private:
-	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties: Projectile Weapon")
 	TSubclassOf<class AProjectile> ProjectileClass;
 };

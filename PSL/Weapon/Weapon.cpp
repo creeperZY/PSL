@@ -7,7 +7,6 @@
 #include "Components/WidgetComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "Net/UnrealNetwork.h"
 #include "PSL/Character/PSLCharacter.h"
 #include "PSL/EasyMacros.h"
 #include "PSL/PlayerController/PSLPlayerController.h"
@@ -15,7 +14,7 @@
 // Sets default values
 AWeapon::AWeapon()
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
 	SetRootComponent(WeaponMesh);
@@ -49,12 +48,44 @@ void AWeapon::BeginPlay()
 	
 	ShowPickupWidget(false);
 
+	if(bUseScatter && ScatterCurve)
+	{
+		ScatterCurve->GetTimeRange(MinCurveTime, MaxCurveTime);
+	}
 }
 
 void AWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	CurveDeltaTimeDecrease(DeltaTime);
 }
+
+void AWeapon::CurveTimeIncreaseOnce()
+{
+	if (!bUseScatter) return;
+	CurveTimeCurrent = FMath::Clamp(CurveTimeCurrent + CurveTimeIncreasePerFire, MinCurveTime, MaxCurveTime);
+	PRINT_ONE_VAR("FIRE TIME: %f", CurveTimeCurrent);
+}
+
+void AWeapon::CurveDeltaTimeDecrease(float DeltaTime)
+{
+	if (!bUseScatter) return;
+	float DeltaDecrease = RecoilRecovery * DeltaTime;
+	CurveTimeCurrent = FMath::Clamp(CurveTimeCurrent - DeltaDecrease, MinCurveTime, MaxCurveTime);
+	PRINT_ONE_VAR("CUREENT TIME: %f", CurveTimeCurrent);
+}
+
+float AWeapon::GetScatterRadius()
+{
+	float ScatterRate = 1.f;
+	if (ScatterCurve)
+	{
+		ScatterRate = ScatterCurve->GetFloatValue(CurveTimeCurrent);
+	}
+	return ScatterRate * SphereRadius;
+}
+
 
 void AWeapon::SetOwner(AActor* NewOwner)
 {
@@ -88,6 +119,7 @@ void AWeapon::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 		ShowStencilColor(0);
 	}
 }
+
 
 void AWeapon::ShowPickupWidget(bool bShowWidget)
 {
@@ -232,7 +264,9 @@ void AWeapon::Fire(const FVector& HitTarget)
 			}
 		}
 	}
-	SpendRound();	
+	SpendRound();
+
+	CurveTimeIncreaseOnce();
 }
 
 
@@ -246,7 +280,7 @@ FVector AWeapon::TraceEndWithScatter(const FVector& HitTarget)
 
 	const FVector ToTargetNormalized = (HitTarget - TraceStart).GetSafeNormal();
 	const FVector SphereCenter = TraceStart + ToTargetNormalized * DistanceToSphere;
-	const FVector RandVec = UKismetMathLibrary::RandomUnitVector() * FMath::FRandRange(0.f, SphereRadius);
+	const FVector RandVec = UKismetMathLibrary::RandomUnitVector() * FMath::FRandRange(0.f, GetScatterRadius());
 	const FVector EndLoc = SphereCenter + RandVec;
 	const FVector ToEndLoc = EndLoc - TraceStart;
 
