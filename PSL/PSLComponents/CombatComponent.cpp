@@ -380,7 +380,9 @@ void UCombatComponent::Fire()
 
 void UCombatComponent::FireProjectileWeapon()
 {
-
+	if (EquippedWeapon == nullptr) return;
+	HitTarget = EquippedWeapon->bUseScatter ? EquippedWeapon->TraceEndWithScatter(HitTarget) : HitTarget;
+	EquippedWeapon->Fire(HitTarget);
 }
 
 void UCombatComponent::FireHitScanWeapon()
@@ -421,7 +423,8 @@ void UCombatComponent::FireTimerFinished()
 bool UCombatComponent::CanFire()
 {
 	if (EquippedWeapon == nullptr) return false;
-	return !EquippedWeapon->IsEmpty() && bTimeUpCanFire && CombatState == ECombatState::ECS_Unoccupied;
+	return !EquippedWeapon->IsEmpty() && bTimeUpCanFire && CombatState == ECombatState::ECS_Unoccupied
+	&& !Character->GetCharacterMovement()->IsFalling();
 }
 
 bool UCombatComponent::ShouldSwapWeapons()

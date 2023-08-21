@@ -116,8 +116,8 @@ private:
 	float UnequippedFOV = 90.f;
 	UPROPERTY(EditAnywhere, Category="Game Camera")
 	float EquippedFOV = 80.f;
-	//UPROPERTY(EditAnywhere, Category="Game Camera") //Use Weapon FOV
-	//float AimFOV = 60.f;
+	UPROPERTY(EditAnywhere, Category="Game Camera") //This option is not in using. Use Weapon FOV
+	float AimFOV = 60.f;
 	float CurrentFOV = 90.f;
 	
 	UPROPERTY(EditAnywhere, Category="Game Camera")
@@ -133,7 +133,7 @@ private:
 	FVector CurrentSocketOffset = FVector(0.f, 25.f, 65.f);
 
 	UPROPERTY(EditAnywhere, Category="Game Camera")
-	float InterpSpeed = 6.f;
+	float InterpSpeed = 10.f;
 	void SetCamera(float DeltaSeconds);
 	UPROPERTY(EditAnywhere, Category="Game Camera")
 	float CameraThreshold = 200.f;

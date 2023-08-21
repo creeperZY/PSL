@@ -350,7 +350,8 @@ void APSLCharacter::SetCamera(float DeltaSeconds)
 		CurrentTargetArmLength = FMath::FInterpTo(CurrentTargetArmLength, EquippedTargetArmLength, DeltaSeconds, InterpSpeed);
 		if (IsAiming())
 		{
-			CurrentFOV = FMath::FInterpTo(CurrentFOV, GetEquippedWeapon()->GetZoomedFOV(), DeltaSeconds, InterpSpeed);
+			AimFOV = GetEquippedWeapon()->GetZoomedFOV();
+			CurrentFOV = FMath::FInterpTo(CurrentFOV, AimFOV, DeltaSeconds, InterpSpeed);
 		}
 		else
 		{

@@ -47,10 +47,10 @@ public:
 	FVector TraceEndWithScatter(const FVector& HitTarget);
 
 	// Zoomed FOV while aiming
-	UPROPERTY(EditAnywhere, Category = "Weapon Aim")
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties: Aim")
 	float ZoomedFOV = 60.f;
 	
-	UPROPERTY(EditAnywhere, Category = "Weapon Aim")
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties: Aim")
 	float ZoomInterpSpeed = 20.f;
 	
 	// Automatic Fire
@@ -64,7 +64,7 @@ public:
 	void EnableCustomDepth(bool bEnable);
 
 
-	UPROPERTY(EditAnywhere, Category = "Weapon FX")
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties: FX")
 	class USoundCue* EquipSound;
 	
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
@@ -74,7 +74,7 @@ public:
 	float DropFactor = 200.f; // Throw impulse factor
 	
 	// Weapon Scatter
-	UPROPERTY(EditAnywhere, Category="Weapon Scatter")
+	UPROPERTY(EditAnywhere, Category="Weapon Properties: Scatter")
 	bool bUseScatter = false;
 
 protected:
@@ -104,10 +104,10 @@ protected:
 
 
 	// Weapon Scatter
-	UPROPERTY(EditAnywhere, Category = "Weapon Scatter")
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties: Scatter")
 	float DistanceToSphere = 800.f;
 	
-	UPROPERTY(EditAnywhere, Category = "Weapon Scatter")
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties: Scatter")
 	float SphereRadius = 75.f;
 
 	// Weapon Properties
@@ -133,16 +133,16 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
 	EWeaponState WeaponState;
 
-	UPROPERTY(EditAnywhere, Category = "Weapon Type")
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties: Type")
 	EWeaponType WeaponType;
 
-	UPROPERTY(EditAnywhere, Category = "Weapon Type")
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties: Type")
 	EEquippedPoseType EquippedPoseType;
 	
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
 	class UWidgetComponent* PickupWidget;
 	
-	UPROPERTY(EditAnywhere, Category = "Weapon FX")
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties: FX")
 	class UAnimationAsset* FireAnimation;
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
