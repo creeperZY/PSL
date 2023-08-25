@@ -65,7 +65,6 @@ void AWeapon::CurveTimeIncreaseOnce()
 {
 	if (!bUseScatter) return;
 	CurveTimeCurrent = FMath::Clamp(CurveTimeCurrent + CurveTimeIncreasePerFire, MinCurveTime, MaxCurveTime);
-	PRINT_ONE_VAR("FIRE TIME: %f", CurveTimeCurrent);
 }
 
 void AWeapon::CurveDeltaTimeDecrease(float DeltaTime)
@@ -73,7 +72,6 @@ void AWeapon::CurveDeltaTimeDecrease(float DeltaTime)
 	if (!bUseScatter) return;
 	float DeltaDecrease = RecoilRecovery * DeltaTime;
 	CurveTimeCurrent = FMath::Clamp(CurveTimeCurrent - DeltaDecrease, MinCurveTime, MaxCurveTime);
-	PRINT_ONE_VAR("CUREENT TIME: %f", CurveTimeCurrent);
 }
 
 float AWeapon::GetScatterRadius()
@@ -250,6 +248,8 @@ void AWeapon::Fire(const FVector& HitTarget)
 	{
 		WeaponMesh->PlayAnimation(FireAnimation, false);
 	}
+	// TODO
+	// if no animation use particle and sound 
 	if (CasingClass)
 	{
 		const USkeletalMeshSocket* AmmoEjectSocket = WeaponMesh->GetSocketByName(FName("AmmoEject"));

@@ -115,10 +115,10 @@ protected:
 	UCurveFloat* ScatterCurve;
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties: Scatter")
-	float RecoilRecovery = 50.0f;
+	float RecoilRecovery = 4.f;
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties: Scatter")
-	float CurveTimeIncreasePerFire = 0.1f;
+	float CurveTimeIncreasePerFire = 1.3f;
 	
 	float FirePressingTime= 0.f;
 	float CurveTimeCurrent = 0.f;
@@ -163,14 +163,23 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties: FX")
 	class UAnimationAsset* FireAnimation;
 
+	//UPROPERTY(EditAnywhere, Category = "Weapon Properties: FX")
+	//class UParticleSystem* FireEffect;
+
+	//UPROPERTY()
+	//class UParticleSystemComponent* FireEffectComponent;
+
+	//UPROPERTY(EditAnywhere, Category = "Weapon Properties: FX")
+	//class USoundCue* FireSound;
+	
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties: Basic")
 	TSubclassOf<class ACasing> CasingClass;
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties: Basic")
-	int32 CurrentAmmo = 1;
+	int32 CurrentAmmo = 30;
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties: Basic")
-	int32 MagCapacity;
+	int32 MagCapacity = 30;
 	
 	void SpendRound();
 
