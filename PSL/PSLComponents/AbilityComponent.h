@@ -51,6 +51,5 @@ private:
 	float EquippedAimWalkSpeedCrouched = 300.f;
 	UPROPERTY(EditAnywhere)
 	float EquippedJogSpeed = 700.f;
-
-
+	
 };

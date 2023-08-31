@@ -11,6 +11,7 @@
 #include "Engine/SkeletalMeshSocket.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "PSL/PlayerController/PSLPlayerController.h"
 #include "Sound/SoundCue.h"
 
 UCombatComponent::UCombatComponent()
@@ -35,10 +36,53 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 		FHitResult HitResult;
 		TraceUnderCrosshairs(HitResult);
 		if(HitResult.bBlockingHit) HitTarget = HitResult.ImpactPoint;
-		else HitTarget = TraceEnd; 
+		else HitTarget = HitResult.TraceEnd;
 		DRAW_SPHERE_AT_LOCATION(HitTarget)
 	}
 }
+
+
+/*
+void UCombatComponent::HideCharacterIfCameraClose()
+{
+	APSLPlayerController* PSLController = Cast<APSLPlayerController>(Character->GetController());
+	if (PSLController == nullptr) return; // Only Human Player Hide
+	
+	if ((Character->GetFollowCamera()->GetComponentLocation() - Character->GetActorLocation()).Size() < CameraThreshold)
+	{
+		Character->GetMesh()->SetVisibility(false);
+		if(Character->GetCombat() && Character->GetCombat()->EquippedWeapon && Character->GetCombat()->EquippedWeapon->GetWeaponMesh())
+		{
+			Character->GetCombat()->EquippedWeapon->GetWeaponMesh()->bOwnerNoSee = true; 
+		}
+		if(Character->GetCombat() && Character->GetCombat()->FirstWeapon && Character->GetCombat()->FirstWeapon->GetWeaponMesh())
+		{
+			Character->GetCombat()->FirstWeapon->GetWeaponMesh()->bOwnerNoSee = true; 
+		}
+		if(Character->GetCombat() && Character->GetCombat()->SecondWeapon && Character->GetCombat()->SecondWeapon->GetWeaponMesh())
+		{
+			Character->GetCombat()->SecondWeapon->GetWeaponMesh()->bOwnerNoSee = true; 
+		}
+	}
+	else
+	{
+		Character->GetMesh()->SetVisibility(true);
+		if(Character->GetCombat() && Character->GetCombat()->EquippedWeapon && Character->GetCombat()->EquippedWeapon->GetWeaponMesh())
+		{
+			Character->GetCombat()->EquippedWeapon->GetWeaponMesh()->bOwnerNoSee = false; 
+		}
+		if(Character->GetCombat() && Character->GetCombat()->FirstWeapon && Character->GetCombat()->FirstWeapon->GetWeaponMesh())
+		{
+			Character->GetCombat()->FirstWeapon->GetWeaponMesh()->bOwnerNoSee = false; 
+		}
+		if(Character->GetCombat() && Character->GetCombat()->SecondWeapon && Character->GetCombat()->SecondWeapon->GetWeaponMesh())
+		{
+			Character->GetCombat()->SecondWeapon->GetWeaponMesh()->bOwnerNoSee = false; 
+		}
+	}
+}
+*/
+
 
 void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 {
@@ -334,8 +378,8 @@ void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 		if (Character)
 		{
 			float DistanceToCharacter = (Character->GetActorLocation() - Start).Size();
-			Start += CrosshairWorldDirection * (DistanceToCharacter + 100.f);
-			//DrawDebugSphere(GetWorld(), Start, 16.f, 12, FColor::Red, false);
+			Start += CrosshairWorldDirection * (DistanceToCharacter + 50.f);
+			DrawDebugSphere(GetWorld(), Start, 2.f, 12, FColor::Orange, false);
 		}
 		
 		FVector End = Start + CrosshairWorldDirection * TRACE_LENGTH;
@@ -343,6 +387,7 @@ void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 
 		//FCollisionQueryParams Params;
 		//Params.AddIgnoredActor(Character);
+		//Params.AddIgnoredActor(Character->GetEquippedWeapon());
 		GetWorld()->LineTraceSingleByChannel(
 			TraceHitResult,
 			Start,
@@ -351,6 +396,11 @@ void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 			//,Params
 		);
 	}
+}
+
+void UCombatComponent::ShowAttachedGrenade(bool bShowGrenade)
+{
+	//TODO
 }
 
 void UCombatComponent::Fire()
@@ -448,5 +498,40 @@ void UCombatComponent::ThrowGrenadeFinished()
 
 void UCombatComponent::ThrowGrenade()
 {
+	/*if(CombatState != ECombatState::ECS_Unoccupied || EquippedWeapon == nullptr) return;
+	if (Character && Character->GetCombat())
+	{
+		if(Character->GetCombat()->Grenades == 0) return;
+		CombatState = ECombatState::ECS_ThrowingGrenade;
+		Character->PlayThrowGrenadeMontage();
+		//AttachActorToLeftHand(EquippedWeapon);
+		ShowAttachedGrenade(true);
+		//ServerThrowGrenade();
+	}*/
+	
+}
+
+void UCombatComponent::LaunchGrenade()
+{
+	ShowAttachedGrenade(false);
+
+	/*if (Character && GrenadeClass && Character->GetAttachedGrenade())
+	{
+		const FVector StartingLocation = Character->GetAttachedGrenade()->GetComponentLocation();
+		FVector ToTarget = Target - StartingLocation;
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = Character;
+		SpawnParams.Instigator = Character;
+		UWorld* World = GetWorld();
+		if (World)
+		{
+			World->SpawnActor<AProjectile>(
+				GrenadeClass,
+				StartingLocation,
+				ToTarget.Rotation(),
+				SpawnParams
+			);
+		}
+	}*/
 }
 

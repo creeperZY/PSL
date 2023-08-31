@@ -32,7 +32,7 @@ protected:
 	void StartDestoryTimer();
 	void DestoryTimerFinished();
 	void SpawnTrailSystem();
-	void ExplodeDamage();
+	virtual void ExplodeDamage();
 
 	UFUNCTION()
 	virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);

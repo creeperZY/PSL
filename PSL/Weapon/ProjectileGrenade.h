@@ -19,7 +19,8 @@ public:
 	virtual void Destroyed() override;
 protected:
 	virtual void BeginPlay() override;
-
+	virtual void ExplodeDamage() override;
+	
 	UFUNCTION()
 	void OnBounce(const FHitResult& ImpactResult, const FVector& ImpactVelocity);
 private:

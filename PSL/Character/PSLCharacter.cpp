@@ -52,8 +52,6 @@ APSLCharacter::APSLCharacter()
 	// Create a camera boom (pulls in towards the player if there is a collision)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(GetMesh());
-	CameraBoom->TargetArmLength = UnequippedTargetArmLength; // The camera follows at this distance behind the character
-	CameraBoom->SocketOffset = UnequippedSocketOffset;
 	CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
 	CameraBoom->bEnableCameraLag = true;
 	CameraBoom->CameraLagSpeed = 16.f;
@@ -62,7 +60,6 @@ APSLCharacter::APSLCharacter()
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
-	FollowCamera->FieldOfView = UnequippedFOV;
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
@@ -82,6 +79,7 @@ void APSLCharacter::PossessedBy(AController* NewController)
 
 	//APSLGameMode* GameModeRef = Cast<APSLGameMode>(GetWorld()->GetAuthGameMode());
 	//check(GameModeRef);
+
 }
 
 void APSLCharacter::PlayFireMontage(bool bAiming)
@@ -118,6 +116,11 @@ void APSLCharacter::PlayElimMontage()
 
 void APSLCharacter::PlayThrowGrenadeMontage()
 {
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && ThrowGrenadeMontage)
+	{
+		AnimInstance->Montage_Play(ThrowGrenadeMontage);
+	}
 }
 
 void APSLCharacter::PlaySwapMontage()
@@ -153,7 +156,7 @@ void APSLCharacter::Tick(float DeltaSeconds)
 	}
 	
 	AimOffset(DeltaSeconds);
-	SetCamera(DeltaSeconds);
+	InterpCameraFOV(DeltaSeconds);
 	HideCharacterIfCameraClose();
 	
 }
@@ -202,6 +205,10 @@ void APSLCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInput
 
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &APSLCharacter::FireButtonPressed);
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, &APSLCharacter::FireButtonReleased);
+
+		EnhancedInputComponent->BindAction(GrenadeAction, ETriggerEvent::Triggered, this, &APSLCharacter::GrenadeButtonPressed);
+		EnhancedInputComponent->BindAction(GrenadeAction, ETriggerEvent::Canceled, this, &APSLCharacter::GrenadeButtonCanceled);
+		EnhancedInputComponent->BindAction(GrenadeAction, ETriggerEvent::Completed, this, &APSLCharacter::GrenadeButtonCompleted);
 	}
 
 }
@@ -338,16 +345,30 @@ void APSLCharacter::FireButtonReleased()
 	}
 }
 
+void APSLCharacter::GrenadeButtonPressed()
+{
+	PRINT_STR("SHOW GRENADE SWITCH UI OR SWITCH GRENADE TYPE?");
+	//this func run twice
+}
+
+void APSLCharacter::GrenadeButtonCanceled()
+{
+	PRINT_STR("throw grenade");
+}
+
+void APSLCharacter::GrenadeButtonCompleted()
+{
+	PRINT_STR("CLOSE UI");
+}
 
 
-
-void APSLCharacter::SetCamera(float DeltaSeconds)
+void APSLCharacter::InterpCameraFOV(float DeltaSeconds)
 {
 	if (IsWeaponEquipped())
 	{
 		CurrentFOV = FMath::FInterpTo(CurrentFOV, EquippedFOV, DeltaSeconds, InterpSpeed);
-		CurrentSocketOffset = FMath::VInterpTo(CurrentSocketOffset, EquippedSocketOffset, DeltaSeconds, InterpSpeed);
-		CurrentTargetArmLength = FMath::FInterpTo(CurrentTargetArmLength, EquippedTargetArmLength, DeltaSeconds, InterpSpeed);
+		//CurrentSocketOffset = FMath::VInterpTo(CurrentSocketOffset, EquippedSocketOffset, DeltaSeconds, InterpSpeed);
+		//CurrentTargetArmLength = FMath::FInterpTo(CurrentTargetArmLength, EquippedTargetArmLength, DeltaSeconds, InterpSpeed);
 		if (IsAiming())
 		{
 			AimFOV = GetEquippedWeapon()->GetZoomedFOV();
@@ -361,13 +382,14 @@ void APSLCharacter::SetCamera(float DeltaSeconds)
 	else
 	{
 		CurrentFOV = FMath::FInterpTo(CurrentFOV, UnequippedFOV, DeltaSeconds, InterpSpeed);
-		CurrentSocketOffset = FMath::VInterpTo(CurrentSocketOffset, UnequippedSocketOffset, DeltaSeconds, InterpSpeed);
-		CurrentTargetArmLength = FMath::FInterpTo(CurrentTargetArmLength, UnequippedTargetArmLength, DeltaSeconds, InterpSpeed);
+		//CurrentSocketOffset = FMath::VInterpTo(CurrentSocketOffset, UnequippedSocketOffset, DeltaSeconds, InterpSpeed);
+		//CurrentTargetArmLength = FMath::FInterpTo(CurrentTargetArmLength, UnequippedTargetArmLength, DeltaSeconds, InterpSpeed);
 	}
 	FollowCamera->FieldOfView = CurrentFOV;
-	CameraBoom->SocketOffset = CurrentSocketOffset;
-	CameraBoom->TargetArmLength = CurrentTargetArmLength;
+	//CameraBoom->SocketOffset = CurrentSocketOffset;
+	//CameraBoom->TargetArmLength = CurrentTargetArmLength;
 }
+
 
 void APSLCharacter::HideCharacterIfCameraClose()
 {
@@ -404,8 +426,6 @@ void APSLCharacter::HideCharacterIfCameraClose()
 		}
 	}
 }
-
-
 
 float APSLCharacter::CalculateSpeed()
 {

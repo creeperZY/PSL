@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "PSL/PSLTypes/CombatState.h"
+#include "PSL/Weapon/WeaponTypes.h"
 #include "CombatComponent.generated.h"
 
 
@@ -71,8 +72,21 @@ protected:
 	void ThrowGrenadeFinished();
 	UFUNCTION(BlueprintCallable)
 	void ThrowGrenade();
+	UFUNCTION(BlueprintCallable)
+	void LaunchGrenade();
+	
+	UPROPERTY(EditAnywhere) // Vis
+	TSubclassOf<class AProjectileTossGrenade> EquippedGrenadeClass;
+	UPROPERTY(EditAnywhere) // Vis
+	int32 EquippedGrenades = 4;
 
+	UPROPERTY(EditAnywhere) // Vis
+	TMap<EGrenadeType, int32> CarriedGrenadesMap;
+	UPROPERTY(EditAnywhere)
+	TMap<EGrenadeType, TSubclassOf<AProjectileTossGrenade>> GrenadeClassMap;
 
+	UPROPERTY(EditAnywhere) // Vis
+	TMap<EWeaponType, int32> CarriedAmmoMap;
 	
 private:
 	UPROPERTY()
@@ -92,6 +106,7 @@ private:
 	*/
 	bool bAiming = false;
 
+	
 	
 	/*
 	* Automatic fire

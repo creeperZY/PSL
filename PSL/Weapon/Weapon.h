@@ -22,8 +22,8 @@ enum class EWeaponState : uint8
 UENUM(BlueprintType)
 enum class EFireType : uint8
 {
-	EFT_HitScan UMETA(DisplayName = "Hit Scan Weapon"),
 	EFT_Projectile UMETA(DisplayName = "Projectile Weapon"),
+	EFT_HitScan UMETA(DisplayName = "Hit Scan Weapon"),
 	EFT_Shotgun UMETA(DisplayName = "Shotgun Weapon"),
 
 	EFT_MAX UMETA(DisplayName = "DefaultMAX")
@@ -48,7 +48,7 @@ public:
 
 	// Zoomed FOV while aiming
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties: Aim")
-	float ZoomedFOV = 60.f;
+	float ZoomedFOV = 40.f;
 	
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties: Aim")
 	float ZoomInterpSpeed = 20.f;

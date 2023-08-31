@@ -49,6 +49,9 @@ protected:
 	void AimButtonReleased();
 	void FireButtonPressed();
 	void FireButtonReleased();
+	void GrenadeButtonPressed();
+	void GrenadeButtonCanceled();
+	void GrenadeButtonCompleted();
 	float CalculateSpeed();
 	void AimOffset(float DeltaTime);
 	
@@ -95,6 +98,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* AimAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* GrenadeAction;
 	
 	UPROPERTY()
 	class AWeapon* OverlappingWeapon;
@@ -108,19 +114,26 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	class UPostProcessComponent* PostProcess;
 	
+
+	/*
+	 * Grenade
+	 */
+	//UPROPERTY(VisibleAnywhere)
+	//UStaticMeshComponent* AttachedGrenade;
+
 	
 	/*
 	 * FOV
 	 */
 	UPROPERTY(EditAnywhere, Category="Game Camera")
-	float UnequippedFOV = 90.f;
+	float UnequippedFOV = 90.f; //This option is not in using. Set FOV in blueprint
 	UPROPERTY(EditAnywhere, Category="Game Camera")
-	float EquippedFOV = 80.f;
-	UPROPERTY(EditAnywhere, Category="Game Camera") //This option is not in using. Use Weapon FOV
-	float AimFOV = 60.f;
+	float EquippedFOV = 70.f;
+	UPROPERTY(EditAnywhere, Category="Game Camera") 
+	float AimFOV = 60.f; //This option is not in using. Use Weapon FOV
 	float CurrentFOV = 90.f;
 	
-	UPROPERTY(EditAnywhere, Category="Game Camera")
+	/*UPROPERTY(EditAnywhere, Category="Game Camera")
 	float UnequippedTargetArmLength = 320.f;
 	UPROPERTY(EditAnywhere, Category="Game Camera")
 	float EquippedTargetArmLength = 320.f;
@@ -130,11 +143,11 @@ private:
 	FVector UnequippedSocketOffset = FVector(0.f, 25.f, 65.f);
 	UPROPERTY(EditAnywhere, Category="Game Camera")
 	FVector EquippedSocketOffset = FVector(0.f, 25.f, 65.f);
-	FVector CurrentSocketOffset = FVector(0.f, 25.f, 65.f);
+	FVector CurrentSocketOffset = FVector(0.f, 25.f, 65.f);*/
 
 	UPROPERTY(EditAnywhere, Category="Game Camera")
 	float InterpSpeed = 10.f;
-	void SetCamera(float DeltaSeconds);
+	void InterpCameraFOV(float DeltaSeconds);
 	UPROPERTY(EditAnywhere, Category="Game Camera")
 	float CameraThreshold = 200.f;
 	void HideCharacterIfCameraClose();
