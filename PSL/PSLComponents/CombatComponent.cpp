@@ -42,48 +42,6 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 }
 
 
-/*
-void UCombatComponent::HideCharacterIfCameraClose()
-{
-	APSLPlayerController* PSLController = Cast<APSLPlayerController>(Character->GetController());
-	if (PSLController == nullptr) return; // Only Human Player Hide
-	
-	if ((Character->GetFollowCamera()->GetComponentLocation() - Character->GetActorLocation()).Size() < CameraThreshold)
-	{
-		Character->GetMesh()->SetVisibility(false);
-		if(Character->GetCombat() && Character->GetCombat()->EquippedWeapon && Character->GetCombat()->EquippedWeapon->GetWeaponMesh())
-		{
-			Character->GetCombat()->EquippedWeapon->GetWeaponMesh()->bOwnerNoSee = true; 
-		}
-		if(Character->GetCombat() && Character->GetCombat()->FirstWeapon && Character->GetCombat()->FirstWeapon->GetWeaponMesh())
-		{
-			Character->GetCombat()->FirstWeapon->GetWeaponMesh()->bOwnerNoSee = true; 
-		}
-		if(Character->GetCombat() && Character->GetCombat()->SecondWeapon && Character->GetCombat()->SecondWeapon->GetWeaponMesh())
-		{
-			Character->GetCombat()->SecondWeapon->GetWeaponMesh()->bOwnerNoSee = true; 
-		}
-	}
-	else
-	{
-		Character->GetMesh()->SetVisibility(true);
-		if(Character->GetCombat() && Character->GetCombat()->EquippedWeapon && Character->GetCombat()->EquippedWeapon->GetWeaponMesh())
-		{
-			Character->GetCombat()->EquippedWeapon->GetWeaponMesh()->bOwnerNoSee = false; 
-		}
-		if(Character->GetCombat() && Character->GetCombat()->FirstWeapon && Character->GetCombat()->FirstWeapon->GetWeaponMesh())
-		{
-			Character->GetCombat()->FirstWeapon->GetWeaponMesh()->bOwnerNoSee = false; 
-		}
-		if(Character->GetCombat() && Character->GetCombat()->SecondWeapon && Character->GetCombat()->SecondWeapon->GetWeaponMesh())
-		{
-			Character->GetCombat()->SecondWeapon->GetWeaponMesh()->bOwnerNoSee = false; 
-		}
-	}
-}
-*/
-
-
 void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 {
 	if (Character == nullptr || WeaponToEquip == nullptr) return;
