@@ -22,6 +22,7 @@ enum class EWeaponType : uint8
 UENUM(BlueprintType)
 enum class EGrenadeType : uint8
 {
+	EWT_None UMETA(DisplayName = "None"),
 	EWT_GrenadeFrag UMETA(DisplayName = "Grenade Frag"),
 	EWT_GrenadeFire UMETA(DisplayName = "Grenade Fire"),
 	EWT_GrenadeImpact UMETA(DisplayName = "Grenade Impact"),

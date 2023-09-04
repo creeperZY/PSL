@@ -17,8 +17,7 @@
 #include "PSL/PSLComponents/AbilityComponent.h"
 #include "Components/PrimitiveComponent.h"
 #include "PSL/PlayerController/PSLPlayerController.h"
-
-
+#include "PSL/Weapon/ProjectileTossGrenade.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -69,6 +68,10 @@ APSLCharacter::APSLCharacter()
 	PostProcess = CreateDefaultSubobject<UPostProcessComponent>(TEXT("PostProcessComponent"));
 
 	TurningInPlace = ETurningInPlace::ETIP_NotTurning;
+
+	AttachedGrenade = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Attached Grenade"));
+	AttachedGrenade->SetupAttachment(GetMesh(), FName("LeftHandSocketGrenade"));
+	AttachedGrenade->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 }
 
@@ -353,7 +356,10 @@ void APSLCharacter::GrenadeButtonPressed()
 
 void APSLCharacter::GrenadeButtonCanceled()
 {
-	PRINT_STR("throw grenade");
+	if (Combat)
+	{
+		Combat->ThrowGrenade();
+	}
 }
 
 void APSLCharacter::GrenadeButtonCompleted()

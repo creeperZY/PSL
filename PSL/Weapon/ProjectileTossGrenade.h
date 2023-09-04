@@ -16,6 +16,14 @@ class PSL_API AProjectileTossGrenade : public AProjectileGrenade
 	GENERATED_BODY()
 	
 public:
+#if WITH_EDITOR
+	virtual void PostEditChangeProperty(struct FPropertyChangedEvent& Event) override;
+#endif
+		
+
+
+	
+public:
 	virtual void ExplodeDamage() override;
 	UPROPERTY(EditAnywhere)
 	EGrenadeType GrenadeType = EGrenadeType::EWT_GrenadeFrag;

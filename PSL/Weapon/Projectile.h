@@ -77,4 +77,6 @@ private:
 	float DestoryTime = 3.f;
 
 public:
+	FORCEINLINE UStaticMeshComponent* GetProjectileMesh() const { return ProjectileMesh; }
+
 };

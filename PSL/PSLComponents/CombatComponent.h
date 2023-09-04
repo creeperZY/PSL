@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "PSL/PSLTypes/CombatState.h"
+#include "PSL/Weapon/ProjectileTossGrenade.h"
 #include "PSL/Weapon/WeaponTypes.h"
 #include "CombatComponent.generated.h"
 
@@ -73,10 +74,10 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void ThrowGrenade();
 	UFUNCTION(BlueprintCallable)
-	void LaunchGrenade();
+	void LaunchGrenade(const FVector& Target);
 	
 	UPROPERTY(EditAnywhere) // Vis
-	TSubclassOf<class AProjectileTossGrenade> EquippedGrenadeClass;
+	EGrenadeType EquippedGrenadeType;
 	UPROPERTY(EditAnywhere) // Vis
 	int32 EquippedGrenades = 4;
 

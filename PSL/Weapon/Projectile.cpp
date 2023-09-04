@@ -5,15 +5,11 @@
 
 #include "Projectile.h"
 #include "Components/BoxComponent.h"
-#include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Particles/ParticleSystemComponent.h"
 #include "Particles/ParticleSystem.h"
 #include "Sound/SoundCue.h"
-#include "PSL/Character/PSLCharacter.h"
 #include "PSL/PSL.h"
 #include "NiagaraFunctionLibrary.h"
-#include "NiagaraComponent.h"
 
 AProjectile::AProjectile()
 {

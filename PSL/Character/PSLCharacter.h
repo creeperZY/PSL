@@ -115,11 +115,12 @@ private:
 	class UPostProcessComponent* PostProcess;
 	
 
+		
 	/*
 	 * Grenade
 	 */
-	//UPROPERTY(VisibleAnywhere)
-	//UStaticMeshComponent* AttachedGrenade;
+	UPROPERTY(VisibleAnywhere)
+	UStaticMeshComponent* AttachedGrenade;
 
 	
 	/*
@@ -207,6 +208,10 @@ private:
 	 */
 	void SetShowXRayWhenCharacterOccluded();
 
+public:
+
+
+
 	
 public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
@@ -215,6 +220,7 @@ public:
 	ECombatState GetCombatState() const;
 	FORCEINLINE UAbilityComponent* GetAbility() const { return Ability; }
 	FORCEINLINE void SetOverlappingWeapon(AWeapon* Weapon) { OverlappingWeapon = Weapon; }
+	FORCEINLINE UStaticMeshComponent* GetAttachedGrenade() const { return AttachedGrenade; }
 	FORCEINLINE ETurningInPlace GetTurningInPlace() const { return TurningInPlace; }
 	FORCEINLINE float GetAO_Yaw() const { return AO_Yaw; }
 	FORCEINLINE float GetAO_Pitch() const { return AO_Pitch; }

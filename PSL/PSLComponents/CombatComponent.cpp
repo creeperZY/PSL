@@ -12,6 +12,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "PSL/PlayerController/PSLPlayerController.h"
+#include "PSL/Weapon/ProjectileTossGrenade.h"
 #include "Sound/SoundCue.h"
 
 UCombatComponent::UCombatComponent()
@@ -23,7 +24,6 @@ UCombatComponent::UCombatComponent()
 void UCombatComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 
@@ -356,10 +356,6 @@ void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 	}
 }
 
-void UCombatComponent::ShowAttachedGrenade(bool bShowGrenade)
-{
-	//TODO
-}
 
 void UCombatComponent::Fire()
 {
@@ -449,30 +445,59 @@ void UCombatComponent::FinishReloading()
 {
 }
 
-
 void UCombatComponent::ThrowGrenadeFinished()
 {
+	CombatState = ECombatState::ECS_Unoccupied;
 }
 
 void UCombatComponent::ThrowGrenade()
 {
-	/*if(CombatState != ECombatState::ECS_Unoccupied || EquippedWeapon == nullptr) return;
+	if(CombatState != ECombatState::ECS_Unoccupied || EquippedWeapon == nullptr) return;
 	if (Character && Character->GetCombat())
 	{
-		if(Character->GetCombat()->Grenades == 0) return;
+		if(Character->GetCombat()->EquippedGrenades == 0) return;
 		CombatState = ECombatState::ECS_ThrowingGrenade;
 		Character->PlayThrowGrenadeMontage();
 		//AttachActorToLeftHand(EquippedWeapon);
 		ShowAttachedGrenade(true);
-		//ServerThrowGrenade();
-	}*/
+		PRINT_STR("throw grenade");
+		LaunchGrenade(HitTarget);
+	}
 	
 }
 
-void UCombatComponent::LaunchGrenade()
+void UCombatComponent::LaunchGrenade(const FVector& Target)
 {
 	ShowAttachedGrenade(false);
+	
+	if (GrenadeClassMap.Contains(EquippedGrenadeType) &&
+		CarriedGrenadesMap.Contains(EquippedGrenadeType) &&
+		CarriedGrenadesMap[EquippedGrenadeType] > 0)
+	{
+		const USkeletalMeshSocket* Socket = Character->GetMesh()->GetSocketByName(FName("LeftHandSocketGrenade"));
+		if (Socket)
+		{
+			const FVector StartingLocation = Socket->GetSocketLocation(Character->GetMesh());
+			//const FVector StartingLocation = GrenadeMesh->GetComponentLocation();
+			FVector ToTarget = Target - StartingLocation;
+			FActorSpawnParameters SpawnParams;
+			SpawnParams.Owner = Character;
+			SpawnParams.Instigator = Character;
+			UWorld* World = GetWorld();
+			if (World)
+			{
+				World->SpawnActor<AProjectile>(
+					GrenadeClassMap[EquippedGrenadeType],
+					StartingLocation,
+					ToTarget.Rotation(),
+					SpawnParams
+				);
+			}
+		}
 
+	}
+
+	CombatState = ECombatState::ECS_Unoccupied;
 	/*if (Character && GrenadeClass && Character->GetAttachedGrenade())
 	{
 		const FVector StartingLocation = Character->GetAttachedGrenade()->GetComponentLocation();
@@ -490,6 +515,30 @@ void UCombatComponent::LaunchGrenade()
 				SpawnParams
 			);
 		}
+	}*/
+}
+
+
+void UCombatComponent::ShowAttachedGrenade(bool bShowGrenade)
+{
+	if(GrenadeClassMap.Contains(EquippedGrenadeType))
+	{
+		UStaticMesh* GrenadeMesh = GrenadeClassMap[EquippedGrenadeType]->GetDefaultObject<AProjectileTossGrenade>()->GetProjectileMesh()->GetStaticMesh();
+		if (GrenadeMesh)
+		{
+			Character->GetAttachedGrenade()->SetStaticMesh(GrenadeMesh);
+			//Character->GetAttachedGrenade()->SetWorldScale3D(FVector(10.f,10.f,10.f));
+			Character->GetAttachedGrenade()->SetVisibility(bShowGrenade);
+		}
+	}
+
+	//GrenadeMesh->SetupAttachment(Character->GetMesh(), FName("LeftHandSocketGrenade"));
+	//GrenadeMesh->SetWorldScale3D(FVector(10.f,10.f,10.f));
+	//GrenadeMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	/*if (GrenadeMeshMap.Contains(EquippedGrenadeType))
+	{
+		UStaticMeshComponent* GrenadeMesh = GrenadeMeshMap[EquippedGrenadeType];
+		GrenadeMesh->SetVisibility(bShowGrenade);
 	}*/
 }
 
