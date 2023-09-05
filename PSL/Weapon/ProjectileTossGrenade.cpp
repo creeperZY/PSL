@@ -2,9 +2,18 @@
 
 
 #include "ProjectileTossGrenade.h"
+#include "Components/BoxComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "PSL/PSL.h"
 
 #if WITH_EDITOR
+AProjectileTossGrenade::AProjectileTossGrenade()
+{
+	GetCollisionBox()->SetCollisionResponseToChannel(ECC_SkeletalMesh, ECollisionResponse::ECR_Ignore);
+	GetCollisionBox()->SetCollisionResponseToChannel(ECC_Weapon, ECollisionResponse::ECR_Ignore);
+}
+
 void AProjectileTossGrenade::PostEditChangeProperty(FPropertyChangedEvent& Event)
 {
 	Super::PostEditChangeProperty(Event);

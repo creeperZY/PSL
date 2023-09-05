@@ -4,6 +4,7 @@
 #include "ProjectileGrenade.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "PSL/EasyMacros.h"
 #include "Sound/SoundCue.h"
 
 AProjectileGrenade::AProjectileGrenade()
@@ -49,6 +50,7 @@ void AProjectileGrenade::ExplodeDamage()
 {
 	Super::ExplodeDamage();
 }
+
 
 void AProjectileGrenade::OnBounce(const FHitResult& ImpactResult, const FVector& ImpactVelocity)
 {

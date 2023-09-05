@@ -10,6 +10,7 @@
 #include "Sound/SoundCue.h"
 #include "PSL/PSL.h"
 #include "NiagaraFunctionLibrary.h"
+#include "Components/CapsuleComponent.h"
 
 AProjectile::AProjectile()
 {

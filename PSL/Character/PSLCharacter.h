@@ -105,7 +105,7 @@ private:
 	UPROPERTY()
 	class AWeapon* OverlappingWeapon;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UCombatComponent* Combat;
 
 	UPROPERTY(VisibleAnywhere)
@@ -134,17 +134,17 @@ private:
 	float AimFOV = 60.f; //This option is not in using. Use Weapon FOV
 	float CurrentFOV = 90.f;
 	
-	/*UPROPERTY(EditAnywhere, Category="Game Camera")
+	UPROPERTY(EditAnywhere, Category="Game Camera")
 	float UnequippedTargetArmLength = 320.f;
 	UPROPERTY(EditAnywhere, Category="Game Camera")
 	float EquippedTargetArmLength = 320.f;
 	float CurrentTargetArmLength = 320.f;
 	
 	UPROPERTY(EditAnywhere, Category="Game Camera")
-	FVector UnequippedSocketOffset = FVector(0.f, 25.f, 65.f);
+	FVector UnequippedSocketOffset = FVector(0.f, 40.f, -60.f);
 	UPROPERTY(EditAnywhere, Category="Game Camera")
-	FVector EquippedSocketOffset = FVector(0.f, 25.f, 65.f);
-	FVector CurrentSocketOffset = FVector(0.f, 25.f, 65.f);*/
+	FVector EquippedSocketOffset = FVector(0.f, 65.f, -60.f);
+	FVector CurrentSocketOffset = FVector(0.f, 40.f, -60.f);
 
 	UPROPERTY(EditAnywhere, Category="Game Camera")
 	float InterpSpeed = 10.f;
@@ -180,7 +180,7 @@ private:
 	UFUNCTION()
 	void OnTurnFinished();
 	void TurnBeforeEquip();
-
+	
 
 	/*
 	 * Animation montages

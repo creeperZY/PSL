@@ -74,7 +74,7 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void ThrowGrenade();
 	UFUNCTION(BlueprintCallable)
-	void LaunchGrenade(const FVector& Target);
+	void LaunchGrenade();
 	
 	UPROPERTY(EditAnywhere) // Vis
 	EGrenadeType EquippedGrenadeType;

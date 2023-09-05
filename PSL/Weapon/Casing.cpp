@@ -17,6 +17,9 @@ ACasing::ACasing()
 	CasingMesh->SetNotifyRigidBodyCollision(true);
 	ShellEjectionImpulse = 10.f;
 	InitialLifeSpan = 10.f;
+	CasingMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
+	CasingMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Block);
+	CasingMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
 }
 
 void ACasing::BeginPlay()

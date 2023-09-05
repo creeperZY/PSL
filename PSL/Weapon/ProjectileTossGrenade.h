@@ -16,6 +16,7 @@ class PSL_API AProjectileTossGrenade : public AProjectileGrenade
 	GENERATED_BODY()
 	
 public:
+	AProjectileTossGrenade();
 #if WITH_EDITOR
 	virtual void PostEditChangeProperty(struct FPropertyChangedEvent& Event) override;
 #endif

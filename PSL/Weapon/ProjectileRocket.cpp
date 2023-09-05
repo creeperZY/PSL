@@ -11,6 +11,7 @@
 #include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
 #include "RocketMovementComponent.h"
+#include "Components/CapsuleComponent.h"
 
 AProjectileRocket::AProjectileRocket()
 {

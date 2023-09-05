@@ -373,8 +373,8 @@ void APSLCharacter::InterpCameraFOV(float DeltaSeconds)
 	if (IsWeaponEquipped())
 	{
 		CurrentFOV = FMath::FInterpTo(CurrentFOV, EquippedFOV, DeltaSeconds, InterpSpeed);
-		//CurrentSocketOffset = FMath::VInterpTo(CurrentSocketOffset, EquippedSocketOffset, DeltaSeconds, InterpSpeed);
-		//CurrentTargetArmLength = FMath::FInterpTo(CurrentTargetArmLength, EquippedTargetArmLength, DeltaSeconds, InterpSpeed);
+		CurrentSocketOffset = FMath::VInterpTo(CurrentSocketOffset, EquippedSocketOffset, DeltaSeconds, InterpSpeed);
+		CurrentTargetArmLength = FMath::FInterpTo(CurrentTargetArmLength, EquippedTargetArmLength, DeltaSeconds, InterpSpeed);
 		if (IsAiming())
 		{
 			AimFOV = GetEquippedWeapon()->GetZoomedFOV();
@@ -388,48 +388,34 @@ void APSLCharacter::InterpCameraFOV(float DeltaSeconds)
 	else
 	{
 		CurrentFOV = FMath::FInterpTo(CurrentFOV, UnequippedFOV, DeltaSeconds, InterpSpeed);
-		//CurrentSocketOffset = FMath::VInterpTo(CurrentSocketOffset, UnequippedSocketOffset, DeltaSeconds, InterpSpeed);
-		//CurrentTargetArmLength = FMath::FInterpTo(CurrentTargetArmLength, UnequippedTargetArmLength, DeltaSeconds, InterpSpeed);
+		CurrentSocketOffset = FMath::VInterpTo(CurrentSocketOffset, UnequippedSocketOffset, DeltaSeconds, InterpSpeed);
+		CurrentTargetArmLength = FMath::FInterpTo(CurrentTargetArmLength, UnequippedTargetArmLength, DeltaSeconds, InterpSpeed);
 	}
 	FollowCamera->FieldOfView = CurrentFOV;
-	//CameraBoom->SocketOffset = CurrentSocketOffset;
-	//CameraBoom->TargetArmLength = CurrentTargetArmLength;
+	CameraBoom->SocketOffset = CurrentSocketOffset;
+	CameraBoom->TargetArmLength = CurrentTargetArmLength;
 }
 
 
 void APSLCharacter::HideCharacterIfCameraClose()
 {
-	if ((FollowCamera->GetComponentLocation() - GetActorLocation()).Size() < CameraThreshold)
+	bool bShouldHide = (FollowCamera->GetComponentLocation() - GetActorLocation()).Size() < CameraThreshold;
+	GetMesh()->SetVisibility(!bShouldHide);
+	if(Combat && Combat->EquippedWeapon && Combat->EquippedWeapon->GetWeaponMesh())
 	{
-		GetMesh()->SetVisibility(false);
-		if(Combat && Combat->EquippedWeapon && Combat->EquippedWeapon->GetWeaponMesh())
-		{
-			Combat->EquippedWeapon->GetWeaponMesh()->bOwnerNoSee = true; 
-		}
-		if(Combat && Combat->FirstWeapon && Combat->FirstWeapon->GetWeaponMesh())
-		{
-			Combat->FirstWeapon->GetWeaponMesh()->bOwnerNoSee = true; 
-		}
-		if(Combat && Combat->SecondWeapon && Combat->SecondWeapon->GetWeaponMesh())
-		{
-			Combat->SecondWeapon->GetWeaponMesh()->bOwnerNoSee = true; 
-		}
+		Combat->EquippedWeapon->GetWeaponMesh()->bOwnerNoSee = bShouldHide; 
 	}
-	else
+	if(Combat && Combat->FirstWeapon && Combat->FirstWeapon->GetWeaponMesh())
 	{
-		GetMesh()->SetVisibility(true);
-		if(Combat && Combat->EquippedWeapon && Combat->EquippedWeapon->GetWeaponMesh())
-		{
-			Combat->EquippedWeapon->GetWeaponMesh()->bOwnerNoSee = false; 
-		}
-		if(Combat && Combat->FirstWeapon && Combat->FirstWeapon->GetWeaponMesh())
-		{
-			Combat->FirstWeapon->GetWeaponMesh()->bOwnerNoSee = false; 
-		}
-		if(Combat && Combat->SecondWeapon && Combat->SecondWeapon->GetWeaponMesh())
-		{
-			Combat->SecondWeapon->GetWeaponMesh()->bOwnerNoSee = false; 
-		}
+		Combat->FirstWeapon->GetWeaponMesh()->bOwnerNoSee = bShouldHide; 
+	}
+	if(Combat && Combat->SecondWeapon && Combat->SecondWeapon->GetWeaponMesh())
+	{
+		Combat->SecondWeapon->GetWeaponMesh()->bOwnerNoSee = bShouldHide; 
+	}
+	if (AttachedGrenade)
+	{
+		AttachedGrenade->bOwnerNoSee = bShouldHide;
 	}
 }
 

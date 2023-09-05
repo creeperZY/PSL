@@ -3,6 +3,7 @@
 
 #include "ProjectileBullet.h"
 
+#include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "PSL/Character/PSLCharacter.h"
 #include "PSL/PlayerController/PSLPlayerController.h"
