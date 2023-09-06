@@ -399,7 +399,7 @@ void APSLCharacter::InterpCameraFOV(float DeltaSeconds)
 
 void APSLCharacter::HideCharacterIfCameraClose()
 {
-	bool bShouldHide = (FollowCamera->GetComponentLocation() - GetActorLocation()).Size() < CameraThreshold;
+	/*bool bShouldHide = (FollowCamera->GetComponentLocation() - GetActorLocation()).Size() < CameraThreshold;
 	GetMesh()->SetVisibility(!bShouldHide);
 	if(Combat && Combat->EquippedWeapon && Combat->EquippedWeapon->GetWeaponMesh())
 	{
@@ -416,7 +416,7 @@ void APSLCharacter::HideCharacterIfCameraClose()
 	if (AttachedGrenade)
 	{
 		AttachedGrenade->bOwnerNoSee = bShouldHide;
-	}
+	}*/
 }
 
 float APSLCharacter::CalculateSpeed()
@@ -442,6 +442,14 @@ void APSLCharacter::AimOffset(float DeltaTime)
 		FRotator CurrentAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
 		FRotator DeltaAimRotation = UKismetMathLibrary::NormalizedDeltaRotator(CurrentAimRotation, StartingAimRotation);
 		AO_Yaw = DeltaAimRotation.Yaw;
+
+		if (Combat->CombatState == ECombatState::ECS_ThrowingGrenade)
+		{
+			if (AO_Yaw > 45.f) TurningInPlace = ETurningInPlace::ETIP_Right;
+			if (AO_Yaw < -45.f) TurningInPlace = ETurningInPlace::ETIP_Left;
+			if (FMath::Abs(AO_Yaw) < 15.f) TurningInPlace = ETurningInPlace::ETIP_NotTurning;
+		}
+		
 		if (TurningInPlace == ETurningInPlace::ETIP_NotTurning)
 		{
 			InterpAO_Yaw = AO_Yaw;
@@ -449,11 +457,13 @@ void APSLCharacter::AimOffset(float DeltaTime)
 		bUseControllerRotationYaw = true;
 		TurnInPlace(DeltaTime);
 	}
+	// throwing grenades or melee
 	if (Speed > 0.f || bIsInAir) // running, or jumping
 	{
         StartingAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
-        AO_Yaw = 0.f;
-        bUseControllerRotationYaw = true;
+        AO_Yaw = FMath::FInterpTo(AO_Yaw, 0.f, DeltaTime, 15.f);
+		//AO_Yaw = 0.f;
+		bUseControllerRotationYaw = true;
         TurningInPlace = ETurningInPlace::ETIP_NotTurning;
 	}
 	AO_Pitch = FMath::FInterpTo(AO_Pitch, GetBaseAimRotation().Pitch, DeltaTime, 15.f);
