@@ -3,6 +3,7 @@
 #include "Weapon.h"
 
 #include "Casing.h"
+#include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
@@ -35,6 +36,7 @@ AWeapon::AWeapon()
 
 	EnableCustomDepth(true);
 	ShowStencilColor(0);
+
 }
 
 void AWeapon::BeginPlay()
@@ -43,6 +45,7 @@ void AWeapon::BeginPlay()
 
 	AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	AreaSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+	AreaSphere->SetCollisionResponseToChannel(ECC_SkeletalMesh, ECollisionResponse::ECR_Overlap);
 	AreaSphere->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::OnSphereOverlap);
 	AreaSphere->OnComponentEndOverlap.AddDynamic(this, &AWeapon::OnSphereEndOverlap);
 	

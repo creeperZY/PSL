@@ -11,6 +11,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "PSL/Weapon/ProjectileTossGrenade.h"
 #include "Sound/SoundCue.h"
 
@@ -406,7 +407,19 @@ void UCombatComponent::FireShotgun()
 
 }
 
+void UCombatComponent::Reload()
+{
+	if (CombatState != ECombatState::ECS_Unoccupied || EquippedWeapon == nullptr) return;
+	
+}
 
+void UCombatComponent::ReloadEmptyWeapon()
+{
+}
+
+void UCombatComponent::FinishReloading()
+{
+}
 
 
 void UCombatComponent::StartFireTimer()
@@ -444,14 +457,6 @@ bool UCombatComponent::ShouldSwapWeapons()
 }
 
 
-void UCombatComponent::ReloadEmptyWeapon()
-{
-}
-
-void UCombatComponent::FinishReloading()
-{
-}
-
 void UCombatComponent::ThrowGrenadeFinished()
 {
 	CombatState = ECombatState::ECS_Unoccupied;
@@ -459,10 +464,10 @@ void UCombatComponent::ThrowGrenadeFinished()
 
 void UCombatComponent::ThrowGrenade()
 {
-	if(CombatState != ECombatState::ECS_Unoccupied || EquippedWeapon == nullptr) return;
-	if (Character && Character->GetCombat())
+	if (CombatState != ECombatState::ECS_Unoccupied || EquippedWeapon == nullptr) return;
+	if (Character)
 	{
-		if(Character->GetCombat()->EquippedGrenades == 0) return;
+		if(EquippedGrenades <= 0) return;
 		CombatState = ECombatState::ECS_ThrowingGrenade;
 		Character->PlayThrowGrenadeMontage();
 		//AttachActorToLeftHand(EquippedWeapon);
@@ -478,49 +483,89 @@ void UCombatComponent::LaunchGrenade()
 	
 	if (GrenadeClassMap.Contains(EquippedGrenadeType) &&
 		CarriedGrenadesMap.Contains(EquippedGrenadeType) &&
-		CarriedGrenadesMap[EquippedGrenadeType] > 0)
-	{
-		const USkeletalMeshSocket* Socket = Character->GetMesh()->GetSocketByName(FName("LeftHandSocketGrenade"));
-		if (Socket)
-		{
-			const FVector StartingLocation = Character->GetAttachedGrenade()->GetComponentLocation();
-			FVector ToTarget = HitTarget - StartingLocation;
-			FActorSpawnParameters SpawnParams;
-			SpawnParams.Owner = Character;
-			SpawnParams.Instigator = Character;
-			UWorld* World = GetWorld();
-			if (World)
-			{
-				AProjectileTossGrenade* TossGrenade = World->SpawnActor<AProjectileTossGrenade>(
-					GrenadeClassMap[EquippedGrenadeType],
-					StartingLocation,
-					ToTarget.Rotation(),
-					SpawnParams
-				);
-
-			}
-		}
-
-	}
-	
-	/*if (Character && GrenadeClass && Character->GetAttachedGrenade())
+		Character->GetAttachedGrenade())
 	{
 		const FVector StartingLocation = Character->GetAttachedGrenade()->GetComponentLocation();
-		FVector ToTarget = Target - StartingLocation;
+		FVector ToTarget = HitTarget - StartingLocation;
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Owner = Character;
 		SpawnParams.Instigator = Character;
 		UWorld* World = GetWorld();
 		if (World)
 		{
-			World->SpawnActor<AProjectile>(
-				GrenadeClass,
+			AProjectileTossGrenade* TossGrenade = World->SpawnActor<AProjectileTossGrenade>(
+				GrenadeClassMap[EquippedGrenadeType],
 				StartingLocation,
 				ToTarget.Rotation(),
 				SpawnParams
 			);
 		}
-	}*/
+	}
+	
+}
+
+void UCombatComponent::MeleeAttack()
+{
+	if (CombatState != ECombatState::ECS_Unoccupied || EquippedWeapon == nullptr) return;
+	if (Character)
+	{
+		CombatState = ECombatState::ECS_ThrowingGrenade;
+		Character->PlayMeleeAttackMontage();
+	}
+	
+}
+
+void UCombatComponent::MeleeAttackConfirm()
+{
+	PRINT_STR("melee attack")
+
+	UWorld* World = GetWorld();
+	const USkeletalMeshSocket* Socket = Character->GetMesh()->GetSocketByName(FName("RightHandSocketRifle"));
+	
+	if (Character == nullptr || Character->GetCombat() == nullptr || World == nullptr || Socket == nullptr) return;
+	
+	FTransform SocketTransform = Socket->GetSocketTransform(Character->GetMesh());
+	FVector Start = Character->GetActorLocation();
+	FVector End = SocketTransform.GetLocation() + Character->GetActorForwardVector() * (40.f);
+
+	FHitResult TraceHitResult;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(Character);
+	if (Character->GetCombat()->FirstWeapon)
+		Params.AddIgnoredActor(Character->GetCombat()->FirstWeapon);
+	if (Character->GetCombat()->SecondWeapon)
+		Params.AddIgnoredActor(Character->GetCombat()->SecondWeapon);
+	Params.AddIgnoredActor(Character->GetEquippedWeapon());
+	World->LineTraceSingleByChannel(
+		TraceHitResult,
+		Start,
+		End,
+		ECollisionChannel::ECC_Visibility
+		,Params
+	);
+	
+	APSLCharacter* OtherPSLCharacter = Cast<APSLCharacter>(TraceHitResult.GetActor());
+	if (OtherPSLCharacter)
+	{
+		PRINT_STR("melee HIT")
+		World->GetFirstPlayerController()->PlayerCameraManager->StartCameraShake(Character->MeleeAttackCameraShake, 1.f);
+	}
+	else if (OtherPSLCharacter == Character)
+	{
+		PRINT_STR("====")
+	}
+	else
+	{
+		PRINT_STR("void")
+	}
+	
+	DrawDebugSphere(GetWorld(), Start,2.f, 12, FColor::Blue, false, 12.f);
+	DrawDebugSphere(GetWorld(), End, 2.f, 12, FColor::Cyan, false,12.f);
+}
+
+void UCombatComponent::MeleeAttackFinished()
+{
+	CombatState = ECombatState::ECS_Unoccupied;
 }
 
 

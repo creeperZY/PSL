@@ -68,13 +68,13 @@ protected:
 	/*
 	 * Grenade
 	 */
+	void ThrowGrenade();
 	void ShowAttachedGrenade(bool bShowGrenade);
 	UFUNCTION(BlueprintCallable)
-	void ThrowGrenadeFinished();
-	UFUNCTION(BlueprintCallable)
-	void ThrowGrenade();
-	UFUNCTION(BlueprintCallable)
 	void LaunchGrenade();
+	UFUNCTION(BlueprintCallable)
+	void ThrowGrenadeFinished();
+	
 	
 	UPROPERTY(EditAnywhere) // Vis
 	EGrenadeType EquippedGrenadeType;
@@ -88,12 +88,25 @@ protected:
 
 	UPROPERTY(EditAnywhere) // Vis
 	TMap<EWeaponType, int32> CarriedAmmoMap;
+
+
+	/*
+	 * Melee Attack
+	 */
+	void MeleeAttack();
+	UFUNCTION(BlueprintCallable)
+	void MeleeAttackConfirm();
+	UFUNCTION(BlueprintCallable)
+	void MeleeAttackFinished();
+	
 	
 private:
 	UPROPERTY()
 	class APSLCharacter* Character;
 	UPROPERTY()
 	class AWeapon* EquippedWeapon;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AWeapon> DefaultWeaponClass;
 	UPROPERTY()
 	AWeapon* FirstWeapon;
 	UPROPERTY()

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
+#include "LegacyCameraShake.h"
 #include "Components/TimelineComponent.h"
 #include "PSL/PSLTypes/EquippedPoses.h"
 #include "PSL/PSLTypes/TurningInPlace.h"
@@ -20,12 +21,14 @@ class APSLCharacter : public ACharacter
 public:
 	APSLCharacter();
 	virtual void PossessedBy(AController* NewController) override;
+	
 public:
 	void PlayFireMontage(bool bAiming);
 	void PlayReloadMontage();
 	void PlayElimMontage();
 	void PlayThrowGrenadeMontage();
-	void PlaySwapMontage();
+	void PlaySwapMontage(AWeapon* WeaponToEquip, float PlayRate);
+	void PlayMeleeAttackMontage();
 	
 protected:
 	/** Called for movement input */
@@ -52,10 +55,9 @@ protected:
 	void GrenadeButtonPressed();
 	void GrenadeButtonCanceled();
 	void GrenadeButtonCompleted();
-	float CalculateSpeed();
-	void AimOffset(float DeltaTime);
-	
-	
+	void MeleeAttackButtonPressed();
+	void ReloadButtonPressed();
+
 	
 private:
 	
@@ -101,6 +103,12 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* GrenadeAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* MeleeAttackAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* ReloadAction;
 	
 	UPROPERTY()
 	class AWeapon* OverlappingWeapon;
@@ -115,7 +123,38 @@ private:
 	class UPostProcessComponent* PostProcess;
 	
 
-		
+	/*
+	 * Animation montages
+	 */
+	UPROPERTY(EditAnywhere, Category = "Combat Montage")
+	class UAnimMontage* FireWeaponMontage;
+
+	UPROPERTY(EditAnywhere, Category = "Combat Montage")
+	class UAnimMontage* ReloadMontage;
+	
+	UPROPERTY(EditAnywhere, Category = "Combat Montage")
+	class UAnimMontage* HitReactMontage;
+
+	UPROPERTY(EditAnywhere, Category = "Combat Montage")
+	class UAnimMontage* ElimMontage;
+
+	UPROPERTY(EditAnywhere, Category = "Combat Montage")
+	class UAnimMontage* ThrowGrenadeMontage;
+	
+	UPROPERTY(EditAnywhere, Category = "Combat Montage")
+	class UAnimMontage* SwapMontage;
+ 
+	UPROPERTY(EditAnywhere, Category = "Combat Montage")
+	class UAnimMontage* MeleeAttackMontage;
+	
+
+	/*
+	 * Render X-ray on screen
+	 */
+	void SetShowXRayWhenCharacterOccluded();
+	
+	
+	
 	/*
 	 * Grenade
 	 */
@@ -163,7 +202,10 @@ private:
 	FRotator StartingAimRotation;
 	ETurningInPlace TurningInPlace;
 	void TurnInPlace(float DeltaTime);
-
+	float CalculateSpeed();
+	void AimOffset(float DeltaTime);
+	
+	
 	
 	/*
 	 * Turn before equip weapon 
@@ -182,33 +224,14 @@ private:
 	void TurnBeforeEquip();
 	
 
-	/*
-	 * Animation montages
-	 */
-	UPROPERTY(EditAnywhere, Category = "Combat Montage")
-	class UAnimMontage* FireWeaponMontage;
 
-	UPROPERTY(EditAnywhere, Category = "Combat Montage")
-	class UAnimMontage* ReloadMontage;
 	
-	UPROPERTY(EditAnywhere, Category = "Combat Montage")
-	class UAnimMontage* HitReactMontage;
-
-	UPROPERTY(EditAnywhere, Category = "Combat Montage")
-	class UAnimMontage* ElimMontage;
-
-	UPROPERTY(EditAnywhere, Category = "Combat Montage")
-	class UAnimMontage* ThrowGrenadeMontage;
-	
-	UPROPERTY(EditAnywhere, Category = "Combat Montage")
-	class UAnimMontage* SwapMontage;
-	
-	/*
-	 * Render X-ray on screen
-	 */
-	void SetShowXRayWhenCharacterOccluded();
-
 public:
+	/*
+	 * Camera Shake
+	 */
+	UPROPERTY(EditAnywhere, Category="Camera Shake")
+	TSubclassOf<UCameraShakeBase> MeleeAttackCameraShake;
 
 
 

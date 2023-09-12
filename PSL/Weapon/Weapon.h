@@ -135,7 +135,6 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties: Basic")
 	float HeadShotDamage = 40.f;
 	
-
 	UPROPERTY()
 	class APSLCharacter* PSLOwnerCharacter;
 	UPROPERTY()

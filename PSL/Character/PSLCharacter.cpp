@@ -9,6 +9,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Components/BoxComponent.h"
 #include "Components/PostProcessComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "PSL/PSLComponents/CombatComponent.h"
@@ -16,6 +17,7 @@
 #include "PSL/EasyMacros.h"
 #include "PSL/PSLComponents/AbilityComponent.h"
 #include "Components/PrimitiveComponent.h"
+#include "PSL/PSL.h"
 #include "PSL/PlayerController/PSLPlayerController.h"
 #include "PSL/Weapon/ProjectileTossGrenade.h"
 
@@ -68,7 +70,7 @@ APSLCharacter::APSLCharacter()
 	PostProcess = CreateDefaultSubobject<UPostProcessComponent>(TEXT("PostProcessComponent"));
 
 	TurningInPlace = ETurningInPlace::ETIP_NotTurning;
-
+	
 	AttachedGrenade = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Attached Grenade"));
 	AttachedGrenade->SetupAttachment(GetMesh(), FName("LeftHandSocketGrenade"));
 	AttachedGrenade->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -126,8 +128,52 @@ void APSLCharacter::PlayThrowGrenadeMontage()
 	}
 }
 
-void APSLCharacter::PlaySwapMontage()
+void APSLCharacter::PlaySwapMontage(AWeapon* WeaponToEquip, float PlayRate)
 {
+	/*
+	if(Combat == nullptr || WeaponToEquip == nullptr) return;
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && SwapMontage)
+	{
+		AnimInstance->Montage_Play(SwapMontage);
+		//AnimInstance->Montage_SetPlayRate()
+
+		FName SectionName;
+		switch (WeaponToEquip->GetEquippedPoseType())
+		{
+		case EEquippedPoseType::EEPT_RiflePose:
+			SectionName = FName("RifleEquip");
+			break;
+		case EEquippedPoseType::EEPT_PistolPose:
+			SectionName = FName("PistolEquip");
+			break;
+		}
+	}
+	*/
+	
+}
+
+void APSLCharacter::PlayMeleeAttackMontage()
+{
+	if(Combat == nullptr || Combat->EquippedWeapon == nullptr) return;
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && MeleeAttackMontage)
+	{
+		AnimInstance->Montage_Play(MeleeAttackMontage);
+		FName SectionName;
+		
+		switch (Combat->EquippedWeapon->GetEquippedPoseType())
+		{
+		case EEquippedPoseType::EEPT_RiflePose:
+			SectionName = FName("RifleMelee");
+			break;
+		case EEquippedPoseType::EEPT_PistolPose:
+			SectionName = FName("PistolMelee");
+			break;
+		}
+
+		AnimInstance->Montage_JumpToSection(SectionName);
+	}
 }
 
 void APSLCharacter::BeginPlay()
@@ -146,6 +192,7 @@ void APSLCharacter::BeginPlay()
 	
 	SetShowXRayWhenCharacterOccluded();
 	SetTurnDelegate();
+	
 
 }
 
@@ -212,6 +259,10 @@ void APSLCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInput
 		EnhancedInputComponent->BindAction(GrenadeAction, ETriggerEvent::Triggered, this, &APSLCharacter::GrenadeButtonPressed);
 		EnhancedInputComponent->BindAction(GrenadeAction, ETriggerEvent::Canceled, this, &APSLCharacter::GrenadeButtonCanceled);
 		EnhancedInputComponent->BindAction(GrenadeAction, ETriggerEvent::Completed, this, &APSLCharacter::GrenadeButtonCompleted);
+
+		EnhancedInputComponent->BindAction(MeleeAttackAction, ETriggerEvent::Triggered, this, &APSLCharacter::MeleeAttackButtonPressed);
+
+		EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Triggered, this, &APSLCharacter::ReloadButtonPressed);
 	}
 
 }
@@ -367,6 +418,22 @@ void APSLCharacter::GrenadeButtonCompleted()
 	PRINT_STR("CLOSE UI");
 }
 
+void APSLCharacter::MeleeAttackButtonPressed()
+{
+	if (Combat)
+	{
+		Combat->MeleeAttack();
+	}
+}
+
+void APSLCharacter::ReloadButtonPressed()
+{
+	if (Combat)
+	{
+		Combat->Reload();
+	}
+}
+
 
 void APSLCharacter::InterpCameraFOV(float DeltaSeconds)
 {
@@ -443,10 +510,12 @@ void APSLCharacter::AimOffset(float DeltaTime)
 		FRotator DeltaAimRotation = UKismetMathLibrary::NormalizedDeltaRotator(CurrentAimRotation, StartingAimRotation);
 		AO_Yaw = DeltaAimRotation.Yaw;
 
-		if (Combat->CombatState == ECombatState::ECS_ThrowingGrenade)
+		bool bCombatStateShouldTurn = Combat->CombatState == ECombatState::ECS_ThrowingGrenade
+								   || Combat->CombatState == ECombatState::ECS_MeleeAttack;
+		if (bCombatStateShouldTurn)
 		{
-			if (AO_Yaw > 45.f) TurningInPlace = ETurningInPlace::ETIP_Right;
-			if (AO_Yaw < -45.f) TurningInPlace = ETurningInPlace::ETIP_Left;
+			if (AO_Yaw > 40.f) TurningInPlace = ETurningInPlace::ETIP_Right;
+			if (AO_Yaw < -40.f) TurningInPlace = ETurningInPlace::ETIP_Left;
 			if (FMath::Abs(AO_Yaw) < 15.f) TurningInPlace = ETurningInPlace::ETIP_NotTurning;
 		}
 		
@@ -518,13 +587,13 @@ void APSLCharacter::TurnBeforeEquip()
 void APSLCharacter::TurnProgress(float Alpha)
 {
 	FRotator TurnRotation = FMath::Lerp(StartingRotation, AimRotation, Alpha);
-	if (GetEquippedWeapon()) SetActorRotation(TurnRotation);
+	if (IsWeaponEquipped()) SetActorRotation(TurnRotation);
 }
 
 void APSLCharacter::OnTurnFinished()
 {
 	bTurnFinished = true;
-	if (GetEquippedWeapon())
+	if (IsWeaponEquipped())
 	{
 		bUseControllerRotationYaw = true;
 		GetCharacterMovement()->bOrientRotationToMovement = false;
@@ -569,6 +638,8 @@ void APSLCharacter::SetShowXRayWhenCharacterOccluded()
 		}
 	}
 }
+
+
 
 ECombatState APSLCharacter::GetCombatState() const
 {
