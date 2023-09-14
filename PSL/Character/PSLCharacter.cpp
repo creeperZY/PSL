@@ -610,7 +610,8 @@ void APSLCharacter::TurnBeforeEquip()
 void APSLCharacter::TurnProgress(float Alpha)
 {
 	FRotator TurnRotation = FMath::Lerp(StartingRotation, AimRotation, Alpha);
-	if (IsWeaponEquipped()) SetActorRotation(TurnRotation);
+	//if (IsWeaponEquipped()) SetActorRotation(TurnRotation);
+	SetActorRotation(TurnRotation);
 }
 
 void APSLCharacter::OnTurnFinished()
@@ -618,13 +619,13 @@ void APSLCharacter::OnTurnFinished()
 	bTurnFinished = true;
 	if (IsWeaponEquipped())
 	{
-		bUseControllerRotationYaw = true;
-		GetCharacterMovement()->bOrientRotationToMovement = false;
+		//bUseControllerRotationYaw = true;
+		//GetCharacterMovement()->bOrientRotationToMovement = false;
 	}
 	else
 	{
-		bUseControllerRotationYaw = false;
-		GetCharacterMovement()->bOrientRotationToMovement = true;
+		//bUseControllerRotationYaw = false;
+		//GetCharacterMovement()->bOrientRotationToMovement = true;
 	}
 }
 

@@ -186,52 +186,6 @@ void UCombatComponent::EquipWeaponToBack2(AWeapon* WeaponToEquip)
 	PlayEquipWeaponSound(WeaponToEquip);
 }
 
-void UCombatComponent::EquipFirstWeapon()
-{
-	if (FirstWeapon)
-	{
-		if (EquippedWeapon == FirstWeapon && EquippedWeapon)
-		{
-			UnequipWeapons(EquippedWeapon);
-			//HolsterWeapon();
-		}
-		//else if (EquippedWeapon == SecondWeapon && EquippedWeapon) // need swap animation
-		//{
-		//	EquipWeaponToBack2(EquippedWeapon);
-		//	EquipWeaponToRightHand(FirstWeapon);
-		//}
-		else
-		{
-			SwapWeapons(FirstWeapon);
-			//EquipWeaponToBack2(EquippedWeapon); //
-			//EquipWeaponToRightHand(FirstWeapon); // on back
-		}
-	}
-}
-
-void UCombatComponent::EquipSecondWeapon()
-{
-	if (SecondWeapon)
-	{
-		if (EquippedWeapon == SecondWeapon && EquippedWeapon)
-		{
-			UnequipWeapons(EquippedWeapon);
-			//HolsterWeapon();
-		}
-		//else if (EquippedWeapon == FirstWeapon && EquippedWeapon)
-		//{
-		//	EquipWeaponToBack1(EquippedWeapon);
-		//	EquipWeaponToRightHand(SecondWeapon);
-		//}
-		else
-		{
-			SwapWeapons(SecondWeapon);
-			//EquipWeaponToBack1(EquippedWeapon); //
-			//EquipWeaponToRightHand(SecondWeapon);
-		}
-	}
-
-}
 
 void UCombatComponent::DropEquippedWeapon()
 {
@@ -313,27 +267,77 @@ void UCombatComponent::PlayEquipWeaponSound(AWeapon* WeaponToEquip)
 }
 
 
+void UCombatComponent::EquipFirstWeapon()
+{
+	if (FirstWeapon)
+	{
+		if (EquippedWeapon == FirstWeapon && EquippedWeapon)
+		{
+			UnequipWeapons(EquippedWeapon);
+			//HolsterWeapon();
+		}
+		//else if (EquippedWeapon == SecondWeapon && EquippedWeapon) // need swap animation
+		//{
+		//	EquipWeaponToBack2(EquippedWeapon);
+		//	EquipWeaponToRightHand(FirstWeapon);
+		//}
+		else
+		{
+			//EquipWeaponToBack2(EquippedWeapon); 
+			//EquipWeaponToRightHand(FirstWeapon); // on back
+			SwapWeapons(FirstWeapon);
+		}
+	}
+}
+
+
+void UCombatComponent::EquipSecondWeapon()
+{
+	if (SecondWeapon)
+	{
+		if (EquippedWeapon == SecondWeapon && EquippedWeapon)
+		{
+			UnequipWeapons(EquippedWeapon);
+			//HolsterWeapon();
+		}
+		//else if (EquippedWeapon == FirstWeapon && EquippedWeapon)
+		//{
+		//	EquipWeaponToBack1(EquippedWeapon);
+		//	EquipWeaponToRightHand(SecondWeapon);
+		//}
+		else
+		{
+			//EquipWeaponToBack1(EquippedWeapon); 
+			//EquipWeaponToRightHand(SecondWeapon);
+			SwapWeapons(SecondWeapon);
+		}
+	}
+
+}
+
 
 void UCombatComponent::SwapWeapons(AWeapon* WeaponToEquip)
 {
 	if (CombatState != ECombatState::ECS_Unoccupied || Character == nullptr) return;
 	if (WeaponToEquip == nullptr) return;
-	EquippedWeapon = WeaponToEquip;//
+	TempWeapon = WeaponToEquip;
 	Character->PlaySwapMontage(WeaponToEquip);
 	CombatState = ECombatState::ECS_SwappingWeapons;
 }
 
+
+
 void UCombatComponent::FinishSwapAttachWeapons()
 {
-	if (EquippedWeapon == FirstWeapon && EquippedWeapon)
+	if (TempWeapon == FirstWeapon && TempWeapon)
 	{
 		EquipWeaponToBack2(EquippedWeapon);
-		EquipWeaponToRightHand(SecondWeapon);
+		EquipWeaponToRightHand(FirstWeapon);
 	}
-	if (EquippedWeapon == SecondWeapon && EquippedWeapon)
+	else if (TempWeapon == SecondWeapon && TempWeapon)
 	{
 		EquipWeaponToBack1(EquippedWeapon);
-		EquipWeaponToRightHand(FirstWeapon);
+		EquipWeaponToRightHand(SecondWeapon);
 	}
 }
 

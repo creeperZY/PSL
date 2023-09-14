@@ -117,6 +117,8 @@ private:
 	AWeapon* FirstWeapon;
 	UPROPERTY()
 	AWeapon* SecondWeapon;
+	UPROPERTY()
+	AWeapon* TempWeapon;
 
 	FVector TraceEnd;
 	FVector HitTarget;
