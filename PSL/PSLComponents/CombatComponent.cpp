@@ -47,7 +47,8 @@ void UCombatComponent::PickupWeapon(AWeapon* WeaponToEquip)
 	if (Character == nullptr || WeaponToEquip == nullptr) return;
 	if (CombatState != ECombatState::ECS_Unoccupied) return;
 
-	// Freely swap weapons
+	EquipWeapon(WeaponToEquip);
+	/*// Freely swap weapons
 	if (FirstWeapon != nullptr && SecondWeapon == nullptr)
 	{
 		EquipWeaponToBack2(WeaponToEquip);
@@ -75,7 +76,7 @@ void UCombatComponent::PickupWeapon(AWeapon* WeaponToEquip)
 			FirstWeapon = WeaponToEquip;
 			EquippedWeapon = nullptr;
 		}
-	}
+	}*/
 
 	// Old School 1 Rifle 2 Pistol
 	/*switch (WeaponToEquip->GetEquippedPoseType())
@@ -329,16 +330,51 @@ void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 
 void UCombatComponent::FinishSwapAttachWeapons()
 {
+	// Swap Weapons
 	if (TempWeapon == FirstWeapon && TempWeapon)
 	{
-		EquipWeaponToBack2(EquippedWeapon);
+		EquipWeaponToBack2(SecondWeapon);
 		EquipWeaponToRightHand(FirstWeapon);
 	}
 	else if (TempWeapon == SecondWeapon && TempWeapon)
 	{
-		EquipWeaponToBack1(EquippedWeapon);
+		EquipWeaponToBack1(FirstWeapon);
 		EquipWeaponToRightHand(SecondWeapon);
 	}
+	
+	// Pickup Weapon
+	else if (FirstWeapon != nullptr && SecondWeapon == nullptr)
+	{
+		EquipWeaponToBack1(FirstWeapon);
+		EquipWeaponToRightHand(TempWeapon);
+		SecondWeapon = TempWeapon; 
+	}
+	else if (FirstWeapon == nullptr) // X
+	{
+		EquipWeaponToBack2(SecondWeapon);
+		EquipWeaponToRightHand(TempWeapon);
+		FirstWeapon = TempWeapon;
+	}
+	else if (FirstWeapon != nullptr && SecondWeapon != nullptr)
+	{
+		if (EquippedWeapon)
+		{
+			DropEquippedWeapon();
+			if (EquippedWeapon == FirstWeapon) FirstWeapon = TempWeapon;
+			if (EquippedWeapon == SecondWeapon) SecondWeapon = TempWeapon;
+			EquipWeaponToRightHand(TempWeapon);
+		}
+		else // drop first weapon, of course we can drop second or UI hint equip one
+		{
+			EquippedWeapon = FirstWeapon;
+			DropEquippedWeapon();
+			FirstWeapon = nullptr;
+			EquipWeaponToBack1(TempWeapon);
+			FirstWeapon = TempWeapon;
+			EquippedWeapon = nullptr;
+		}
+	}
+	
 }
 
 void UCombatComponent::FinishEquip()
