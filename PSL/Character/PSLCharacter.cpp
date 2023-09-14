@@ -128,13 +128,13 @@ void APSLCharacter::PlayThrowGrenadeMontage()
 	}
 }
 
-void APSLCharacter::PlaySwapMontage(AWeapon* WeaponToEquip)
+void APSLCharacter::PlayEquipMontage(AWeapon* WeaponToEquip)
 {
 	if(Combat == nullptr || WeaponToEquip == nullptr) return;
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	if (AnimInstance && SwapMontage)
+	if (AnimInstance && EquipMontage)
 	{
-		AnimInstance->Montage_Play(SwapMontage);
+		AnimInstance->Montage_Play(EquipMontage);
 		//AnimInstance->Montage_SetPlayRate()
 
 		FName SectionName;
@@ -345,7 +345,7 @@ void APSLCharacter::EquipButtonPressed()
 	if (Combat && OverlappingWeapon)
 	{
 		TurnBeforeEquip();
-		Combat->EquipWeapon(OverlappingWeapon);
+		Combat->PickupWeapon(OverlappingWeapon);
 	}
 }
 

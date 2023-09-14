@@ -27,7 +27,7 @@ public:
 	void PlayReloadMontage();
 	void PlayElimMontage();
 	void PlayThrowGrenadeMontage();
-	void PlaySwapMontage(AWeapon* WeaponToEquip);
+	void PlayEquipMontage(AWeapon* WeaponToEquip);
 	void PlayUnequipMontage(AWeapon* WeaponToUnequip);
 	void PlayMeleeAttackMontage();
 	
@@ -143,7 +143,7 @@ private:
 	class UAnimMontage* ThrowGrenadeMontage;
 	
 	UPROPERTY(EditAnywhere, Category = "Combat Montage")
-	class UAnimMontage* SwapMontage;
+	class UAnimMontage* EquipMontage;
 
 	UPROPERTY(EditAnywhere, Category = "Combat Montage")
 	class UAnimMontage* UnequipMontage;

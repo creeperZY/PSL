@@ -27,7 +27,7 @@ protected:
 	/*
 	 * Weapon equip
 	 */
-	void EquipWeapon(class AWeapon* WeaponToEquip);
+	void PickupWeapon(class AWeapon* WeaponToEquip);
 	void HolsterWeapon();
 	void DropEquippedWeapon();
 	void AttachActorToRightHand(AActor* ActorToAttach);
@@ -41,15 +41,15 @@ protected:
 	void EquipFirstWeapon();
 	void EquipSecondWeapon();
 	
-	void SwapWeapons(AWeapon* WeaponToEquip);
+	void EquipWeapon(AWeapon* WeaponToEquip);
 	UFUNCTION(BlueprintCallable)
-	void FinishSwap();
+	void FinishEquip();
 	UFUNCTION(BlueprintCallable)
 	void FinishSwapAttachWeapons();
 
-	void UnequipWeapons(AWeapon* WeaponToUnequip);
+	void UnequipWeapon(AWeapon* WeaponToUnequip);
 	UFUNCTION(BlueprintCallable)
-	void FinishUnequipWeapons();
+	void FinishUnequipWeapon();
 
 
 	

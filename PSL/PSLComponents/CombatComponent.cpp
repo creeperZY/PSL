@@ -42,7 +42,7 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 }
 
 
-void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
+void UCombatComponent::PickupWeapon(AWeapon* WeaponToEquip)
 {
 	if (Character == nullptr || WeaponToEquip == nullptr) return;
 	if (CombatState != ECombatState::ECS_Unoccupied) return;
@@ -273,7 +273,7 @@ void UCombatComponent::EquipFirstWeapon()
 	{
 		if (EquippedWeapon == FirstWeapon && EquippedWeapon)
 		{
-			UnequipWeapons(EquippedWeapon);
+			UnequipWeapon(EquippedWeapon);
 			//HolsterWeapon();
 		}
 		//else if (EquippedWeapon == SecondWeapon && EquippedWeapon) // need swap animation
@@ -285,7 +285,7 @@ void UCombatComponent::EquipFirstWeapon()
 		{
 			//EquipWeaponToBack2(EquippedWeapon); 
 			//EquipWeaponToRightHand(FirstWeapon); // on back
-			SwapWeapons(FirstWeapon);
+			EquipWeapon(FirstWeapon);
 		}
 	}
 }
@@ -297,7 +297,7 @@ void UCombatComponent::EquipSecondWeapon()
 	{
 		if (EquippedWeapon == SecondWeapon && EquippedWeapon)
 		{
-			UnequipWeapons(EquippedWeapon);
+			UnequipWeapon(EquippedWeapon);
 			//HolsterWeapon();
 		}
 		//else if (EquippedWeapon == FirstWeapon && EquippedWeapon)
@@ -309,19 +309,19 @@ void UCombatComponent::EquipSecondWeapon()
 		{
 			//EquipWeaponToBack1(EquippedWeapon); 
 			//EquipWeaponToRightHand(SecondWeapon);
-			SwapWeapons(SecondWeapon);
+			EquipWeapon(SecondWeapon);
 		}
 	}
 
 }
 
 
-void UCombatComponent::SwapWeapons(AWeapon* WeaponToEquip)
+void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 {
 	if (CombatState != ECombatState::ECS_Unoccupied || Character == nullptr) return;
 	if (WeaponToEquip == nullptr) return;
 	TempWeapon = WeaponToEquip;
-	Character->PlaySwapMontage(WeaponToEquip);
+	Character->PlayEquipMontage(WeaponToEquip);
 	CombatState = ECombatState::ECS_SwappingWeapons;
 }
 
@@ -341,7 +341,7 @@ void UCombatComponent::FinishSwapAttachWeapons()
 	}
 }
 
-void UCombatComponent::FinishSwap()
+void UCombatComponent::FinishEquip()
 {
 	if (Character)
 	{
@@ -349,7 +349,7 @@ void UCombatComponent::FinishSwap()
 	}
 }
 
-void UCombatComponent::UnequipWeapons(AWeapon* WeaponToUnequip)
+void UCombatComponent::UnequipWeapon(AWeapon* WeaponToUnequip)
 {
 	if (CombatState != ECombatState::ECS_Unoccupied || Character == nullptr) return;
 	
@@ -358,7 +358,7 @@ void UCombatComponent::UnequipWeapons(AWeapon* WeaponToUnequip)
 	
 }
 
-void UCombatComponent::FinishUnequipWeapons()
+void UCombatComponent::FinishUnequipWeapon()
 {
 	if (Character)
 	{
