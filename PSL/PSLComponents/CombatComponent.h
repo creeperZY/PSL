@@ -41,12 +41,18 @@ protected:
 	void EquipFirstWeapon();
 	void EquipSecondWeapon();
 	
-	void SwapWeapons();
+	void SwapWeapons(AWeapon* WeaponToEquip);
 	UFUNCTION(BlueprintCallable)
 	void FinishSwap();
 	UFUNCTION(BlueprintCallable)
 	void FinishSwapAttachWeapons();
 
+	void UnequipWeapons(AWeapon* WeaponToUnequip);
+	UFUNCTION(BlueprintCallable)
+	void FinishUnequipWeapons();
+
+
+	
 	void SetAiming(bool bIsAiming);
 
 	
@@ -105,7 +111,7 @@ private:
 	class APSLCharacter* Character;
 	UPROPERTY()
 	class AWeapon* EquippedWeapon;
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere) // should be a pistol
 	TSubclassOf<AWeapon> DefaultWeaponClass;
 	UPROPERTY()
 	AWeapon* FirstWeapon;

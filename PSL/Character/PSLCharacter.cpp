@@ -128,9 +128,8 @@ void APSLCharacter::PlayThrowGrenadeMontage()
 	}
 }
 
-void APSLCharacter::PlaySwapMontage(AWeapon* WeaponToEquip, float PlayRate)
+void APSLCharacter::PlaySwapMontage(AWeapon* WeaponToEquip)
 {
-	/*
 	if(Combat == nullptr || WeaponToEquip == nullptr) return;
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (AnimInstance && SwapMontage)
@@ -148,9 +147,33 @@ void APSLCharacter::PlaySwapMontage(AWeapon* WeaponToEquip, float PlayRate)
 			SectionName = FName("PistolEquip");
 			break;
 		}
+
+		AnimInstance->Montage_JumpToSection(SectionName);
 	}
-	*/
-	
+}
+
+void APSLCharacter::PlayUnequipMontage(AWeapon* WeaponToUnequip)
+{
+	if(Combat == nullptr || WeaponToUnequip == nullptr) return;
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && UnequipMontage)
+	{
+		AnimInstance->Montage_Play(UnequipMontage);
+		//AnimInstance->Montage_SetPlayRate()
+
+		FName SectionName;
+		switch (WeaponToUnequip->GetEquippedPoseType())
+		{
+		case EEquippedPoseType::EEPT_RiflePose:
+			SectionName = FName("RifleUnequip");
+			break;
+		case EEquippedPoseType::EEPT_PistolPose:
+			SectionName = FName("PistolUnequip");
+			break;
+		}
+
+		AnimInstance->Montage_JumpToSection(SectionName);
+	}
 }
 
 void APSLCharacter::PlayMeleeAttackMontage()
