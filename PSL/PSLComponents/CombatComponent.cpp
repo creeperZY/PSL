@@ -48,90 +48,6 @@ void UCombatComponent::PickupWeapon(AWeapon* WeaponToEquip)
 	if (CombatState != ECombatState::ECS_Unoccupied) return;
 
 	EquipWeapon(WeaponToEquip);
-	/*// Freely swap weapons
-	if (FirstWeapon != nullptr && SecondWeapon == nullptr)
-	{
-		EquipWeaponToBack2(WeaponToEquip);
-	}
-	else if (FirstWeapon == nullptr)
-	{
-		EquipWeaponToRightHand(WeaponToEquip);
-		FirstWeapon = WeaponToEquip;
-	}
-	else if (FirstWeapon != nullptr && SecondWeapon != nullptr)
-	{
-		if (EquippedWeapon)
-		{
-			DropEquippedWeapon();
-			if (EquippedWeapon == FirstWeapon) FirstWeapon = WeaponToEquip;
-			if (EquippedWeapon == SecondWeapon) SecondWeapon = WeaponToEquip;
-			EquipWeaponToRightHand(WeaponToEquip);
-		}
-		else // drop first weapon, of course we can drop second 
-		{
-			EquippedWeapon = FirstWeapon;
-			DropEquippedWeapon();
-			FirstWeapon = nullptr;
-			EquipWeaponToBack1(WeaponToEquip);
-			FirstWeapon = WeaponToEquip;
-			EquippedWeapon = nullptr;
-		}
-	}*/
-
-	// Old School 1 Rifle 2 Pistol
-	/*switch (WeaponToEquip->GetEquippedPoseType())
-	{
-	case EEquippedPoseType::EEPT_PistolPose:
-		if (SecondWeapon != nullptr)
-		{
-			if(EquippedWeapon == SecondWeapon)
-			{
-				DropEquippedWeapon();
-				SecondWeapon = WeaponToEquip;
-				EquipWeaponToRightHand(WeaponToEquip);
-			}
-			else
-			{
-				AWeapon* TempWeapon = EquippedWeapon;
-				EquippedWeapon = SecondWeapon;
-				DropEquippedWeapon();
-				SecondWeapon = nullptr;
-				EquipWeaponToBack2(WeaponToEquip);
-				SecondWeapon = WeaponToEquip;
-				EquippedWeapon = TempWeapon;
-			}
-		}
-		else
-		{
-			EquipWeaponToBack2(WeaponToEquip);
-		}
-		break;
-	case EEquippedPoseType::EEPT_RiflePose:
-		if (FirstWeapon != nullptr)
-		{
-			if(EquippedWeapon == FirstWeapon)
-			{
-				DropEquippedWeapon();
-				FirstWeapon = WeaponToEquip;
-				EquipWeaponToRightHand(WeaponToEquip);
-			}
-			else
-			{
-				AWeapon* TempWeapon = EquippedWeapon;
-				EquippedWeapon = FirstWeapon;
-				DropEquippedWeapon();
-				FirstWeapon = nullptr;
-				EquipWeaponToBack1(WeaponToEquip);
-				FirstWeapon = WeaponToEquip;
-				EquippedWeapon = TempWeapon;
-			}
-		}
-		else
-		{
-			EquipWeaponToBack1(WeaponToEquip);
-		}
-		break;
-	}*/
 
 }
 
@@ -154,16 +70,12 @@ void UCombatComponent::HolsterWeapon()
 void UCombatComponent::EquipWeaponToRightHand(AWeapon* WeaponToEquip)
 {
 	if (WeaponToEquip == nullptr) return;
-	//DropEquippedWeapon();
 	EquippedWeapon = WeaponToEquip;
 	EquippedWeapon->SetOwner(Character);
 	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
 	AttachActorToRightHand(WeaponToEquip);
 	PlayEquipWeaponSound(WeaponToEquip);
 	ReloadEmptyWeapon();
-	//EquippedWeapon->EnableCustomDepth(false);
-	//Character->GetCharacterMovement()->bOrientRotationToMovement = false;
-	//Character->bUseControllerRotationYaw = true;
 }
 
 void UCombatComponent::EquipWeaponToBack1(AWeapon* WeaponToEquip)
@@ -275,17 +187,9 @@ void UCombatComponent::EquipFirstWeapon()
 		if (EquippedWeapon == FirstWeapon && EquippedWeapon)
 		{
 			UnequipWeapon(EquippedWeapon);
-			//HolsterWeapon();
 		}
-		//else if (EquippedWeapon == SecondWeapon && EquippedWeapon) // need swap animation
-		//{
-		//	EquipWeaponToBack2(EquippedWeapon);
-		//	EquipWeaponToRightHand(FirstWeapon);
-		//}
 		else
 		{
-			//EquipWeaponToBack2(EquippedWeapon); 
-			//EquipWeaponToRightHand(FirstWeapon); // on back
 			EquipWeapon(FirstWeapon);
 		}
 	}
@@ -299,17 +203,10 @@ void UCombatComponent::EquipSecondWeapon()
 		if (EquippedWeapon == SecondWeapon && EquippedWeapon)
 		{
 			UnequipWeapon(EquippedWeapon);
-			//HolsterWeapon();
+
 		}
-		//else if (EquippedWeapon == FirstWeapon && EquippedWeapon)
-		//{
-		//	EquipWeaponToBack1(EquippedWeapon);
-		//	EquipWeaponToRightHand(SecondWeapon);
-		//}
 		else
 		{
-			//EquipWeaponToBack1(EquippedWeapon); 
-			//EquipWeaponToRightHand(SecondWeapon);
 			EquipWeapon(SecondWeapon);
 		}
 	}
