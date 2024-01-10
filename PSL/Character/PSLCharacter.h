@@ -7,6 +7,8 @@
 #include "InputActionValue.h"
 #include "LegacyCameraShake.h"
 #include "Components/TimelineComponent.h"
+#include "PSL/AbilitySystem/PSLAbilitySystemComponent.h"
+#include "AbilitySystemInterface.h"
 #include "PSL/PSLTypes/EquippedPoses.h"
 #include "PSL/PSLTypes/TurningInPlace.h"
 #include "PSL/PSLTypes/CombatState.h"
@@ -14,13 +16,16 @@
 
 
 UCLASS(config=Game)
-class APSLCharacter : public ACharacter
+class APSLCharacter : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
 public:
 	APSLCharacter();
 	virtual void PossessedBy(AController* NewController) override;
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
+	void InitAbilityActorInfo();
 	
 public:
 	void PlayFireMontage(bool bAiming);
@@ -59,7 +64,6 @@ protected:
 	void MeleeAttackButtonPressed();
 	void ReloadButtonPressed();
 
-	
 private:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -120,10 +124,15 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	class UAbilityComponent* Ability;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UAttributeSet> AttributeSet;
+	
 	UPROPERTY(VisibleAnywhere)
 	class UPostProcessComponent* PostProcess;
 	
-
 	/*
 	 * Animation montages
 	 */

@@ -10,8 +10,8 @@ UPSLAssetManager& UPSLAssetManager::Get()
 {
 	check(GEngine);
 	
-	UPSLAssetManager* AuraAssetManager = Cast<UPSLAssetManager>(GEngine->AssetManager);
-	return *AuraAssetManager;
+	UPSLAssetManager* PSLAssetManager = Cast<UPSLAssetManager>(GEngine->AssetManager);
+	return *PSLAssetManager;
 }
 
 void UPSLAssetManager::StartInitialLoading()

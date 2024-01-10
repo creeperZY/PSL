@@ -7,7 +7,9 @@
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "PSL/EasyMacros.h"
 #include "PSL/Character/PSLCharacter.h"
 #include "PSL/PSL.h"
 #include "PSL/PlayerController/PSLPlayerController.h"
@@ -33,7 +35,7 @@ AWeapon::AWeapon()
 
 	PickupWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("PickupWidget"));
 	PickupWidget->SetupAttachment(RootComponent);
-
+	
 	EnableCustomDepth(true);
 	ShowStencilColor(0);
 
@@ -227,6 +229,7 @@ void AWeapon::OnEquippedBack()
 		PSLOwnerController = PSLOwnerController == nullptr ? Cast<APSLPlayerController>(PSLOwnerCharacter->Controller) : PSLOwnerController; 
 	}
 }
+
 
 void AWeapon::OnDropped()
 {

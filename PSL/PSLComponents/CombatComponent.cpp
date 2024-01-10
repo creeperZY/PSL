@@ -4,6 +4,7 @@
 #include "CombatComponent.h"
 
 #include "AbilityComponent.h"
+#include "Camera/CameraComponent.h"
 #include "PSL/EasyMacros.h"
 #include "PSL/Weapon/Weapon.h"
 #include "PSL/Character/PSLCharacter.h"
@@ -104,7 +105,12 @@ void UCombatComponent::DropEquippedWeapon()
 {
 	if (Character == nullptr || EquippedWeapon == nullptr) return;
 	EquippedWeapon->Dropped();
-	EquippedWeapon->GetWeaponMesh()->AddImpulse(Character->GetActorForwardVector() * EquippedWeapon->DropFactor);
+	FVector TossVelocity;
+	FVector StartLocation = EquippedWeapon->GetActorLocation();
+	FVector EndLocation = EquippedWeapon->GetActorLocation() + Character->GetFollowCamera()->GetComponentRotation().Vector() * 400.f;
+	UGameplayStatics::SuggestProjectileVelocity(this, TossVelocity, StartLocation, EndLocation, 200.f);
+	UGameplayStatics::SuggestProjectileVelocity_CustomArc(this, TossVelocity, StartLocation, EndLocation);
+	//EquippedWeapon->GetWeaponMesh()->AddImpulse(/*Character->GetActorForwardVector()*/);
 	if (EquippedWeapon == FirstWeapon) FirstWeapon = nullptr;
 	if (EquippedWeapon == SecondWeapon) SecondWeapon = nullptr;
 	EquippedWeapon = nullptr;

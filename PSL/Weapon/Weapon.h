@@ -118,7 +118,7 @@ protected:
 	float RecoilRecovery = 4.f;
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties: Scatter")
-	float RecoilRecoveryWhenStop = 40.f; //when stop fire recoil recovery faster
+	float RecoilRecoveryWhenStop = 40.f; // TODO: when stop fire recoil recovery faster
 	
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties: Scatter")
 	float CurveTimeIncreasePerFire = 1.3f;
@@ -144,6 +144,7 @@ protected:
 	class APSLPlayerController* PSLOwnerController;
 	
 private:
+	
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties: Basic")
 	USkeletalMeshComponent* WeaponMesh;
 	

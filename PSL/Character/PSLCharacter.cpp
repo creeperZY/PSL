@@ -18,7 +18,11 @@
 #include "PSL/PSLComponents/AbilityComponent.h"
 #include "Components/PrimitiveComponent.h"
 #include "PSL/PSL.h"
+#include "PSL/AbilitySystem/PSLAttributeSet.h"
+#include "PSL/GameMode/PSLGameMode.h"
 #include "PSL/PlayerController/PSLPlayerController.h"
+#include "PSL/PlayerState/PSLPlayerState.h"
+#include "PSL/UI/HUD/PSLHUD.h"
 #include "PSL/Weapon/ProjectileTossGrenade.h"
 
 
@@ -75,15 +79,63 @@ APSLCharacter::APSLCharacter()
 	AttachedGrenade->SetupAttachment(GetMesh(), FName("LeftHandSocketGrenade"));
 	AttachedGrenade->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
+	AbilitySystemComponent = CreateDefaultSubobject<UPSLAbilitySystemComponent>("AbilitySystemComponent");
+	AttributeSet = CreateDefaultSubobject<UPSLAttributeSet>("AttributeSet");
+	
 }
 
 
 void APSLCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
+	FString str(NewController->GetName());
+	//PRINT_ONE_VAR("%s", *NewController->GetName())
+	InitAbilityActorInfo();
+}
 
-	//APSLGameMode* GameModeRef = Cast<APSLGameMode>(GetWorld()->GetAuthGameMode());
-	//check(GameModeRef);
+void APSLCharacter::BeginPlay()
+{
+	// Call the base class  
+	Super::BeginPlay();
+
+	//Add Input Mapping Context
+	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+		{
+			Subsystem->AddMappingContext(InputMappingContext, 0);
+		}
+	}
+	
+	SetShowXRayWhenCharacterOccluded();
+	SetTurnDelegate();
+	
+}
+
+
+UAbilitySystemComponent* APSLCharacter::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
+}
+
+void APSLCharacter::InitAbilityActorInfo()
+{
+	APSLGameMode* PSLGameMode = Cast<APSLGameMode>(GetWorld()->GetAuthGameMode());
+	check(PSLGameMode);
+	AbilitySystemComponent->InitAbilityActorInfo(this, this);
+	PSLGameMode->GetAbilitySystemComponent()->InitAbilityActorInfo(PSLGameMode, this);
+	//AbilitySystemComponent = AuraPlayerState->GetAbilitySystemComponent();
+	//AttributeSet = AuraPlayerState->GetAttributeSet();
+	if (APSLPlayerController* PSLPlayerController = Cast<APSLPlayerController>(GetController()))
+	{
+		APSLPlayerState* PSLPlayerState = GetPlayerState<APSLPlayerState>();
+		APSLHUD* PSLHUD = Cast<APSLHUD>(PSLPlayerController->GetHUD());
+		if(PSLHUD && PSLPlayerState)
+		{
+			PSLHUD->InitOverlay(PSLGameMode, PSLPlayerController, PSLPlayerState, AbilitySystemComponent, AttributeSet);
+		}
+	}
+
 
 }
 
@@ -199,25 +251,6 @@ void APSLCharacter::PlayMeleeAttackMontage()
 	}
 }
 
-void APSLCharacter::BeginPlay()
-{
-	// Call the base class  
-	Super::BeginPlay();
-
-	//Add Input Mapping Context
-	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
-	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
-		{
-			Subsystem->AddMappingContext(InputMappingContext, 0);
-		}
-	}
-	
-	SetShowXRayWhenCharacterOccluded();
-	SetTurnDelegate();
-	
-
-}
 
 void APSLCharacter::Tick(float DeltaSeconds)
 {
@@ -533,6 +566,7 @@ void APSLCharacter::AimOffset(float DeltaTime)
 		FRotator DeltaAimRotation = UKismetMathLibrary::NormalizedDeltaRotator(CurrentAimRotation, StartingAimRotation);
 		AO_Yaw = DeltaAimRotation.Yaw;
 
+		// when not moving, if throwing grenades or melee, turn first
 		bool bCombatStateShouldTurn = Combat->CombatState == ECombatState::ECS_ThrowingGrenade
 								   || Combat->CombatState == ECombatState::ECS_MeleeAttack;
 		if (bCombatStateShouldTurn)
@@ -547,15 +581,16 @@ void APSLCharacter::AimOffset(float DeltaTime)
 			InterpAO_Yaw = AO_Yaw;
 		}
 		bUseControllerRotationYaw = true;
+		GetCharacterMovement()->bOrientRotationToMovement = false; //
 		TurnInPlace(DeltaTime);
 	}
-	// throwing grenades or melee
 	if (Speed > 0.f || bIsInAir) // running, or jumping
 	{
         StartingAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
         AO_Yaw = FMath::FInterpTo(AO_Yaw, 0.f, DeltaTime, 15.f);
 		//AO_Yaw = 0.f;
 		bUseControllerRotationYaw = true;
+		GetCharacterMovement()->bOrientRotationToMovement = false; //
         TurningInPlace = ETurningInPlace::ETIP_NotTurning;
 	}
 	AO_Pitch = FMath::FInterpTo(AO_Pitch, GetBaseAimRotation().Pitch, DeltaTime, 15.f);
