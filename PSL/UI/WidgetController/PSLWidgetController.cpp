@@ -11,3 +11,11 @@ void UPSLWidgetController::SetWidgetControllerParams(const FWidgetControllerPara
 	AbilitySystemComponent = WCParams.AbilitySystemComponent;
 	AttributeSet = WCParams.AttributeSet;
 }
+
+void UPSLWidgetController::BroadcastInitialValues()
+{
+}
+
+void UPSLWidgetController::BindCallbacksToDependencies()
+{
+}

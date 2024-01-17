@@ -13,14 +13,14 @@ UOverlayWidgetController* APSLHUD::GetOverlayWidgetController(const FWidgetContr
 	{
 		OverlayWidgetController = NewObject<UOverlayWidgetController>(this, OverlayWidgetControllerClass);
 		OverlayWidgetController->SetWidgetControllerParams(WCParams);
+		OverlayWidgetController->BindCallbacksToDependencies();
 
 		return OverlayWidgetController;
 	}
 	return OverlayWidgetController;
 }
 
-void APSLHUD::InitOverlay(AGameMode* GM, APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC,
-	UAttributeSet* AS)
+void APSLHUD::InitOverlay(AGameMode* GM, APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS)
 {
 	checkf(OverlayWidgetClass, TEXT("Overlay Widget Class uninitialized, please fill out BP_PSLHUD"));
 	checkf(OverlayWidgetControllerClass, TEXT("Overlay Widget Controller Class uninitialized, please fill out BP_PSLHUD"))
@@ -31,6 +31,7 @@ void APSLHUD::InitOverlay(AGameMode* GM, APlayerController* PC, APlayerState* PS
 	UOverlayWidgetController* WidgetController = GetOverlayWidgetController(WidgetControllerParams);
 
 	OverlayWidget->SetWidgetController(WidgetController);
+	WidgetController->BroadcastInitialValues();
 
 	Widget->AddToViewport();
 }

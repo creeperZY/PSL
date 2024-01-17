@@ -139,6 +139,7 @@ private:
 	void StartFireTimer();
 	void FireTimerFinished();
 	bool CanFire();
+	void RecoilRecovery(float DeltaTime);
 	
 	
 	ECombatState CombatState = ECombatState::ECS_Unoccupied;

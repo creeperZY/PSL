@@ -45,6 +45,19 @@ void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 
+	/*switch (EquippedPoseType)
+	{
+	case EEquippedPoseType::EEPT_RiflePose:
+		DropFactor = 600.f;
+		break;
+	case EEquippedPoseType::EEPT_PistolPose:
+		DropFactor = 200.f;
+		break;
+	case EEquippedPoseType::EEPT_MeleePose:
+		DropFactor = 400.f;
+		break;
+	}*/
+	
 	AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	AreaSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 	AreaSphere->SetCollisionResponseToChannel(ECC_SkeletalMesh, ECollisionResponse::ECR_Overlap);
@@ -65,7 +78,7 @@ void AWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	CurveDeltaTimeDecrease(DeltaTime);
+	//CurveDeltaTimeDecrease(DeltaTime);
 }
 
 void AWeapon::CurveTimeIncreaseOnce()
@@ -291,7 +304,9 @@ FVector AWeapon::TraceEndWithScatter(const FVector& HitTarget)
 	const FVector RandVec = UKismetMathLibrary::RandomUnitVector() * FMath::FRandRange(0.f, GetScatterRadius());
 	const FVector EndLoc = SphereCenter + RandVec;
 	const FVector ToEndLoc = EndLoc - TraceStart;
-
+	
+	PRINT_ONE_VAR("Scatter Radius: %f", GetScatterRadius())
+	DrawDebugSphere(GetWorld(), HitTarget, GetScatterRadius(), 12, FColor::Red, false);
 	/*
 	DrawDebugSphere(GetWorld(), SphereCenter, SphereRadius, 12, FColor::Red, true);
 	DrawDebugSphere(GetWorld(), EndLoc, 4.f, 12, FColor::Orange, true);

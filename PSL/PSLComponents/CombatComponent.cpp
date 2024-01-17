@@ -40,6 +40,8 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 		else HitTarget = HitResult.TraceEnd;
 		DRAW_SPHERE_AT_LOCATION(HitTarget)
 	}
+
+	RecoilRecovery(DeltaTime);
 }
 
 
@@ -105,12 +107,8 @@ void UCombatComponent::DropEquippedWeapon()
 {
 	if (Character == nullptr || EquippedWeapon == nullptr) return;
 	EquippedWeapon->Dropped();
-	FVector TossVelocity;
-	FVector StartLocation = EquippedWeapon->GetActorLocation();
-	FVector EndLocation = EquippedWeapon->GetActorLocation() + Character->GetFollowCamera()->GetComponentRotation().Vector() * 400.f;
-	UGameplayStatics::SuggestProjectileVelocity(this, TossVelocity, StartLocation, EndLocation, 200.f);
-	UGameplayStatics::SuggestProjectileVelocity_CustomArc(this, TossVelocity, StartLocation, EndLocation);
-	//EquippedWeapon->GetWeaponMesh()->AddImpulse(/*Character->GetActorForwardVector()*/);
+	
+	EquippedWeapon->GetWeaponMesh()->AddImpulse(Character->GetFollowCamera()->GetComponentRotation().Vector() * EquippedWeapon->DropFactor);
 	if (EquippedWeapon == FirstWeapon) FirstWeapon = nullptr;
 	if (EquippedWeapon == SecondWeapon) SecondWeapon = nullptr;
 	EquippedWeapon = nullptr;
@@ -469,6 +467,14 @@ bool UCombatComponent::CanFire()
 	if (EquippedWeapon == nullptr) return false;
 	return !EquippedWeapon->IsEmpty() && bTimeUpCanFire && CombatState == ECombatState::ECS_Unoccupied
 	&& !Character->GetCharacterMovement()->IsFalling();
+}
+
+void UCombatComponent::RecoilRecovery(float DeltaTime)
+{
+	if (EquippedWeapon && bTimeUpCanFire && !bFireButtonPressed)
+	{
+		EquippedWeapon->CurveDeltaTimeDecrease(DeltaTime);
+	}
 }
 
 bool UCombatComponent::ShouldSwapWeapons()

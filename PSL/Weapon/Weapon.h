@@ -77,7 +77,8 @@ public:
 	UPROPERTY(EditAnywhere, Category="Weapon Properties: Scatter")
 	bool bUseScatter = false;
 
-
+	void CurveDeltaTimeDecrease(float DeltaTime);
+	
 protected:
 	virtual void BeginPlay() override;
 	virtual void OnWeaponStateSet();
@@ -115,20 +116,16 @@ protected:
 	UCurveFloat* ScatterCurve;
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties: Scatter")
-	float RecoilRecovery = 4.f;
-
-	UPROPERTY(EditAnywhere, Category = "Weapon Properties: Scatter")
-	float RecoilRecoveryWhenStop = 40.f; // TODO: when stop fire recoil recovery faster
+	float RecoilRecovery = 1.5f;
 	
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties: Scatter")
-	float CurveTimeIncreasePerFire = 1.3f;
+	float CurveTimeIncreasePerFire = 0.15f;
 	
-	float FirePressingTime= 0.f;
 	float CurveTimeCurrent = 0.f;
 	float MinCurveTime;
 	float MaxCurveTime;
+
 	void CurveTimeIncreaseOnce();
-	void CurveDeltaTimeDecrease(float DeltaTime);
 	float GetScatterRadius();
 	
 	// Weapon Properties
