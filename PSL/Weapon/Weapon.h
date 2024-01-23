@@ -46,6 +46,8 @@ public:
 	void AddAmmo(int32 AmmoToAdd);
 	FVector TraceEndWithScatter(const FVector& HitTarget);
 
+	void PlayReloadSliderAninmation();
+
 	// Zoomed FOV while aiming
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties: Aim")
 	float ZoomedFOV = 40.f;
@@ -66,6 +68,15 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties: FX")
 	class USoundCue* EquipSound;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties: FX")
+	USoundCue* ReloadEjectSound;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties: FX")
+	USoundCue* ReloadInsertSound;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties: FX")
+	USoundCue* ReloadSliderSound;
 	
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties: Basic")
 	EFireType FireType;
@@ -162,6 +173,9 @@ private:
 	
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties: FX")
 	class UAnimationAsset* FireAnimation;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties: FX")
+	UAnimationAsset* SliderAnimation;
 
 	//UPROPERTY(EditAnywhere, Category = "Weapon Properties: FX")
 	//class UParticleSystem* FireEffect;

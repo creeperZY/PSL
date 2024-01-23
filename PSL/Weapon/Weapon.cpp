@@ -316,6 +316,14 @@ FVector AWeapon::TraceEndWithScatter(const FVector& HitTarget)
 	return FVector(TraceStart + ToEndLoc * TRACE_LENGTH / ToEndLoc.Size());
 }
 
+void AWeapon::PlayReloadSliderAninmation()
+{
+	if (SliderAnimation)
+	{
+		WeaponMesh->PlayAnimation(SliderAnimation, false);
+	}
+}
+
 void AWeapon::EnableCustomDepth(bool bEnable)
 {
 	if (WeaponMesh)

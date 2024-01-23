@@ -165,6 +165,26 @@ void APSLCharacter::PlayFireMontage(bool bAiming)
 
 void APSLCharacter::PlayReloadMontage()
 {
+	if(Combat == nullptr || Combat->EquippedWeapon == nullptr) return;
+	
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && ReloadMontage)
+	{
+		AnimInstance->Montage_Play(ReloadMontage);
+		FName SectionName;
+		
+		switch (Combat->EquippedWeapon->GetEquippedPoseType())
+		{
+		case EEquippedPoseType::EEPT_RiflePose:
+			SectionName = FName("ReloadRifle");
+			break;
+		case EEquippedPoseType::EEPT_PistolPose:
+			SectionName = FName("ReloadPistol");
+			break;
+		}
+
+		AnimInstance->Montage_JumpToSection(SectionName);
+	}
 }
 
 void APSLCharacter::PlayElimMontage()

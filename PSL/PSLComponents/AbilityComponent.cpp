@@ -37,9 +37,9 @@ void UAbilityComponent::BeginPlay()
 		PRINT_STR("NO HAS\n");
 	}
 	if (Character == nullptr) return;
-	Character->GetCharacterMovement()->JumpZVelocity = JumpZVelocity;
-	Character->GetCharacterMovement()->MaxWalkSpeed = UnequippedWalkSpeed;
-	Character->GetCharacterMovement()->MaxWalkSpeedCrouched = UnequippedWalkSpeedCrouched;
+	//Character->GetCharacterMovement()->JumpZVelocity = JumpZVelocity;
+	//Character->GetCharacterMovement()->MaxWalkSpeed = UnequippedWalkSpeed;
+	//Character->GetCharacterMovement()->MaxWalkSpeedCrouched = UnequippedWalkSpeedCrouched;
 }
 
 

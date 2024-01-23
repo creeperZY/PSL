@@ -32,12 +32,14 @@ protected:
 	void DropEquippedWeapon();
 	void AttachActorToRightHand(AActor* ActorToAttach);
 	void AttachActorToLeftHand(AActor* ActorToAttach);
-	void AttachActorToBack1(AActor* ActorToAttach); // maybe need 2?
+	void AttachActorToBack1(AActor* ActorToAttach);
 	void AttachActorToBack2(AActor* ActorToAttach);
+	void AttachActorToPelvis1(AActor* ActorToAttach);
+	void AttachActorToPelvis2(AActor* ActorToAttach);
 	void PlayEquipWeaponSound(AWeapon* WeaponToEquip);
 	void EquipWeaponToRightHand(AWeapon* WeaponToEquip);
-	void EquipWeaponToBack1(AWeapon* WeaponToEquip);
-	void EquipWeaponToBack2(AWeapon* WeaponToEquip);
+	void EquipWeaponToSlot1(AWeapon* WeaponToEquip);
+	void EquipWeaponToSlot2(AWeapon* WeaponToEquip);
 	void EquipFirstWeapon();
 	void EquipSecondWeapon();
 	
@@ -51,6 +53,14 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void FinishUnequipWeapon();
 
+	UFUNCTION(BlueprintCallable)
+	void PlayReloadEjectSound();
+	UFUNCTION(BlueprintCallable)
+	void PlayReloadInsertSound();
+	UFUNCTION(BlueprintCallable)
+	void PlayReloadSliderSound();
+	UFUNCTION(BlueprintCallable)
+	void PlayReloadSliderAnimation();
 
 	
 	void SetAiming(bool bIsAiming);

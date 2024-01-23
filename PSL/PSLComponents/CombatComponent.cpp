@@ -58,12 +58,12 @@ void UCombatComponent::HolsterWeapon()
 {
 	if (EquippedWeapon && EquippedWeapon == FirstWeapon)
 	{
-		AttachActorToBack1(EquippedWeapon);
+		EquipWeaponToSlot1(EquippedWeapon);
 		EquippedWeapon = nullptr;
 	}
 	else if (EquippedWeapon && EquippedWeapon == SecondWeapon)
 	{
-		AttachActorToBack2(EquippedWeapon);
+		EquipWeaponToSlot2(EquippedWeapon);
 		EquippedWeapon = nullptr;
 	}
 	Character->GetCharacterMovement()->bOrientRotationToMovement = true;
@@ -81,25 +81,41 @@ void UCombatComponent::EquipWeaponToRightHand(AWeapon* WeaponToEquip)
 	ReloadEmptyWeapon();
 }
 
-void UCombatComponent::EquipWeaponToBack1(AWeapon* WeaponToEquip)
+void UCombatComponent::EquipWeaponToSlot1(AWeapon* WeaponToEquip)
 {
 	if (WeaponToEquip == nullptr) return; 
 	FirstWeapon = WeaponToEquip;
 	FirstWeapon->SetOwner(Character);
 	FirstWeapon->SetWeaponState(EWeaponState::EWS_EquippedBack);
-	AttachActorToBack1(WeaponToEquip);
-	PlayEquipWeaponSound(WeaponToEquip);
+	switch (WeaponToEquip->GetEquippedPoseType())
+	{
+	case EEquippedPoseType::EEPT_RiflePose:
+		AttachActorToBack1(WeaponToEquip);
+		break;
+	case EEquippedPoseType::EEPT_PistolPose:
+		AttachActorToPelvis1(WeaponToEquip);
+		break;
+	}
+	//PlayEquipWeaponSound(WeaponToEquip);
 }
 
 
-void UCombatComponent::EquipWeaponToBack2(AWeapon* WeaponToEquip)
+void UCombatComponent::EquipWeaponToSlot2(AWeapon* WeaponToEquip)
 {
 	if (WeaponToEquip == nullptr) return; 
 	SecondWeapon = WeaponToEquip;
 	SecondWeapon->SetOwner(Character);
 	SecondWeapon->SetWeaponState(EWeaponState::EWS_EquippedBack);
-	AttachActorToBack2(WeaponToEquip);
-	PlayEquipWeaponSound(WeaponToEquip);
+	switch (WeaponToEquip->GetEquippedPoseType())
+	{
+	case EEquippedPoseType::EEPT_RiflePose:
+		AttachActorToBack2(WeaponToEquip);
+		break;
+	case EEquippedPoseType::EEPT_PistolPose:
+		AttachActorToPelvis2(WeaponToEquip);
+		break;
+	}
+	//PlayEquipWeaponSound(WeaponToEquip);
 }
 
 
@@ -171,6 +187,26 @@ void UCombatComponent::AttachActorToBack2(AActor* ActorToAttach)
 	}
 }
 
+void UCombatComponent::AttachActorToPelvis1(AActor* ActorToAttach)
+{
+	if (Character == nullptr || Character->GetMesh() == nullptr || ActorToAttach == nullptr) return;
+	const USkeletalMeshSocket* BackpackSocket = Character->GetMesh()->GetSocketByName(FName("PelvisSocket1"));
+	if (BackpackSocket)
+	{
+		BackpackSocket->AttachActor(ActorToAttach, Character->GetMesh());
+	}
+}
+
+void UCombatComponent::AttachActorToPelvis2(AActor* ActorToAttach)
+{
+	if (Character == nullptr || Character->GetMesh() == nullptr || ActorToAttach == nullptr) return;
+	const USkeletalMeshSocket* BackpackSocket = Character->GetMesh()->GetSocketByName(FName("PelvisSocket2"));
+	if (BackpackSocket)
+	{
+		BackpackSocket->AttachActor(ActorToAttach, Character->GetMesh());
+	}
+}
+
 void UCombatComponent::PlayEquipWeaponSound(AWeapon* WeaponToEquip)
 {
 	if(Character && WeaponToEquip && WeaponToEquip->EquipSound)
@@ -180,6 +216,53 @@ void UCombatComponent::PlayEquipWeaponSound(AWeapon* WeaponToEquip)
 			WeaponToEquip->EquipSound,
 			Character->GetActorLocation()
 		);
+	}
+}
+
+void UCombatComponent::PlayReloadEjectSound()
+{
+	if(Character && Character->IsWeaponEquipped() && EquippedWeapon->ReloadEjectSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(
+			this,
+			EquippedWeapon->ReloadEjectSound,
+			EquippedWeapon->GetActorLocation()
+		);
+	}
+}
+
+void UCombatComponent::PlayReloadInsertSound()
+{
+	if(Character && Character->IsWeaponEquipped() && EquippedWeapon->ReloadInsertSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(
+			this,
+			EquippedWeapon->ReloadInsertSound,
+			EquippedWeapon->GetActorLocation()
+		);
+	}
+}
+
+void UCombatComponent::PlayReloadSliderSound()
+{
+	
+	if(Character && Character->IsWeaponEquipped() && EquippedWeapon->ReloadSliderSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(
+			this,
+			EquippedWeapon->ReloadSliderSound,
+			EquippedWeapon->GetActorLocation()
+		);
+		PlayReloadSliderAnimation();
+	}
+	
+}
+
+void UCombatComponent::PlayReloadSliderAnimation()
+{
+	if(Character && Character->IsWeaponEquipped())
+	{
+		EquippedWeapon->PlayReloadSliderAninmation();
 	}
 }
 
@@ -207,7 +290,6 @@ void UCombatComponent::EquipSecondWeapon()
 		if (EquippedWeapon == SecondWeapon && EquippedWeapon)
 		{
 			UnequipWeapon(EquippedWeapon);
-
 		}
 		else
 		{
@@ -234,25 +316,25 @@ void UCombatComponent::FinishSwapAttachWeapons()
 	// Swap Weapons
 	if (TempWeapon == FirstWeapon && TempWeapon)
 	{
-		EquipWeaponToBack2(SecondWeapon);
+		EquipWeaponToSlot2(SecondWeapon);
 		EquipWeaponToRightHand(FirstWeapon);
 	}
 	else if (TempWeapon == SecondWeapon && TempWeapon)
 	{
-		EquipWeaponToBack1(FirstWeapon);
+		EquipWeaponToSlot1(FirstWeapon);
 		EquipWeaponToRightHand(SecondWeapon);
 	}
 	
 	// Pickup Weapon
 	else if (FirstWeapon != nullptr && SecondWeapon == nullptr)
 	{
-		EquipWeaponToBack1(FirstWeapon);
+		EquipWeaponToSlot1(FirstWeapon);
 		EquipWeaponToRightHand(TempWeapon);
 		SecondWeapon = TempWeapon; 
 	}
 	else if (FirstWeapon == nullptr) // X
 	{
-		EquipWeaponToBack2(SecondWeapon);
+		EquipWeaponToSlot2(SecondWeapon);
 		EquipWeaponToRightHand(TempWeapon);
 		FirstWeapon = TempWeapon;
 	}
@@ -270,7 +352,7 @@ void UCombatComponent::FinishSwapAttachWeapons()
 			EquippedWeapon = FirstWeapon;
 			DropEquippedWeapon();
 			FirstWeapon = nullptr;
-			EquipWeaponToBack1(TempWeapon);
+			EquipWeaponToSlot1(TempWeapon);
 			FirstWeapon = TempWeapon;
 			EquippedWeapon = nullptr;
 		}
@@ -428,15 +510,24 @@ void UCombatComponent::FireShotgun()
 void UCombatComponent::Reload()
 {
 	if (CombatState != ECombatState::ECS_Unoccupied || EquippedWeapon == nullptr) return;
-	
+	if (Character && EquippedWeapon)
+	{
+		CombatState = ECombatState::ECS_Reloading;
+		Character->PlayReloadMontage();
+	}
 }
 
 void UCombatComponent::ReloadEmptyWeapon()
 {
+	if (EquippedWeapon && EquippedWeapon->IsEmpty())
+	{
+		Reload();
+	}
 }
 
 void UCombatComponent::FinishReloading()
 {
+	CombatState = ECombatState::ECS_Unoccupied;
 }
 
 
