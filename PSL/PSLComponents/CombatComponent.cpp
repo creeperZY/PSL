@@ -13,6 +13,7 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "PSL/PSL.h"
 #include "PSL/Weapon/ProjectileTossGrenade.h"
 #include "Sound/SoundCue.h"
 
@@ -603,7 +604,7 @@ void UCombatComponent::LaunchGrenade()
 		Character->GetAttachedGrenade())
 	{
 		const FVector StartingLocation = Character->GetAttachedGrenade()->GetComponentLocation();
-		FVector ToTarget = HitTarget - StartingLocation;
+		const FVector ToTarget = HitTarget - StartingLocation;
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Owner = Character;
 		SpawnParams.Instigator = Character;
@@ -616,9 +617,28 @@ void UCombatComponent::LaunchGrenade()
 				ToTarget.Rotation(),
 				SpawnParams
 			);
+			
+			const FVector GrenadeImpulse =
+				(Character->GetActorUpVector() * 0.5f
+				+ Character->GetActorForwardVector().GetSafeNormal()
+				+ ToTarget.GetSafeNormal())
+				.GetSafeNormal() * FMath::Clamp(ToTarget.Length(), 150.f, 600.f);
+			if (TossGrenade) TossGrenade->GetProjectileMesh()->AddImpulse(GrenadeImpulse);
 		}
 	}
 	
+}
+
+float UCombatComponent::CalcThrowGrenadeMontagePlayRate()
+{
+	if (Character->GetAttachedGrenade())
+	{
+		const FVector StartingLocation = Character->GetAttachedGrenade()->GetComponentLocation();
+		const FVector ToTarget = HitTarget - StartingLocation;
+		return FMath::Clamp(FMath::Clamp(ToTarget.Length(), 0.f, 500.f) / 500.f, 0.7f, 1.f);
+	}
+	return 1.f;
+
 }
 
 void UCombatComponent::MeleeAttack()
@@ -642,26 +662,23 @@ void UCombatComponent::MeleeAttackConfirm()
 	if (Character == nullptr || Character->GetCombat() == nullptr || World == nullptr || Socket == nullptr) return;
 	
 	FTransform SocketTransform = Socket->GetSocketTransform(Character->GetMesh());
-	FVector Start = Character->GetActorLocation();
-	FVector End = SocketTransform.GetLocation() + Character->GetActorForwardVector() * (40.f);
-
+	FVector Start =SocketTransform.GetLocation();
+	FVector End = Start;
 	FHitResult TraceHitResult;
-	FCollisionQueryParams Params;
-	Params.AddIgnoredActor(Character);
-	if (Character->GetCombat()->FirstWeapon)
-		Params.AddIgnoredActor(Character->GetCombat()->FirstWeapon);
-	if (Character->GetCombat()->SecondWeapon)
-		Params.AddIgnoredActor(Character->GetCombat()->SecondWeapon);
-	Params.AddIgnoredActor(Character->GetEquippedWeapon());
-	World->LineTraceSingleByChannel(
-		TraceHitResult,
+	ETraceTypeQuery Query = UEngineTypes::ConvertToTraceType(ECC_TraceMelee);
+	UKismetSystemLibrary::SphereTraceSingle(
+		this,
 		Start,
 		End,
-		ECollisionChannel::ECC_Visibility
-		,Params
-	);
+		25.f,
+		Query,
+		false,
+		TArray<AActor*>(),
+		EDrawDebugTrace::ForDuration,
+		TraceHitResult,
+		true);
 	
-	APSLCharacter* OtherPSLCharacter = Cast<APSLCharacter>(TraceHitResult.GetActor());
+	const APSLCharacter* OtherPSLCharacter = Cast<APSLCharacter>(TraceHitResult.GetActor());
 	if (OtherPSLCharacter)
 	{
 		PRINT_STR("melee HIT")
@@ -675,9 +692,6 @@ void UCombatComponent::MeleeAttackConfirm()
 	{
 		PRINT_STR("void")
 	}
-	
-	DrawDebugSphere(GetWorld(), Start,2.f, 12, FColor::Blue, false, 12.f);
-	DrawDebugSphere(GetWorld(), End, 2.f, 12, FColor::Cyan, false,12.f);
 }
 
 void UCombatComponent::MeleeAttackFinished()

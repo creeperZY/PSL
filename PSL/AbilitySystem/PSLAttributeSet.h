@@ -23,6 +23,8 @@ class PSL_API UPSLAttributeSet : public UAttributeSet
 public:
 	UPSLAttributeSet();
 
+	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
+
 	UPROPERTY(BlueprintReadOnly, Category= "Vital Attributes")
 	FGameplayAttributeData Health;
 	ATTRIBUTE_ACCESSORS(UPSLAttributeSet, Health);

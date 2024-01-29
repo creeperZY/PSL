@@ -10,3 +10,4 @@
 
 // Custom trace channels
 #define ECC_TracePickUp ECollisionChannel::ECC_GameTraceChannel3 // No Use
+#define ECC_TraceMelee ECollisionChannel::ECC_GameTraceChannel4

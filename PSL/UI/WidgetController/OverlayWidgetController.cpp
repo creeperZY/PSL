@@ -8,7 +8,6 @@
 void UOverlayWidgetController::BroadcastInitialValues()
 {
 	const UPSLAttributeSet* PSLAttributeSet = CastChecked<UPSLAttributeSet>(AttributeSet);
-	
 	OnHealthChanged.Broadcast(PSLAttributeSet->GetHealth());
 	OnMaxHealthChanged.Broadcast(PSLAttributeSet->GetMaxHealth());
 }

@@ -193,10 +193,12 @@ void APSLCharacter::PlayElimMontage()
 
 void APSLCharacter::PlayThrowGrenadeMontage()
 {
+	if (Combat == nullptr) return;
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (AnimInstance && ThrowGrenadeMontage)
 	{
 		AnimInstance->Montage_Play(ThrowGrenadeMontage);
+		AnimInstance->Montage_SetPlayRate(ThrowGrenadeMontage, Combat->CalcThrowGrenadeMontagePlayRate());
 	}
 }
 

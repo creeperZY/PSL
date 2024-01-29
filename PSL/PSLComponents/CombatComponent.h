@@ -88,6 +88,7 @@ protected:
 	void ShowAttachedGrenade(bool bShowGrenade);
 	UFUNCTION(BlueprintCallable)
 	void LaunchGrenade();
+	float CalcThrowGrenadeMontagePlayRate();
 	UFUNCTION(BlueprintCallable)
 	void ThrowGrenadeFinished();
 	
