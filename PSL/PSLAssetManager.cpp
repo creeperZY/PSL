@@ -4,7 +4,8 @@
 #include "PSLAssetManager.h"
 
 #include "AbilitySystemGlobals.h"
-#include "PSLGameplayTags.h"
+#include "PSLAbilityGameplayTags.h"
+#include "PSLMessageGameplayTags.h"
 
 UPSLAssetManager& UPSLAssetManager::Get()
 {
@@ -17,7 +18,8 @@ UPSLAssetManager& UPSLAssetManager::Get()
 void UPSLAssetManager::StartInitialLoading()
 {
 	Super::StartInitialLoading();
-	FPSLGameplayTags::InitializeNativeGameplayTags();
+	FPSLAbilityGameplayTags::InitializeNativeGameplayTags();
+	FPSLMessageGameplayTags::InitializeNativeGameplayTags();
 
 	// This is required to use Target Data!
 	UAbilitySystemGlobals::Get().InitGlobalData();

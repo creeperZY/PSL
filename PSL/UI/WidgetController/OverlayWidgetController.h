@@ -6,8 +6,35 @@
 #include "PSLWidgetController.h"
 #include "OverlayWidgetController.generated.h"
 
+
+USTRUCT(BlueprintType)
+struct FUIWidgetRow : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FGameplayTag MessageTag = FGameplayTag();
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FText Message = FText();
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TSubclassOf<class UPSLUserWidget> MessageWidget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UTexture2D* Image = nullptr;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float AmountToAdd = 1.f;
+};
+
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthChangedSignature, float, NewHealth);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMaxHealthChangedSignature, float, NewMaxHealth);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMessageWidgetRowSignature, FUIWidgetRow, Row);
+
+
 
 /**
  * 
@@ -17,6 +44,7 @@ class PSL_API UOverlayWidgetController : public UPSLWidgetController
 {
 	GENERATED_BODY()
 public:
+	
 	virtual void BroadcastInitialValues() override;
 	virtual void BindCallbacksToDependencies() override;
 
@@ -26,7 +54,23 @@ public:
 	UPROPERTY(BlueprintAssignable, Category="GAS|Attributes")
 	FOnMaxHealthChangedSignature OnMaxHealthChanged;
 
+	UPROPERTY(BlueprintAssignable, Category="GAS|Attributes")
+	FMessageWidgetRowSignature MessageWidgetRowDelegate;
+	
 protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="WidgetData")
+	TObjectPtr<UDataTable> MessageWidgetDataTable;
+	
 	void HealthChanged(const FOnAttributeChangeData& Data) const;
 	void MaxHealthChanged(const FOnAttributeChangeData& Data) const;
+
+	template<typename T>
+	T* GetDataTableRowByTag(UDataTable* DataTable, const FGameplayTag& Tag);
 };
+
+template <typename T>
+T* UOverlayWidgetController::GetDataTableRowByTag(UDataTable* DataTable, const FGameplayTag& Tag)
+{
+	if (DataTable == nullptr) return nullptr;
+	return DataTable->FindRow<T>(Tag.GetTagName(), TEXT(""));
+}

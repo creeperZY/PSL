@@ -90,7 +90,7 @@ void AWeapon::CurveTimeIncreaseOnce()
 void AWeapon::CurveDeltaTimeDecrease(float DeltaTime)
 {
 	if (!bUseScatter) return;
-	float DeltaDecrease = RecoilRecovery * DeltaTime;
+	const float DeltaDecrease = RecoilRecovery * DeltaTime;
 	CurveTimeCurrent = FMath::Clamp(CurveTimeCurrent - DeltaDecrease, MinCurveTime, MaxCurveTime);
 }
 
@@ -212,12 +212,20 @@ void AWeapon::OnEquipped()
 		WeaponMesh->SetEnableGravity(true);
 		WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	}
-
-	ShowStencilColor(255);
+	
 	PSLOwnerCharacter = PSLOwnerCharacter == nullptr ? Cast<APSLCharacter>(GetOwner()) : PSLOwnerCharacter;
 	if (PSLOwnerCharacter)
 	{
-		PSLOwnerController = PSLOwnerController == nullptr ? Cast<APSLPlayerController>(PSLOwnerCharacter->Controller) : PSLOwnerController; 
+		PSLOwnerController = PSLOwnerController == nullptr ? Cast<APSLPlayerController>(PSLOwnerCharacter->Controller) : PSLOwnerController;
+
+		if (PSLOwnerController)
+		{
+			ShowStencilColor(0);
+		}
+		else
+		{
+			ShowStencilColor(255);
+		}
 	}
 }
 
@@ -235,12 +243,21 @@ void AWeapon::OnEquippedBack()
 		WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	}
 
-	ShowStencilColor(255);
 	PSLOwnerCharacter = PSLOwnerCharacter == nullptr ? Cast<APSLCharacter>(GetOwner()) : PSLOwnerCharacter;
 	if (PSLOwnerCharacter)
 	{
-		PSLOwnerController = PSLOwnerController == nullptr ? Cast<APSLPlayerController>(PSLOwnerCharacter->Controller) : PSLOwnerController; 
+		PSLOwnerController = PSLOwnerController == nullptr ? Cast<APSLPlayerController>(PSLOwnerCharacter->Controller) : PSLOwnerController;
+
+		if (PSLOwnerController)
+		{
+			ShowStencilColor(0);
+		}
+		else
+		{
+			ShowStencilColor(255);
+		}
 	}
+	
 }
 
 

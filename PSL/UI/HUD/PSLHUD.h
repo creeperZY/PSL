@@ -6,6 +6,9 @@
 #include "GameFramework/HUD.h"
 #include "PSLHUD.generated.h"
 
+class UPSLOverlayWidget;
+class APSLGameMode;
+class APSLCharacterBase;
 struct FWidgetControllerParams;
 class UOverlayWidgetController;
 class UPSLUserWidget;
@@ -18,29 +21,37 @@ class PSL_API APSLHUD : public AHUD
 	GENERATED_BODY()
 
 public:
+	friend class APSLGameMode;
 
+	
 	UPROPERTY()
-	TObjectPtr<UPSLUserWidget> OverlayWidget;
+	TObjectPtr<UPSLOverlayWidget> OverlayWidget;
 
-	UOverlayWidgetController* GetOverlayWidgetController(const FWidgetControllerParams& WCParams);
-
-	void InitOverlay(
-		AGameMode* GM,
-		APlayerController* PC,
-		APlayerState* PS,
+	UOverlayWidgetController* GetOverlayWidgetController(ACharacter* Character,
 		UAbilitySystemComponent* ASC,
 		UAttributeSet* AS);
-	
+
+	void InitOverlay(
+		ACharacter* Character,
+		UAbilitySystemComponent* ASC,
+		UAttributeSet* AS);
+
+	void AddToCharacterWidgetControllerMap(ACharacter* Character, UAbilitySystemComponent* ASC, UAttributeSet* AS);
 protected:
 	
 	
 private:
+	UPROPERTY(BlueprintReadWrite, meta=(AllowPrivateAccess = "true"))
+	TMap<ACharacter*, UPSLWidgetController*> CharacterWidgetControllerMap;
+
+	UPROPERTY(BlueprintReadWrite, meta=(AllowPrivateAccess = "true"))
+	TMap<ACharacter*, UPSLUserWidget*> CharacterUserWidgetMap;
 	
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UPSLUserWidget> OverlayWidgetClass;
-	
-	UPROPERTY()
-	TObjectPtr<UOverlayWidgetController> OverlayWidgetController;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UPSLUserWidget> CharacterStateWidgetClass;
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UOverlayWidgetController> OverlayWidgetControllerClass;

@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
 #include "Components/ActorComponent.h"
-#include "PSL/PSLGameplayTags.h"
+#include "PSL/PSLAbilityGameplayTags.h"
 
 #include "AbilityComponent.generated.h"
 
@@ -26,7 +26,7 @@ protected:
 
 public:
 	FGameplayTagContainer AbilityTagContainer;
-	const FPSLGameplayTags& GameplayTags = FPSLGameplayTags::Get();
+	const FPSLAbilityGameplayTags& AbilityGameplayTags = FPSLAbilityGameplayTags::Get();
 
 private:
 	UPROPERTY()

@@ -7,6 +7,7 @@
 #include "InputActionValue.h"
 #include "LegacyCameraShake.h"
 #include "Components/TimelineComponent.h"
+#include "PSLCharacterBase.h"
 #include "PSL/AbilitySystem/PSLAbilitySystemComponent.h"
 #include "AbilitySystemInterface.h"
 #include "PSL/PSLTypes/EquippedPoses.h"
@@ -16,16 +17,15 @@
 
 
 UCLASS(config=Game)
-class APSLCharacter : public ACharacter, public IAbilitySystemInterface
+class APSLCharacter : public APSLCharacterBase
 {
 	GENERATED_BODY()
 
 public:
 	APSLCharacter();
 	virtual void PossessedBy(AController* NewController) override;
-	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
-	void InitAbilityActorInfo();
+	virtual void InitAbilityActorInfo() override;
+
 	
 public:
 	void PlayFireMontage(bool bAiming);
@@ -124,11 +124,8 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	class UAbilityComponent* Ability;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UAttributeSet> AttributeSet;
+	UPROPERTY(VisibleAnywhere)
+	class UBroadcastComponent* Broadcast;
 	
 	UPROPERTY(VisibleAnywhere)
 	class UPostProcessComponent* PostProcess;
@@ -255,6 +252,7 @@ public:
 	FORCEINLINE UCombatComponent* GetCombat() const { return Combat; }
 	ECombatState GetCombatState() const;
 	FORCEINLINE UAbilityComponent* GetAbility() const { return Ability; }
+	FORCEINLINE UBroadcastComponent* GetBroadcast() const { return Broadcast; }
 	FORCEINLINE void SetOverlappingWeapon(AWeapon* Weapon) { OverlappingWeapon = Weapon; }
 	FORCEINLINE UStaticMeshComponent* GetAttachedGrenade() const { return AttachedGrenade; }
 	FORCEINLINE ETurningInPlace GetTurningInPlace() const { return TurningInPlace; }

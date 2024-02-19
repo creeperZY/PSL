@@ -22,6 +22,7 @@
 #include "PSL/GameMode/PSLGameMode.h"
 #include "PSL/PlayerController/PSLPlayerController.h"
 #include "PSL/PlayerState/PSLPlayerState.h"
+#include "PSL/PSLComponents/BroadcastComponent.h"
 #include "PSL/UI/HUD/PSLHUD.h"
 #include "PSL/Weapon/ProjectileTossGrenade.h"
 
@@ -68,9 +69,10 @@ APSLCharacter::APSLCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
-
+	
 	Combat = CreateDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
 	Ability = CreateDefaultSubobject<UAbilityComponent>(TEXT("AbilityComponent"));
+	Broadcast = CreateDefaultSubobject<UBroadcastComponent>(TEXT("UBroadcastComponent"));
 	PostProcess = CreateDefaultSubobject<UPostProcessComponent>(TEXT("PostProcessComponent"));
 
 	TurningInPlace = ETurningInPlace::ETIP_NotTurning;
@@ -88,45 +90,47 @@ APSLCharacter::APSLCharacter()
 void APSLCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
-	FString str(NewController->GetName());
 	//PRINT_ONE_VAR("%s", *NewController->GetName())
-	InitAbilityActorInfo();
-}
-
-void APSLCharacter::BeginPlay()
-{
-	// Call the base class  
-	Super::BeginPlay();
-
-	//Add Input Mapping Context
-	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
+	APSLPlayerController* PSLPlayerController = Cast<APSLPlayerController>(NewController);
+	APSLGameMode* PSLGameMode = Cast<APSLGameMode>(GetWorld()->GetAuthGameMode());
+	if (PSLPlayerController && PSLGameMode)
 	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
-		{
-			Subsystem->AddMappingContext(InputMappingContext, 0);
-		}
+		PSLGameMode->GetAbilitySystemComponent()->SetAvatarActor(this);
+		PSLGameMode->SetPlayerController(PSLPlayerController);
+		PSLGameMode->SetCurrentCharacter(this);
 	}
 	
-	SetShowXRayWhenCharacterOccluded();
-	SetTurnDelegate();
-	
 }
 
-
-UAbilitySystemComponent* APSLCharacter::GetAbilitySystemComponent() const
-{
-	return AbilitySystemComponent;
-}
 
 void APSLCharacter::InitAbilityActorInfo()
 {
+	
 	APSLGameMode* PSLGameMode = Cast<APSLGameMode>(GetWorld()->GetAuthGameMode());
 	check(PSLGameMode);
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
-	PSLGameMode->GetAbilitySystemComponent()->InitAbilityActorInfo(PSLGameMode, this);
+	Cast<UPSLAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoSet();
+	APSLPlayerController* PSLPlayerController = Cast<APSLPlayerController>(GetController());
+	if (PSLPlayerController && PSLGameMode) // human player himself
+	{
+		PSLGameMode->GetAbilitySystemComponent()->InitAbilityActorInfo(PSLGameMode, this);
+		//Cast<UPSLAbilitySystemComponent>(PSLGameMode->GetAbilitySystemComponent())->AbilityActorInfoSet();
+		PSLGameMode->SetPlayerController(PSLPlayerController);
+		PSLGameMode->SetCurrentCharacter(this);
+		APSLHUD* PSLHUD = Cast<APSLHUD>(PSLPlayerController->GetHUD());
+		if (PSLHUD)
+		{
+			PSLHUD->InitOverlay(this, AbilitySystemComponent, AttributeSet);
+		}
+	}
+	
+	if (PSLGameMode) // human and ai player
+	{
+		PSLGameMode->AddToCharacterWidgetControllerMap(this, AbilitySystemComponent, AttributeSet);
+	}
 	//AbilitySystemComponent = AuraPlayerState->GetAbilitySystemComponent();
 	//AttributeSet = AuraPlayerState->GetAttributeSet();
-	if (APSLPlayerController* PSLPlayerController = Cast<APSLPlayerController>(GetController()))
+	/*if (PSLPlayerController)
 	{
 		APSLPlayerState* PSLPlayerState = GetPlayerState<APSLPlayerState>();
 		APSLHUD* PSLHUD = Cast<APSLHUD>(PSLPlayerController->GetHUD());
@@ -134,10 +138,34 @@ void APSLCharacter::InitAbilityActorInfo()
 		{
 			PSLHUD->InitOverlay(PSLGameMode, PSLPlayerController, PSLPlayerState, AbilitySystemComponent, AttributeSet);
 		}
-	}
-
-
+	}*/
+	
 }
+
+
+
+void APSLCharacter::BeginPlay()
+{
+	// Call the base class  
+	Super::BeginPlay();
+
+	// Add Input Mapping Context
+	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+		{
+			Subsystem->AddMappingContext(InputMappingContext, 0);
+		}
+	}
+	// GAS
+	InitAbilityActorInfo();
+
+	
+	SetShowXRayWhenCharacterOccluded();
+	SetTurnDelegate();
+	
+}
+
 
 void APSLCharacter::PlayFireMontage(bool bAiming)
 {
@@ -299,6 +327,10 @@ void APSLCharacter::PostInitializeComponents()
 	if (Ability)
 	{
 		Ability->Character = this;
+	}
+	if (Broadcast)
+	{
+		Broadcast->Character = this;
 	}
 }
 
@@ -678,7 +710,7 @@ void APSLCharacter::OnTurnFinished()
 
 void APSLCharacter::SetShowXRayWhenCharacterOccluded()
 {
-	APSLPlayerController* PSLController = Cast<APSLPlayerController>(GetController());
+	const APSLPlayerController* PSLController = Cast<APSLPlayerController>(GetController());
 	if(PSLController)
 	{
 		GetMesh()->SetRenderCustomDepth(true);

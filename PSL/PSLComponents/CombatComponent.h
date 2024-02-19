@@ -20,6 +20,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	friend class APSLCharacter;
 	friend class UAbilityComponent;
+	friend class UBroadcastComponent;
 
 protected:
 	virtual void BeginPlay() override;

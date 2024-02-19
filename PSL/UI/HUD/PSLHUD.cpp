@@ -4,36 +4,65 @@
 #include "PSLHUD.h"
 
 #include "Blueprint/UserWidget.h"
+#include "Components/VerticalBox.h"
+#include "PSL/UI/Widget/PSLOverlayWidget.h"
 #include "PSL/UI/Widget/PSLUserWidget.h"
 #include "PSL/UI/WidgetController/OverlayWidgetController.h"
 
-UOverlayWidgetController* APSLHUD::GetOverlayWidgetController(const FWidgetControllerParams& WCParams)
+UOverlayWidgetController* APSLHUD::GetOverlayWidgetController(ACharacter* Character, UAbilitySystemComponent* ASC, UAttributeSet* AS)
 {
-	if (OverlayWidgetController == nullptr)
-	{
-		OverlayWidgetController = NewObject<UOverlayWidgetController>(this, OverlayWidgetControllerClass);
-		OverlayWidgetController->SetWidgetControllerParams(WCParams);
-		OverlayWidgetController->BindCallbacksToDependencies();
+	UOverlayWidgetController* OverlayWidgetController = NewObject<UOverlayWidgetController>(this, OverlayWidgetControllerClass);
+	checkf(OverlayWidgetControllerClass, TEXT("Overlay Widget Controller Class uninitialized, please fill out BP_OverlayWidgetController"))
+	OverlayWidgetController->SetWidgetControllerParams(Character, ASC, AS);
+	OverlayWidgetController->BindCallbacksToDependencies();
 
-		return OverlayWidgetController;
-	}
 	return OverlayWidgetController;
 }
 
-void APSLHUD::InitOverlay(AGameMode* GM, APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS)
+void APSLHUD::InitOverlay(ACharacter* Character, UAbilitySystemComponent* ASC, UAttributeSet* AS)
 {
 	checkf(OverlayWidgetClass, TEXT("Overlay Widget Class uninitialized, please fill out BP_PSLHUD"));
-	checkf(OverlayWidgetControllerClass, TEXT("Overlay Widget Controller Class uninitialized, please fill out BP_PSLHUD"))
+	checkf(OverlayWidgetControllerClass, TEXT("Overlay Widget Controller Class uninitialized, please fill out BP_OverlayWidgetController"))
 	
-	UUserWidget* Widget = CreateWidget<UUserWidget>(GetWorld(), OverlayWidgetClass);
-	OverlayWidget = Cast<UPSLUserWidget>(Widget);
-	const FWidgetControllerParams WidgetControllerParams(GM, PC, PS, ASC, AS);
-	UOverlayWidgetController* WidgetController = GetOverlayWidgetController(WidgetControllerParams);
-
+	if (!OverlayWidget)
+	{
+		UUserWidget* Widget = CreateWidget<UUserWidget>(GetWorld(), OverlayWidgetClass);
+		OverlayWidget = Cast<UPSLOverlayWidget>(Widget);
+	}
+	
+	UOverlayWidgetController* WidgetController = GetOverlayWidgetController(Character, ASC, AS);
 	OverlayWidget->SetWidgetController(WidgetController);
 	WidgetController->BroadcastInitialValues();
+	// should also broadcast weapon ammo and etc. 
 
-	Widget->AddToViewport();
+	OverlayWidget->AddToViewport();
+}
+
+void APSLHUD::AddToCharacterWidgetControllerMap(ACharacter* Character, UAbilitySystemComponent* ASC, UAttributeSet* AS)
+{
+	//UUserWidget* Widget = CreateWidget<UUserWidget>(GetWorld(), OverlayWidgetClass);
+	//OverlayWidget = Cast<UPSLUserWidget>(Widget);
+	
+	if (!CharacterWidgetControllerMap.Contains(Character))
+	{
+		if (!OverlayWidget)
+		{
+			UUserWidget* Widget = CreateWidget<UUserWidget>(GetWorld(), OverlayWidgetClass);
+			OverlayWidget = Cast<UPSLOverlayWidget>(Widget);
+		}
+		
+		UOverlayWidgetController* WidgetController = GetOverlayWidgetController(Character, ASC, AS);
+		
+		CharacterWidgetControllerMap.Add(Character, WidgetController);
+		UUserWidget* Widget = CreateWidget<UUserWidget>(GetWorld(), CharacterStateWidgetClass);
+		UPSLUserWidget* CharacterStateWidget = Cast<UPSLUserWidget>(Widget);
+		CharacterStateWidget->SetWidgetController(WidgetController);
+		CharacterUserWidgetMap.Add(Character, CharacterStateWidget);
+		WidgetController->BroadcastInitialValues();
+		OverlayWidget->CharacterStateVerticalBox->AddChild(Widget);
+		Widget->AddToViewport();
+		
+	}
 }
 
 

@@ -3,13 +3,11 @@
 
 #include "PSLWidgetController.h"
 
-void UPSLWidgetController::SetWidgetControllerParams(const FWidgetControllerParams& WCParams)
+void UPSLWidgetController::SetWidgetControllerParams(ACharacter* Char, UAbilitySystemComponent* ASC, UAttributeSet* AS)
 {
-	GameMode = WCParams.GameMode;
-	PlayerController = WCParams.PlayerController;
-	PlayerState = WCParams.PlayerState;
-	AbilitySystemComponent = WCParams.AbilitySystemComponent;
-	AttributeSet = WCParams.AttributeSet;
+	Character = Char;
+	AbilitySystemComponent = ASC;
+	AttributeSet = AS;
 }
 
 void UPSLWidgetController::BroadcastInitialValues()
@@ -19,3 +17,4 @@ void UPSLWidgetController::BroadcastInitialValues()
 void UPSLWidgetController::BindCallbacksToDependencies()
 {
 }
+
