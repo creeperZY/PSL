@@ -123,9 +123,6 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	class UAbilityComponent* Ability;
-
-	UPROPERTY(VisibleAnywhere)
-	class UBroadcastComponent* Broadcast;
 	
 	UPROPERTY(VisibleAnywhere)
 	class UPostProcessComponent* PostProcess;
@@ -252,7 +249,6 @@ public:
 	FORCEINLINE UCombatComponent* GetCombat() const { return Combat; }
 	ECombatState GetCombatState() const;
 	FORCEINLINE UAbilityComponent* GetAbility() const { return Ability; }
-	FORCEINLINE UBroadcastComponent* GetBroadcast() const { return Broadcast; }
 	FORCEINLINE void SetOverlappingWeapon(AWeapon* Weapon) { OverlappingWeapon = Weapon; }
 	FORCEINLINE UStaticMeshComponent* GetAttachedGrenade() const { return AttachedGrenade; }
 	FORCEINLINE ETurningInPlace GetTurningInPlace() const { return TurningInPlace; }

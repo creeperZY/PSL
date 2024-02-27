@@ -24,7 +24,7 @@ void APSLHUD::InitOverlay(ACharacter* Character, UAbilitySystemComponent* ASC, U
 	checkf(OverlayWidgetClass, TEXT("Overlay Widget Class uninitialized, please fill out BP_PSLHUD"));
 	checkf(OverlayWidgetControllerClass, TEXT("Overlay Widget Controller Class uninitialized, please fill out BP_OverlayWidgetController"))
 	
-	if (!OverlayWidget)
+	/*if (!OverlayWidget)
 	{
 		UUserWidget* Widget = CreateWidget<UUserWidget>(GetWorld(), OverlayWidgetClass);
 		OverlayWidget = Cast<UPSLOverlayWidget>(Widget);
@@ -35,7 +35,7 @@ void APSLHUD::InitOverlay(ACharacter* Character, UAbilitySystemComponent* ASC, U
 	WidgetController->BroadcastInitialValues();
 	// should also broadcast weapon ammo and etc. 
 
-	OverlayWidget->AddToViewport();
+	OverlayWidget->AddToViewport();*/
 }
 
 void APSLHUD::AddToCharacterWidgetControllerMap(ACharacter* Character, UAbilitySystemComponent* ASC, UAttributeSet* AS)
@@ -49,6 +49,7 @@ void APSLHUD::AddToCharacterWidgetControllerMap(ACharacter* Character, UAbilityS
 		{
 			UUserWidget* Widget = CreateWidget<UUserWidget>(GetWorld(), OverlayWidgetClass);
 			OverlayWidget = Cast<UPSLOverlayWidget>(Widget);
+			Widget->AddToViewport();
 		}
 		
 		UOverlayWidgetController* WidgetController = GetOverlayWidgetController(Character, ASC, AS);

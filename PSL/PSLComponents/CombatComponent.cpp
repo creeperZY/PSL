@@ -45,6 +45,11 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	RecoilRecovery(DeltaTime);
 }
 
+void UCombatComponent::BindCallbacksToDependencies()
+{
+
+}
+
 
 void UCombatComponent::PickupWeapon(AWeapon* WeaponToEquip)
 {

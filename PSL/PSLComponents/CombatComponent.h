@@ -9,6 +9,8 @@
 #include "PSL/Weapon/WeaponTypes.h"
 #include "CombatComponent.generated.h"
 
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FAmmoPickupDelegate, const FGameplayTagContainer&, const TMap<EWeaponType, float>&);
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FGrenadePickupDelegate, const FGameplayTagContainer&, const TMap<EGrenadeType, float>&);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PSL_API UCombatComponent : public UActorComponent
@@ -20,7 +22,10 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	friend class APSLCharacter;
 	friend class UAbilityComponent;
-	friend class UBroadcastComponent;
+
+	void BindCallbacksToDependencies();
+	FAmmoPickupDelegate AmmoPickupDelegate;
+	FGrenadePickupDelegate GrenadePickupDelegate;
 
 protected:
 	virtual void BeginPlay() override;

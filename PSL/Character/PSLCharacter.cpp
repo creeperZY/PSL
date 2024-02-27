@@ -22,7 +22,6 @@
 #include "PSL/GameMode/PSLGameMode.h"
 #include "PSL/PlayerController/PSLPlayerController.h"
 #include "PSL/PlayerState/PSLPlayerState.h"
-#include "PSL/PSLComponents/BroadcastComponent.h"
 #include "PSL/UI/HUD/PSLHUD.h"
 #include "PSL/Weapon/ProjectileTossGrenade.h"
 
@@ -36,6 +35,7 @@ APSLCharacter::APSLCharacter()
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 	GetMesh()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+	GetMesh()->SetCollisionObjectType(ECC_SkeletalMesh);
 		
 	// Don't rotate when the controller rotates. Let that just affect the camera.
 	bUseControllerRotationPitch = false;
@@ -72,7 +72,6 @@ APSLCharacter::APSLCharacter()
 	
 	Combat = CreateDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
 	Ability = CreateDefaultSubobject<UAbilityComponent>(TEXT("AbilityComponent"));
-	Broadcast = CreateDefaultSubobject<UBroadcastComponent>(TEXT("UBroadcastComponent"));
 	PostProcess = CreateDefaultSubobject<UPostProcessComponent>(TEXT("PostProcessComponent"));
 
 	TurningInPlace = ETurningInPlace::ETIP_NotTurning;
@@ -105,7 +104,6 @@ void APSLCharacter::PossessedBy(AController* NewController)
 
 void APSLCharacter::InitAbilityActorInfo()
 {
-	
 	APSLGameMode* PSLGameMode = Cast<APSLGameMode>(GetWorld()->GetAuthGameMode());
 	check(PSLGameMode);
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
@@ -114,14 +112,16 @@ void APSLCharacter::InitAbilityActorInfo()
 	if (PSLPlayerController && PSLGameMode) // human player himself
 	{
 		PSLGameMode->GetAbilitySystemComponent()->InitAbilityActorInfo(PSLGameMode, this);
+		/*
 		//Cast<UPSLAbilitySystemComponent>(PSLGameMode->GetAbilitySystemComponent())->AbilityActorInfoSet();
-		PSLGameMode->SetPlayerController(PSLPlayerController);
-		PSLGameMode->SetCurrentCharacter(this);
+		//PSLGameMode->SetPlayerController(PSLPlayerController);
+		//PSLGameMode->SetCurrentCharacter(this);
 		APSLHUD* PSLHUD = Cast<APSLHUD>(PSLPlayerController->GetHUD());
 		if (PSLHUD)
 		{
+			PRINT_STR("init overlay")
 			PSLHUD->InitOverlay(this, AbilitySystemComponent, AttributeSet);
-		}
+		}*/
 	}
 	
 	if (PSLGameMode) // human and ai player
@@ -328,10 +328,7 @@ void APSLCharacter::PostInitializeComponents()
 	{
 		Ability->Character = this;
 	}
-	if (Broadcast)
-	{
-		Broadcast->Character = this;
-	}
+
 }
 
 //////////////////////////////////////////////////////////////////////////

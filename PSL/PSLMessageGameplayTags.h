@@ -16,6 +16,9 @@ public:
 	FGameplayTag Message_Basic_Health;
 	FGameplayTag Message_Basic_Armor;
 
+	FGameplayTag Message_Pickup_Grenade_Frag;
+
+	FGameplayTag Message_Pickup_Ammo_AR556;
 
 private:
     static FPSLMessageGameplayTags GameplayTags;

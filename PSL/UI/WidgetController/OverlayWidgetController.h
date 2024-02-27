@@ -23,9 +23,6 @@ struct FUIWidgetRow : public FTableRowBase
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	UTexture2D* Image = nullptr;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float AmountToAdd = 1.f;
 };
 
 
@@ -63,6 +60,7 @@ protected:
 	
 	void HealthChanged(const FOnAttributeChangeData& Data) const;
 	void MaxHealthChanged(const FOnAttributeChangeData& Data) const;
+	void AssetTagsToBroadcastMessages(const FGameplayTagContainer& AssetTags);
 
 	template<typename T>
 	T* GetDataTableRowByTag(UDataTable* DataTable, const FGameplayTag& Tag);
