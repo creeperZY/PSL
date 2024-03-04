@@ -23,10 +23,20 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 	
 	// It is not a DYNAMIC so do not use AddDynamic, instead, using AddUObject.
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(PSLAttributeSet->GetHealthAttribute())
-	.AddUObject(this, &UOverlayWidgetController::HealthChanged);
+	.AddLambda(
+		[this](const FOnAttributeChangeData& Data)
+		{
+			OnHealthChanged.Broadcast(Data.NewValue);
+		}
+	);
 
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(PSLAttributeSet->GetMaxHealthAttribute())
-	.AddUObject(this, &UOverlayWidgetController::MaxHealthChanged);
+	.AddLambda(
+		[this](const FOnAttributeChangeData& Data)
+		{
+			OnMaxHealthChanged.Broadcast(Data.NewValue);
+		}
+	);
 	
 	Cast<UPSLAbilitySystemComponent>(AbilitySystemComponent)->EffectAssetTagsDelegate
 	.AddLambda(
@@ -70,15 +80,6 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 	
 }
 
-void UOverlayWidgetController::HealthChanged(const FOnAttributeChangeData& Data) const
-{
-	OnHealthChanged.Broadcast(Data.NewValue);
-}
-
-void UOverlayWidgetController::MaxHealthChanged(const FOnAttributeChangeData& Data) const
-{
-	OnMaxHealthChanged.Broadcast(Data.NewValue);
-}
 
 void UOverlayWidgetController::AssetTagsToBroadcastMessages(const FGameplayTagContainer& AssetTags)
 {

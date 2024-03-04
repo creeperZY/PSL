@@ -21,7 +21,26 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<UObject> WidgetController;
 
+	UFUNCTION(BlueprintCallable)
+	void SetUpperWidget(UPSLUserWidget* InWidget);
+	
+	UPROPERTY(BlueprintReadOnly)
+	TObjectPtr<UPSLUserWidget> UpperWidget;
+
+	UPROPERTY(BlueprintReadOnly)
+	TArray<UPSLUserWidget*> SubWidgets;
+
 protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void WidgetControllerSet();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void UpperWidgetSet();
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void SetAsUpperWidgetBy(UPSLUserWidget* InWidget);
+	
+	UFUNCTION(BlueprintCallable)
+	void RefreshSubWidgetsArray();
+	
 };

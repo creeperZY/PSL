@@ -306,17 +306,6 @@ void UCombatComponent::EquipSecondWeapon()
 }
 
 
-void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
-{
-	if (CombatState != ECombatState::ECS_Unoccupied || Character == nullptr) return;
-	if (WeaponToEquip == nullptr) return;
-	TempWeapon = WeaponToEquip;
-	Character->PlayEquipMontage(WeaponToEquip);
-	CombatState = ECombatState::ECS_SwappingWeapons;
-}
-
-
-
 void UCombatComponent::FinishSwapAttachWeapons()
 {
 	// Swap Weapons
@@ -365,6 +354,16 @@ void UCombatComponent::FinishSwapAttachWeapons()
 	}
 	
 }
+
+void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
+{
+	if (CombatState != ECombatState::ECS_Unoccupied || Character == nullptr) return;
+	if (WeaponToEquip == nullptr) return;
+	TempWeapon = WeaponToEquip;
+	Character->PlayEquipMontage(WeaponToEquip);
+	CombatState = ECombatState::ECS_SwappingWeapons;
+}
+
 
 void UCombatComponent::FinishEquip()
 {
@@ -663,11 +662,12 @@ void UCombatComponent::MeleeAttackConfirm()
 
 	UWorld* World = GetWorld();
 	const USkeletalMeshSocket* Socket = Character->GetMesh()->GetSocketByName(FName("RightHandSocketRifle"));
+	//const USkeletalMeshSocket* EndSocket = Character->GetMesh()->GetSocketByName(FName("MuzzleFlash"));
 	
 	if (Character == nullptr || Character->GetCombat() == nullptr || World == nullptr || Socket == nullptr) return;
 	
 	FTransform SocketTransform = Socket->GetSocketTransform(Character->GetMesh());
-	FVector Start =SocketTransform.GetLocation();
+	FVector Start = SocketTransform.GetLocation();
 	FVector End = Start;
 	FHitResult TraceHitResult;
 	ETraceTypeQuery Query = UEngineTypes::ConvertToTraceType(ECC_TraceMelee);
@@ -702,6 +702,22 @@ void UCombatComponent::MeleeAttackConfirm()
 void UCombatComponent::MeleeAttackFinished()
 {
 	CombatState = ECombatState::ECS_Unoccupied;
+}
+
+void UCombatComponent::SprintButtonPressed(bool bPressed)
+{
+	if (!EquippedWeapon) return;
+	if (bPressed && CombatState == ECombatState::ECS_Unoccupied)
+	{
+		bSprinting = true;
+		Character->GetCharacterMovement()->bOrientRotationToMovement = true;
+		Character->bUseControllerRotationYaw = false;
+	}
+	else
+	{
+		if (EquippedWeapon) Character->TurnFromSprinting();
+		bSprinting = false;
+	}
 }
 
 

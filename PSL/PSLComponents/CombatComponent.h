@@ -22,6 +22,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	friend class APSLCharacter;
 	friend class UAbilityComponent;
+	
 
 	void BindCallbacksToDependencies();
 	FAmmoPickupDelegate AmmoPickupDelegate;
@@ -99,9 +100,25 @@ protected:
 	void ThrowGrenadeFinished();
 	
 	
+	/*
+	 * Melee Attack
+	 */
+	void MeleeAttack();
+	UFUNCTION(BlueprintCallable)
+	void MeleeAttackConfirm();
+	UFUNCTION(BlueprintCallable)
+	void MeleeAttackFinished();
+
+
+	/*
+	 * Sprinting
+	 */
+	void SprintButtonPressed(bool bPressed);
+	
+public:
 	UPROPERTY(EditAnywhere) // Vis
 	EGrenadeType EquippedGrenadeType;
-	UPROPERTY(EditAnywhere) // Vis
+	UPROPERTY(EditAnywhere) // Vis //Can auto switch to grenade type > 0
 	int32 EquippedGrenades = 4;
 
 	UPROPERTY(EditAnywhere) // Vis
@@ -111,17 +128,6 @@ protected:
 
 	UPROPERTY(EditAnywhere) // Vis
 	TMap<EWeaponType, int32> CarriedAmmoMap;
-
-
-	/*
-	 * Melee Attack
-	 */
-	void MeleeAttack();
-	UFUNCTION(BlueprintCallable)
-	void MeleeAttackConfirm();
-	UFUNCTION(BlueprintCallable)
-	void MeleeAttackFinished();
-	
 	
 private:
 	UPROPERTY()
@@ -157,6 +163,12 @@ private:
 	void FireTimerFinished();
 	bool CanFire();
 	void RecoilRecovery(float DeltaTime);
+
+
+	/*
+	 * Sprinting
+	 */
+	bool bSprinting = false;
 	
 	
 	ECombatState CombatState = ECombatState::ECS_Unoccupied;

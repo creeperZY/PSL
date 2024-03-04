@@ -42,22 +42,23 @@ void APSLHUD::AddToCharacterWidgetControllerMap(ACharacter* Character, UAbilityS
 {
 	//UUserWidget* Widget = CreateWidget<UUserWidget>(GetWorld(), OverlayWidgetClass);
 	//OverlayWidget = Cast<UPSLUserWidget>(Widget);
+
+	if (!OverlayWidget)
+	{
+		UUserWidget* Widget = CreateWidget<UUserWidget>(GetWorld(), OverlayWidgetClass);
+		OverlayWidget = Cast<UPSLOverlayWidget>(Widget);
+		Widget->AddToViewport();
+	}
 	
 	if (!CharacterWidgetControllerMap.Contains(Character))
 	{
-		if (!OverlayWidget)
-		{
-			UUserWidget* Widget = CreateWidget<UUserWidget>(GetWorld(), OverlayWidgetClass);
-			OverlayWidget = Cast<UPSLOverlayWidget>(Widget);
-			Widget->AddToViewport();
-		}
-		
 		UOverlayWidgetController* WidgetController = GetOverlayWidgetController(Character, ASC, AS);
 		
 		CharacterWidgetControllerMap.Add(Character, WidgetController);
 		UUserWidget* Widget = CreateWidget<UUserWidget>(GetWorld(), CharacterStateWidgetClass);
 		UPSLUserWidget* CharacterStateWidget = Cast<UPSLUserWidget>(Widget);
 		CharacterStateWidget->SetWidgetController(WidgetController);
+		CharacterStateWidget->SetUpperWidget(OverlayWidget);
 		CharacterUserWidgetMap.Add(Character, CharacterStateWidget);
 		WidgetController->BroadcastInitialValues();
 		OverlayWidget->CharacterStateVerticalBox->AddChild(Widget);

@@ -240,7 +240,8 @@ public:
 	UPROPERTY(EditAnywhere, Category="Camera Shake")
 	TSubclassOf<UCameraShakeBase> MeleeAttackCameraShake;
 
-
+	void TurnFromSprinting() { TurnBeforeEquip(); }
+	
 
 	
 public:
@@ -257,7 +258,8 @@ public:
 	FVector GetHitTarget() const;
 	bool IsWeaponEquipped();
 	EEquippedPoseType GetEquippedPoseType();
-	bool IsAiming();
+	bool IsAiming() const;
+	bool IsSprinting() const;
 
 	AWeapon* GetEquippedWeapon();
 };

@@ -16,7 +16,10 @@ class PSL_API UPSLOverlayWidget : public UPSLUserWidget
 
 
 public:
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	class UVerticalBox* CharacterStateVerticalBox;
+
+	//UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	//class UVerticalBox* MessageVerticalBox;
 
 };

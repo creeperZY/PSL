@@ -766,9 +766,14 @@ EEquippedPoseType APSLCharacter::GetEquippedPoseType()
 	
 }
 
-bool APSLCharacter::IsAiming()
+bool APSLCharacter::IsAiming() const
 {
 	return (Combat && Combat->bAiming);
+}
+
+bool APSLCharacter::IsSprinting() const
+{
+	return (Combat && Combat->bSprinting);
 }
 
 AWeapon* APSLCharacter::GetEquippedWeapon()

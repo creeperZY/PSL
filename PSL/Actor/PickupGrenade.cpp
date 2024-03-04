@@ -17,9 +17,21 @@ void APickupGrenade::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, A
 	if (PSLCharacter)
 	{
 		PRINT_STR("on sphere overlap")
-
 		PSLCharacter->GetCombat()->GrenadePickupDelegate.Broadcast(PickupGameplayTagContainer, GrenadeNumMap);
+
+		for (auto& Pair : GrenadeNumMap)
+		{
+			auto& CarriedGrenadesMap = PSLCharacter->GetCombat()->CarriedGrenadesMap;
+			if (!CarriedGrenadesMap.Contains(Pair.Key))
+			{
+				CarriedGrenadesMap.Add(Pair.Key, Pair.Value);
+			}
+			else
+			{
+				CarriedGrenadesMap[Pair.Key] += Pair.Value;
+			}
+		}
+		
 		Destroy();
 	}
-	
 }
