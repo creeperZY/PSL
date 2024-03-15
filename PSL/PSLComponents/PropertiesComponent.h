@@ -7,19 +7,21 @@
 #include "Components/ActorComponent.h"
 #include "PSL/PSLAbilityGameplayTags.h"
 
-#include "AbilityComponent.generated.h"
+#include "PropertiesComponent.generated.h"
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class PSL_API UAbilityComponent : public UActorComponent
+class PSL_API UPropertiesComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
-	UAbilityComponent();
+	UPropertiesComponent();
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	friend class APSLCharacter;
 	friend class UCombatComponent;
+	friend class UPSLAbilitySystemComponent;
+	friend class UPSLAttributeSet;
 	
 protected:
 	virtual void BeginPlay() override;
@@ -35,14 +37,14 @@ private:
 	UPROPERTY(EditAnywhere)
 	float JumpZVelocity = 700.f;
 	UPROPERTY(EditAnywhere)
-	float UnequippedWalkSpeed = 500.f;
+	float UnequippedWalkSpeed = 450.f;
 	UPROPERTY(EditAnywhere)
 	float UnequippedWalkSpeedCrouched = 350.f;
 	UPROPERTY(EditAnywhere)
-	float UnequippedJogSpeed = 800.f;
+	float UnequippedSprintSpeed = 800.f;
 
 	UPROPERTY(EditAnywhere)
-	float EquippedWalkSpeed = 500.f;
+	float EquippedWalkSpeed = 450.f;
 	UPROPERTY(EditAnywhere)
 	float EquippedWalkSpeedCrouched = 350.f;
 	UPROPERTY(EditAnywhere)
@@ -50,6 +52,6 @@ private:
 	UPROPERTY(EditAnywhere)
 	float EquippedAimWalkSpeedCrouched = 300.f;
 	UPROPERTY(EditAnywhere)
-	float EquippedJogSpeed = 700.f;
+	float EquippedSprintSpeed = 700.f;
 	
 };

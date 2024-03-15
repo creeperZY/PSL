@@ -63,6 +63,8 @@ protected:
 	void GrenadeButtonCompleted();
 	void MeleeAttackButtonPressed();
 	void ReloadButtonPressed();
+	void SprintButtonPressed();
+	void SprintButtonReleased();
 
 private:
 	
@@ -114,6 +116,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* ReloadAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* SprintAction;
 	
 	UPROPERTY()
 	class AWeapon* OverlappingWeapon;
@@ -122,7 +127,7 @@ private:
 	class UCombatComponent* Combat;
 
 	UPROPERTY(VisibleAnywhere)
-	class UAbilityComponent* Ability;
+	class UPropertiesComponent* Properties;
 	
 	UPROPERTY(VisibleAnywhere)
 	class UPostProcessComponent* PostProcess;
@@ -249,7 +254,7 @@ public:
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 	FORCEINLINE UCombatComponent* GetCombat() const { return Combat; }
 	ECombatState GetCombatState() const;
-	FORCEINLINE UAbilityComponent* GetAbility() const { return Ability; }
+	FORCEINLINE UPropertiesComponent* GetProperties() const { return Properties; }
 	FORCEINLINE void SetOverlappingWeapon(AWeapon* Weapon) { OverlappingWeapon = Weapon; }
 	FORCEINLINE UStaticMeshComponent* GetAttachedGrenade() const { return AttachedGrenade; }
 	FORCEINLINE ETurningInPlace GetTurningInPlace() const { return TurningInPlace; }

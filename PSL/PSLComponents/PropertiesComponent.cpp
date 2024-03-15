@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "AbilityComponent.h"
+#include "PropertiesComponent.h"
 
 #include "PSL/PSLAbilityGameplayTags.h"
 #include "PSL/EasyMacros.h"
@@ -9,13 +9,13 @@
 #include "PSL/Character/PSLCharacter.h"
 
 
-UAbilityComponent::UAbilityComponent()
+UPropertiesComponent::UPropertiesComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
 
-void UAbilityComponent::BeginPlay()
+void UPropertiesComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	
@@ -23,7 +23,7 @@ void UAbilityComponent::BeginPlay()
 	AbilityTagContainer.AddTag(AbilityGameplayTags.Ability_B_Medic_LV1);
 	int32 Size = AbilityTagContainer.Num();
 	PRINT_ONE_VAR("size: %d\n", Size)
-
+	
 	if (AbilityTagContainer.HasTagExact(AbilityGameplayTags.Ability_A_Soldier_LV1))
 	{
 		PRINT_STR("A_Soldier_LV1\n");
@@ -43,7 +43,7 @@ void UAbilityComponent::BeginPlay()
 }
 
 
-void UAbilityComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UPropertiesComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "PropertiesComponent.h"
 #include "PSL/PSLTypes/CombatState.h"
 #include "PSL/Weapon/ProjectileTossGrenade.h"
 #include "PSL/Weapon/WeaponTypes.h"
@@ -21,7 +22,7 @@ public:
 	UCombatComponent();
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	friend class APSLCharacter;
-	friend class UAbilityComponent;
+	friend class UPropertiesComponent;
 	
 
 	void BindCallbacksToDependencies();

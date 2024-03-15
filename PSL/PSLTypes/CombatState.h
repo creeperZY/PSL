@@ -3,7 +3,7 @@
 UENUM()
 enum class ECombatState : uint8
 {
-    ECS_Unequipped UMETA(DisplayName = "Unequipped"),	
+    //ECS_Unequipped UMETA(DisplayName = "Unequipped"),	
 	ECS_Unoccupied UMETA(DisplayName = "Unoccupid"),
 	ECS_Sprinting UMETA(DisplayName = "Sprinting"),
 	ECS_Reloading UMETA(DisplayName = "Reloading"),

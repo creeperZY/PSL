@@ -9,21 +9,18 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "Components/BoxComponent.h"
 #include "Components/PostProcessComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "PSL/PSLComponents/CombatComponent.h"
 #include "PSL/Weapon/Weapon.h"
 #include "PSL/EasyMacros.h"
-#include "PSL/PSLComponents/AbilityComponent.h"
+#include "PSL/PSLComponents/PropertiesComponent.h"
 #include "Components/PrimitiveComponent.h"
 #include "PSL/PSL.h"
 #include "PSL/AbilitySystem/PSLAttributeSet.h"
 #include "PSL/GameMode/PSLGameMode.h"
 #include "PSL/PlayerController/PSLPlayerController.h"
-#include "PSL/PlayerState/PSLPlayerState.h"
-#include "PSL/UI/HUD/PSLHUD.h"
-#include "PSL/Weapon/ProjectileTossGrenade.h"
+
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -71,7 +68,7 @@ APSLCharacter::APSLCharacter()
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 	
 	Combat = CreateDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
-	Ability = CreateDefaultSubobject<UAbilityComponent>(TEXT("AbilityComponent"));
+	Properties = CreateDefaultSubobject<UPropertiesComponent>(TEXT("PropertiesComponent"));
 	PostProcess = CreateDefaultSubobject<UPostProcessComponent>(TEXT("PostProcessComponent"));
 
 	TurningInPlace = ETurningInPlace::ETIP_NotTurning;
@@ -324,9 +321,9 @@ void APSLCharacter::PostInitializeComponents()
 	{
 		Combat->Character = this;
 	}
-	if (Ability)
+	if (Properties)
 	{
-		Ability->Character = this;
+		Properties->Character = this;
 	}
 
 }
@@ -370,6 +367,9 @@ void APSLCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInput
 		EnhancedInputComponent->BindAction(MeleeAttackAction, ETriggerEvent::Triggered, this, &APSLCharacter::MeleeAttackButtonPressed);
 
 		EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Triggered, this, &APSLCharacter::ReloadButtonPressed);
+
+		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Triggered, this, &APSLCharacter::SprintButtonPressed);
+		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &APSLCharacter::SprintButtonReleased);
 	}
 
 }
@@ -541,6 +541,22 @@ void APSLCharacter::ReloadButtonPressed()
 	}
 }
 
+void APSLCharacter::SprintButtonPressed()
+{
+	if (Combat)
+	{
+		Combat->SprintButtonPressed(true);
+	}
+}
+
+void APSLCharacter::SprintButtonReleased()
+{
+	if (Combat)
+	{
+		Combat->SprintButtonPressed(false);
+	}
+}
+
 
 void APSLCharacter::InterpCameraFOV(float DeltaSeconds)
 {
@@ -604,6 +620,8 @@ void APSLCharacter::AimOffset(float DeltaTime)
 {
 	if (Combat && Combat->EquippedWeapon == nullptr) return;
 	if (!bTurnFinished) return;
+	if (IsSprinting()) return;
+
 	float Speed = CalculateSpeed();
 	bool bIsInAir = GetCharacterMovement()->IsFalling();
 	//if (bIsInAir)

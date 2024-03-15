@@ -79,7 +79,7 @@ void UPSLAnimInstance::NativeUpdateAnimation(float DeltaTime)
 		//DrawDebugLine(GetWorld(), MuzzleTipTransform.GetLocation(), PSLCharacter->GetHitTarget(), FColor::Orange);
 	}
 
-	bUseFABRIK = PSLCharacter->GetCombatState() == ECombatState::ECS_Unoccupied;
+	bUseFABRIK = PSLCharacter->GetCombatState() == ECombatState::ECS_Unoccupied || PSLCharacter->GetCombatState() == ECombatState::ECS_Sprinting;
 	//bool bFABRIKOverride = 	PSLCharacter->IsLocallyControlled() &&
 	//	PSLCharacter->GetCombatState() != ECombatState::ECS_ThrowingGrenade &&
 	//	PSLCharacter->bFinishedSwapping;
@@ -87,6 +87,7 @@ void UPSLAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	{
 //		bUseFABRIK = !PSLCharacter->IsLocallyReloading();
 	}
-	bUseAimOffset =  PSLCharacter->GetCombatState() == ECombatState::ECS_Unoccupied && !bIsInAir;// && !PSLCharacter->GetDisableGameplay();
-	bTransformRightHand = PSLCharacter->GetCombatState() == ECombatState::ECS_Unoccupied && !bIsInAir;// && !PSLCharacter->GetDisableGameplay();
+	bUseAimOffset =  PSLCharacter->GetCombatState() == ECombatState::ECS_Unoccupied && !bIsInAir && !PSLCharacter->IsSprinting();// && !PSLCharacter->GetDisableGameplay();
+	bTransformRightHand = PSLCharacter->GetCombatState() == ECombatState::ECS_Unoccupied && !bIsInAir && !PSLCharacter->IsSprinting();// && !PSLCharacter->GetDisableGameplay();
+	bSprinting = PSLCharacter->IsSprinting() && bIsAccelerating;
 }

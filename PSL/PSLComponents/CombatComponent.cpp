@@ -3,7 +3,6 @@
 
 #include "CombatComponent.h"
 
-#include "AbilityComponent.h"
 #include "Camera/CameraComponent.h"
 #include "PSL/EasyMacros.h"
 #include "PSL/Weapon/Weapon.h"
@@ -54,7 +53,7 @@ void UCombatComponent::BindCallbacksToDependencies()
 void UCombatComponent::PickupWeapon(AWeapon* WeaponToEquip)
 {
 	if (Character == nullptr || WeaponToEquip == nullptr) return;
-	if (CombatState != ECombatState::ECS_Unoccupied) return;
+	if (CombatState != ECombatState::ECS_Unoccupied && CombatState != ECombatState::ECS_Sprinting) return;
 
 	EquipWeapon(WeaponToEquip);
 
@@ -357,7 +356,7 @@ void UCombatComponent::FinishSwapAttachWeapons()
 
 void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 {
-	if (CombatState != ECombatState::ECS_Unoccupied || Character == nullptr) return;
+	if (CombatState != ECombatState::ECS_Unoccupied && CombatState != ECombatState::ECS_Sprinting || Character == nullptr) return;
 	if (WeaponToEquip == nullptr) return;
 	TempWeapon = WeaponToEquip;
 	Character->PlayEquipMontage(WeaponToEquip);
@@ -375,7 +374,7 @@ void UCombatComponent::FinishEquip()
 
 void UCombatComponent::UnequipWeapon(AWeapon* WeaponToUnequip)
 {
-	if (CombatState != ECombatState::ECS_Unoccupied || Character == nullptr) return;
+	if (CombatState != ECombatState::ECS_Unoccupied && CombatState != ECombatState::ECS_Sprinting || Character == nullptr) return;
 	
 	CombatState = ECombatState::ECS_SwappingWeapons;
 	Character->PlayUnequipMontage(WeaponToUnequip);
@@ -409,10 +408,10 @@ void UCombatComponent::SetAiming(bool bIsAiming)
 	if (Character == nullptr || EquippedWeapon == nullptr) return;
 	bAiming = bIsAiming;
 	
-	if (Character && Character->GetAbility())
+	if (Character && Character->GetProperties())
 	{
-		Character->GetCharacterMovement()->MaxWalkSpeed = bIsAiming ? Character->GetAbility()->EquippedAimWalkSpeed : Character->GetAbility()->EquippedWalkSpeed;
-		Character->GetCharacterMovement()->MaxWalkSpeedCrouched = bIsAiming ? Character->GetAbility()->EquippedAimWalkSpeedCrouched : Character->GetAbility()->UnequippedWalkSpeedCrouched;
+		Character->GetCharacterMovement()->MaxWalkSpeed = bIsAiming ? Character->GetProperties()->EquippedAimWalkSpeed : Character->GetProperties()->EquippedWalkSpeed;
+		Character->GetCharacterMovement()->MaxWalkSpeedCrouched = bIsAiming ? Character->GetProperties()->EquippedAimWalkSpeedCrouched : Character->GetProperties()->UnequippedWalkSpeedCrouched;
 	}
 }
 
@@ -561,7 +560,13 @@ void UCombatComponent::FireTimerFinished()
 bool UCombatComponent::CanFire()
 {
 	if (EquippedWeapon == nullptr) return false;
-	return !EquippedWeapon->IsEmpty() && bTimeUpCanFire && CombatState == ECombatState::ECS_Unoccupied
+	if (Character->IsSprinting())
+	{
+		SprintButtonPressed(false);
+	}
+	return !EquippedWeapon->IsEmpty() && bTimeUpCanFire
+	&& CombatState == ECombatState::ECS_Unoccupied
+	//&& !Character->IsSprinting()
 	&& !Character->GetCharacterMovement()->IsFalling();
 }
 
@@ -712,11 +717,15 @@ void UCombatComponent::SprintButtonPressed(bool bPressed)
 		bSprinting = true;
 		Character->GetCharacterMovement()->bOrientRotationToMovement = true;
 		Character->bUseControllerRotationYaw = false;
+		CombatState = ECombatState::ECS_Sprinting;
+		Character->GetCharacterMovement()->MaxWalkSpeed = Character->GetProperties()->EquippedSprintSpeed;
 	}
 	else
 	{
 		if (EquippedWeapon) Character->TurnFromSprinting();
 		bSprinting = false;
+		CombatState = ECombatState::ECS_Unoccupied;
+		Character->GetCharacterMovement()->MaxWalkSpeed = Character->GetProperties()->EquippedWalkSpeed;
 	}
 }
 
