@@ -541,11 +541,18 @@ void APSLCharacter::ReloadButtonPressed()
 	}
 }
 
+bool APSLCharacter::CanSprint() const
+{
+	bool bIsAccelerating = GetCharacterMovement()->GetCurrentAcceleration().Size() > 0.f ? true : false;
+	bool bCanSprint = bIsAccelerating && !bIsCrouched && !IsAiming();
+	return bCanSprint;
+}
+
 void APSLCharacter::SprintButtonPressed()
 {
 	if (Combat)
 	{
-		Combat->SprintButtonPressed(true);
+		if (CanSprint()) Combat->SprintButtonPressed(true);
 	}
 }
 
@@ -562,9 +569,18 @@ void APSLCharacter::InterpCameraFOV(float DeltaSeconds)
 {
 	if (IsWeaponEquipped())
 	{
-		CurrentFOV = FMath::FInterpTo(CurrentFOV, EquippedFOV, DeltaSeconds, InterpSpeed);
-		CurrentSocketOffset = FMath::VInterpTo(CurrentSocketOffset, EquippedSocketOffset, DeltaSeconds, InterpSpeed);
-		CurrentTargetArmLength = FMath::FInterpTo(CurrentTargetArmLength, EquippedTargetArmLength, DeltaSeconds, InterpSpeed);
+		if (IsSprinting())
+		{
+			CurrentFOV = FMath::FInterpTo(CurrentFOV, EquippedSprintFOV, DeltaSeconds, InterpSpeed);
+			CurrentSocketOffset = FMath::VInterpTo(CurrentSocketOffset, EquippedSprintSocketOffset, DeltaSeconds, InterpSpeed);
+			CurrentTargetArmLength = FMath::FInterpTo(CurrentTargetArmLength, EquippedSprintTargetArmLength, DeltaSeconds, InterpSpeed);
+		}
+		else
+		{
+			CurrentFOV = FMath::FInterpTo(CurrentFOV, EquippedFOV, DeltaSeconds, InterpSpeed);
+			CurrentSocketOffset = FMath::VInterpTo(CurrentSocketOffset, EquippedSocketOffset, DeltaSeconds, InterpSpeed);
+			CurrentTargetArmLength = FMath::FInterpTo(CurrentTargetArmLength, EquippedTargetArmLength, DeltaSeconds, InterpSpeed);
+		}
 		if (IsAiming())
 		{
 			AimFOV = GetEquippedWeapon()->GetZoomedFOV();
@@ -793,6 +809,7 @@ bool APSLCharacter::IsSprinting() const
 {
 	return (Combat && Combat->bSprinting);
 }
+
 
 AWeapon* APSLCharacter::GetEquippedWeapon()
 {

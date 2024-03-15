@@ -37,21 +37,21 @@ private:
 	UPROPERTY(EditAnywhere)
 	float JumpZVelocity = 700.f;
 	UPROPERTY(EditAnywhere)
-	float UnequippedWalkSpeed = 450.f;
+	float UnequippedWalkSpeed = 550.f;
 	UPROPERTY(EditAnywhere)
-	float UnequippedWalkSpeedCrouched = 350.f;
+	float UnequippedWalkSpeedCrouched = 300.f;
 	UPROPERTY(EditAnywhere)
-	float UnequippedSprintSpeed = 800.f;
+	float UnequippedSprintSpeed = 550.f;
 
 	UPROPERTY(EditAnywhere)
-	float EquippedWalkSpeed = 450.f;
+	float EquippedWalkSpeed = 400.f;
 	UPROPERTY(EditAnywhere)
-	float EquippedWalkSpeedCrouched = 350.f;
+	float EquippedWalkSpeedCrouched = 275.f;
 	UPROPERTY(EditAnywhere)
-	float EquippedAimWalkSpeed = 450.f;
+	float EquippedAimWalkSpeed = 400.f;
 	UPROPERTY(EditAnywhere)
-	float EquippedAimWalkSpeedCrouched = 300.f;
+	float EquippedAimWalkSpeedCrouched = 275.f;
 	UPROPERTY(EditAnywhere)
-	float EquippedSprintSpeed = 700.f;
+	float EquippedSprintSpeed = 550.f;
 	
 };

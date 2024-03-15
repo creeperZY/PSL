@@ -40,6 +40,17 @@ void UPropertiesComponent::BeginPlay()
 	//Character->GetCharacterMovement()->JumpZVelocity = JumpZVelocity;
 	//Character->GetCharacterMovement()->MaxWalkSpeed = UnequippedWalkSpeed;
 	//Character->GetCharacterMovement()->MaxWalkSpeedCrouched = UnequippedWalkSpeedCrouched;
+
+	if (Character->IsWeaponEquipped())
+	{
+		Character->GetCharacterMovement()->MaxWalkSpeed = EquippedWalkSpeed;
+		Character->GetCharacterMovement()->MaxWalkSpeedCrouched = EquippedWalkSpeedCrouched;
+	}
+	else
+	{
+		Character->GetCharacterMovement()->MaxWalkSpeed = UnequippedWalkSpeed;
+		Character->GetCharacterMovement()->MaxWalkSpeedCrouched = UnequippedWalkSpeedCrouched;
+	}
 }
 
 

@@ -180,7 +180,9 @@ private:
 	UPROPERTY(EditAnywhere, Category="Game Camera")
 	float UnequippedFOV = 90.f; //This option is not in using. Set FOV in blueprint
 	UPROPERTY(EditAnywhere, Category="Game Camera")
-	float EquippedFOV = 70.f;
+	float EquippedFOV = 75.f;
+	UPROPERTY(EditAnywhere, Category="Game Camera")
+	float EquippedSprintFOV = 90.f;
 	UPROPERTY(EditAnywhere, Category="Game Camera") 
 	float AimFOV = 60.f; //This option is not in using. Use Weapon FOV
 	float CurrentFOV = 90.f;
@@ -189,12 +191,16 @@ private:
 	float UnequippedTargetArmLength = 320.f;
 	UPROPERTY(EditAnywhere, Category="Game Camera")
 	float EquippedTargetArmLength = 320.f;
+	UPROPERTY(EditAnywhere, Category="Game Camera")
+	float EquippedSprintTargetArmLength = 320.f;
 	float CurrentTargetArmLength = 320.f;
 	
 	UPROPERTY(EditAnywhere, Category="Game Camera")
 	FVector UnequippedSocketOffset = FVector(0.f, 40.f, -60.f);
 	UPROPERTY(EditAnywhere, Category="Game Camera")
 	FVector EquippedSocketOffset = FVector(0.f, 65.f, -60.f);
+	UPROPERTY(EditAnywhere, Category="Game Camera")
+	FVector EquippedSprintSocketOffset = FVector(0.f, 65.f, -60.f);
 	FVector CurrentSocketOffset = FVector(0.f, 40.f, -60.f);
 
 	UPROPERTY(EditAnywhere, Category="Game Camera")
@@ -265,6 +271,7 @@ public:
 	EEquippedPoseType GetEquippedPoseType();
 	bool IsAiming() const;
 	bool IsSprinting() const;
+	bool CanSprint() const;
 
 	AWeapon* GetEquippedWeapon();
 };

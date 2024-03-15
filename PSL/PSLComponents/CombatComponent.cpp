@@ -73,6 +73,9 @@ void UCombatComponent::HolsterWeapon()
 	}
 	Character->GetCharacterMovement()->bOrientRotationToMovement = true;
 	Character->bUseControllerRotationYaw = false;
+	
+	Character->GetCharacterMovement()->MaxWalkSpeed = Character->GetProperties()->UnequippedWalkSpeed;
+	Character->GetCharacterMovement()->MaxWalkSpeedCrouched = Character->GetProperties()->UnequippedWalkSpeedCrouched;
 }
 
 void UCombatComponent::EquipWeaponToRightHand(AWeapon* WeaponToEquip)
@@ -84,6 +87,9 @@ void UCombatComponent::EquipWeaponToRightHand(AWeapon* WeaponToEquip)
 	AttachActorToRightHand(WeaponToEquip);
 	PlayEquipWeaponSound(WeaponToEquip);
 	ReloadEmptyWeapon();
+	
+	Character->GetCharacterMovement()->MaxWalkSpeed = Character->GetProperties()->EquippedWalkSpeed;
+	Character->GetCharacterMovement()->MaxWalkSpeedCrouched = Character->GetProperties()->EquippedWalkSpeedCrouched;
 }
 
 void UCombatComponent::EquipWeaponToSlot1(AWeapon* WeaponToEquip)
