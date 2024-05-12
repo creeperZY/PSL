@@ -61,14 +61,23 @@ public:
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 
-	UPROPERTY(BlueprintReadOnly, Category= "Vital Attributes")
+	UPROPERTY(BlueprintReadOnly, Category= "Basic Attributes")
 	FGameplayAttributeData Health;
 	ATTRIBUTE_ACCESSORS(UPSLAttributeSet, Health);
 
-	UPROPERTY(BlueprintReadOnly, Category= "Vital Attributes")
+	UPROPERTY(BlueprintReadOnly, Category= "Basic Attributes")
 	FGameplayAttributeData MaxHealth;
 	ATTRIBUTE_ACCESSORS(UPSLAttributeSet, MaxHealth);
 
+	UPROPERTY(BlueprintReadOnly, Category= "Basic Attributes")
+	FGameplayAttributeData Spirit;
+	ATTRIBUTE_ACCESSORS(UPSLAttributeSet, Spirit);
+
+	UPROPERTY(BlueprintReadOnly, Category= "Basic Attributes")
+	FGameplayAttributeData MaxSpirit;
+	ATTRIBUTE_ACCESSORS(UPSLAttributeSet, MaxSpirit);
+
+	
 private:
 
 	void SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const;

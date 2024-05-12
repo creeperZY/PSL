@@ -11,6 +11,8 @@ UPSLAttributeSet::UPSLAttributeSet()
 {
 	InitHealth(50.f);
 	InitMaxHealth(100.f);
+	InitSpirit(50.f);
+	InitMaxSpirit(100.f);
 }
 
 void UPSLAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
@@ -21,7 +23,31 @@ void UPSLAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, f
 	{
 		NewValue = FMath::Clamp(NewValue, 0.f, GetMaxHealth());
 	}
+
+	if (Attribute == GetSpiritAttribute())
+	{
+		NewValue = FMath::Clamp(NewValue, 0.f, GetMaxSpirit());
+	}
 }
+
+void UPSLAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
+{
+	Super::PostGameplayEffectExecute(Data);
+
+	FEffectProperties Props;
+	SetEffectProperties(Data, Props);
+
+	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
+	{
+		SetHealth(FMath::Clamp(GetHealth(), 0.f, GetMaxHealth()));
+	}
+
+	if (Data.EvaluatedData.Attribute == GetSpiritAttribute())
+	{
+		SetSpirit(FMath::Clamp(GetSpirit(), 0.f, GetMaxSpirit()));
+	}
+}
+
 
 
 void UPSLAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const
@@ -59,15 +85,3 @@ void UPSLAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData&
 }
 
 
-void UPSLAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
-{
-	Super::PostGameplayEffectExecute(Data);
-
-	FEffectProperties Props;
-	SetEffectProperties(Data, Props);
-
-	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
-	{
-		SetHealth(FMath::Clamp(GetHealth(), 0.f, GetMaxHealth()));
-	}
-}

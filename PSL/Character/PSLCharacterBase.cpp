@@ -2,6 +2,7 @@
 
 
 #include "PSLCharacterBase.h"
+#include "AbilitySystemComponent.h"
 
 #include "PSL/PSL.h"
 
@@ -21,17 +22,27 @@ UAbilitySystemComponent* APSLCharacterBase::GetAbilitySystemComponent() const
 }
 
 
+// Called when the game starts or when spawned
+void APSLCharacterBase::BeginPlay()
+{
+	Super::BeginPlay();
+	
+}
+
+
 void APSLCharacterBase::InitAbilityActorInfo()
 {
 }
 
 
 
-// Called when the game starts or when spawned
-void APSLCharacterBase::BeginPlay()
+void APSLCharacterBase::InitializeBasicAttributes() const
 {
-	Super::BeginPlay();
-	
+	check(IsValid(GetAbilitySystemComponent()));
+	check(DefaultBasicAttribute);
+	const FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
+	const FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(DefaultBasicAttribute, 1.f, ContextHandle);
+	GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), GetAbilitySystemComponent());
 }
 
 // Called every frame

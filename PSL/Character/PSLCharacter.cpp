@@ -85,6 +85,7 @@ APSLCharacter::APSLCharacter()
 
 void APSLCharacter::PossessedBy(AController* NewController)
 {
+	// switch player set avatar
 	Super::PossessedBy(NewController);
 	//PRINT_ONE_VAR("%s", *NewController->GetName())
 	APSLPlayerController* PSLPlayerController = Cast<APSLPlayerController>(NewController);
@@ -136,7 +137,7 @@ void APSLCharacter::InitAbilityActorInfo()
 			PSLHUD->InitOverlay(PSLGameMode, PSLPlayerController, PSLPlayerState, AbilitySystemComponent, AttributeSet);
 		}
 	}*/
-	
+	InitializeBasicAttributes();
 }
 
 

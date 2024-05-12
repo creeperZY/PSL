@@ -51,6 +51,13 @@ public:
 	FOnAttributeChangedSignature OnMaxHealthChanged;
 
 	UPROPERTY(BlueprintAssignable, Category="GAS|Attributes")
+	FOnAttributeChangedSignature OnSpiritChanged;
+
+	UPROPERTY(BlueprintAssignable, Category="GAS|Attributes")
+	FOnAttributeChangedSignature OnMaxSpiritChanged;
+
+	
+	UPROPERTY(BlueprintAssignable, Category="GAS|Attributes")
 	FMessageWidgetRowSignature MessageWidgetRowDelegate;
 	
 protected:

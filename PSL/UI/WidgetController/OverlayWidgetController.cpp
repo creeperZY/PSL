@@ -37,6 +37,22 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 			OnMaxHealthChanged.Broadcast(Data.NewValue);
 		}
 	);
+
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(PSLAttributeSet->GetSpiritAttribute())
+	.AddLambda(
+	[this](const FOnAttributeChangeData& Data)
+	{
+		OnSpiritChanged.Broadcast(Data.NewValue);
+	}
+);
+
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(PSLAttributeSet->GetMaxSpiritAttribute())
+	.AddLambda(
+		[this](const FOnAttributeChangeData& Data)
+		{
+			OnMaxSpiritChanged.Broadcast(Data.NewValue);
+		}
+	);
 	
 	Cast<UPSLAbilitySystemComponent>(AbilitySystemComponent)->EffectAssetTagsDelegate
 	.AddLambda(

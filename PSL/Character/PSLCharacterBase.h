@@ -7,6 +7,10 @@
 #include "AbilitySystemInterface.h"
 #include "PSLCharacterBase.generated.h"
 
+class UAbilitySystemComponent;
+class UAttributeSet;
+class UGameplayEffect;
+
 UCLASS()
 class PSL_API APSLCharacterBase : public ACharacter, public IAbilitySystemInterface
 {
@@ -18,8 +22,6 @@ public:
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
-	virtual void InitAbilityActorInfo();
-
 
 protected:
 	// Called when the game starts or when spawned
@@ -30,7 +32,12 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UAttributeSet> AttributeSet;
-	
+	virtual void InitAbilityActorInfo();
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes")
+	TSubclassOf<UGameplayEffect> DefaultBasicAttribute;
+
+	void InitializeBasicAttributes() const;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
