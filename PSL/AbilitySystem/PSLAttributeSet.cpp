@@ -9,9 +9,9 @@
 
 UPSLAttributeSet::UPSLAttributeSet()
 {
-	InitHealth(50.f);
+	InitHealth(8.f);
 	InitMaxHealth(100.f);
-	InitSpirit(50.f);
+	InitSpirit(7.f);
 	InitMaxSpirit(100.f);
 }
 
