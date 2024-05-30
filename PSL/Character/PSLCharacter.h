@@ -13,6 +13,7 @@
 #include "PSL/PSLTypes/EquippedPoses.h"
 #include "PSL/PSLTypes/TurningInPlace.h"
 #include "PSL/PSLTypes/CombatState.h"
+#include "PSL/PSLTypes/MultiwayTree.h"
 #include "PSLCharacter.generated.h"
 
 
@@ -25,6 +26,9 @@ public:
 	APSLCharacter();
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void InitAbilityActorInfo() override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TArray<FMultiwayTreeNodeInfo> TestArray;
 
 	
 public:

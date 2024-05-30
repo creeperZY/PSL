@@ -22,7 +22,6 @@
 #include "PSL/PlayerController/PSLPlayerController.h"
 
 
-
 //////////////////////////////////////////////////////////////////////////
 // APSLCharacter
 
@@ -109,7 +108,7 @@ void APSLCharacter::InitAbilityActorInfo()
 	APSLPlayerController* PSLPlayerController = Cast<APSLPlayerController>(GetController());
 	if (PSLPlayerController && PSLGameMode) // human player himself
 	{
-		PSLGameMode->GetAbilitySystemComponent()->InitAbilityActorInfo(PSLGameMode, this);
+		PSLGameMode->GetAbilitySystemComponent()->InitAbilityActorInfo(PSLGameMode, this); // Deprecated for now, currently using player attributes of himself, instead of using team attributes
 		/*
 		//Cast<UPSLAbilitySystemComponent>(PSLGameMode->GetAbilitySystemComponent())->AbilityActorInfoSet();
 		//PSLGameMode->SetPlayerController(PSLPlayerController);
@@ -122,7 +121,7 @@ void APSLCharacter::InitAbilityActorInfo()
 		}*/
 	}
 	
-	if (PSLGameMode) // human and ai player
+	if (PSLGameMode) // human and AI player
 	{
 		PSLGameMode->AddToCharacterWidgetControllerMap(this, AbilitySystemComponent, AttributeSet);
 	}
