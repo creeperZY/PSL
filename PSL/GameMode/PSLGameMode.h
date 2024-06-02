@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
 #include "GameFramework/GameMode.h"
+#include "PSL/PSLTypes/SkillTreeNode.h"
 #include "PSLGameMode.generated.h"
 
 class APSLCharacter;
@@ -23,8 +24,7 @@ public:
 	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
 
 	void AddToCharacterWidgetControllerMap(ACharacter* Character, UAbilitySystemComponent* ASC, UAttributeSet* AS);
-	
-	
+
 protected:
 	virtual void Tick(float DeltaSeconds) override;
 

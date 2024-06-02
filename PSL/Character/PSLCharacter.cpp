@@ -78,6 +78,8 @@ APSLCharacter::APSLCharacter()
 
 	AbilitySystemComponent = CreateDefaultSubobject<UPSLAbilitySystemComponent>("AbilitySystemComponent");
 	AttributeSet = CreateDefaultSubobject<UPSLAttributeSet>("AttributeSet");
+
+	SkillTreeManager = NewObject<USkillTreeManager>();
 	
 }
 
@@ -157,9 +159,14 @@ void APSLCharacter::BeginPlay()
 	// GAS
 	InitAbilityActorInfo();
 
-	
+	//Visual
 	SetShowXRayWhenCharacterOccluded();
 	SetTurnDelegate();
+
+	// Skill Tree
+	UE_LOG(LogTemp, Warning, TEXT("skill num %d"), SkillInfosArray.Num())
+	USkillTreeNode* Root = SkillTreeManager->BuildTree(SkillInfosArray);
+	SkillTreeManager->PrintTreeByLevelInLog(Root);
 	
 }
 

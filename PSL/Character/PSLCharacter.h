@@ -13,7 +13,7 @@
 #include "PSL/PSLTypes/EquippedPoses.h"
 #include "PSL/PSLTypes/TurningInPlace.h"
 #include "PSL/PSLTypes/CombatState.h"
-#include "PSL/PSLTypes/MultiwayTree.h"
+#include "PSL/PSLTypes/SkillTreeNode.h"
 #include "PSLCharacter.generated.h"
 
 
@@ -27,10 +27,6 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void InitAbilityActorInfo() override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TArray<FMultiwayTreeNodeInfo> TestArray;
-
-	
 public:
 	void PlayFireMontage(bool bAiming);
 	void PlayReloadMontage();
@@ -256,8 +252,14 @@ public:
 	TSubclassOf<UCameraShakeBase> MeleeAttackCameraShake;
 
 	void TurnFromSprinting() { TurnBeforeEquip(); }
-	
 
+	/*
+	 * Skill Tree
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FSkillInfo> SkillInfosArray;
+	UPROPERTY()
+	USkillTreeManager* SkillTreeManager;
 	
 public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }

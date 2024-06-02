@@ -12,6 +12,7 @@ APSLGameMode::APSLGameMode()
 	AbilitySystemComponent = CreateDefaultSubobject<UPSLAbilitySystemComponent>("AbilitySystemComponent");
 
 	AttributeSet = CreateDefaultSubobject<UPSLAttributeSet>("AttributeSet");
+	
 }
 
 UAbilitySystemComponent* APSLGameMode::GetAbilitySystemComponent() const

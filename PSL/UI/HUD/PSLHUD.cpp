@@ -62,7 +62,7 @@ void APSLHUD::AddToCharacterWidgetControllerMap(ACharacter* Character, UAbilityS
 		CharacterUserWidgetMap.Add(Character, CharacterStateWidget);
 		WidgetController->BroadcastInitialValues();
 		OverlayWidget->CharacterStateVerticalBox->AddChild(Widget);
-		Widget->AddToViewport();
+		//Widget->AddToViewport(); //OverlayWidget is drawed in screen so no need to add this widget
 		
 	}
 }
