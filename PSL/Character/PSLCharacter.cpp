@@ -21,6 +21,7 @@
 #include "PSL/GameMode/PSLGameMode.h"
 #include "PSL/PlayerController/PSLPlayerController.h"
 #include "PSL/PSLComponents/BuildComponent.h"
+#include "PSL/PSLComponents/SkillComponent.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -70,6 +71,7 @@ APSLCharacter::APSLCharacter()
 	Combat = CreateDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
 	Properties = CreateDefaultSubobject<UPropertiesComponent>(TEXT("PropertiesComponent"));
 	Build = CreateDefaultSubobject<UBuildComponent>(TEXT("BuildComponent"));
+	Skill = CreateDefaultSubobject<USkillComponent>(TEXT("SkillComponent"));
 	PostProcess = CreateDefaultSubobject<UPostProcessComponent>(TEXT("PostProcessComponent"));
 
 	TurningInPlace = ETurningInPlace::ETIP_NotTurning;
@@ -340,6 +342,10 @@ void APSLCharacter::PostInitializeComponents()
 	if (Build)
 	{
 		Build->Character = this;
+	}
+	if (Skill)
+	{
+		Skill->Character = this;
 	}
 
 }
