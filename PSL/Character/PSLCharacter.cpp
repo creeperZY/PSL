@@ -20,6 +20,7 @@
 #include "PSL/AbilitySystem/PSLAttributeSet.h"
 #include "PSL/GameMode/PSLGameMode.h"
 #include "PSL/PlayerController/PSLPlayerController.h"
+#include "PSL/PSLComponents/BuildComponent.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -68,6 +69,7 @@ APSLCharacter::APSLCharacter()
 	
 	Combat = CreateDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
 	Properties = CreateDefaultSubobject<UPropertiesComponent>(TEXT("PropertiesComponent"));
+	Build = CreateDefaultSubobject<UBuildComponent>(TEXT("BuildComponent"));
 	PostProcess = CreateDefaultSubobject<UPostProcessComponent>(TEXT("PostProcessComponent"));
 
 	TurningInPlace = ETurningInPlace::ETIP_NotTurning;
@@ -79,7 +81,7 @@ APSLCharacter::APSLCharacter()
 	AbilitySystemComponent = CreateDefaultSubobject<UPSLAbilitySystemComponent>("AbilitySystemComponent");
 	AttributeSet = CreateDefaultSubobject<UPSLAttributeSet>("AttributeSet");
 
-	SkillTreeManager = NewObject<USkillTreeManager>();
+	
 	
 }
 
@@ -164,8 +166,11 @@ void APSLCharacter::BeginPlay()
 	SetTurnDelegate();
 
 	// Skill Tree
-	UE_LOG(LogTemp, Warning, TEXT("skill num %d"), SkillInfosArray.Num())
+	SkillTreeManager = NewObject<USkillTreeManager>();
 	USkillTreeNode* Root = SkillTreeManager->BuildTree(SkillInfosArray);
+	//SkillTreeManager->UpdateInfosArrayFromStartTreeNode(Root, SkillInfosArray);
+	UE_LOG(LogTemp, Warning, TEXT("Skill infos num: %d"), SkillInfosArray.Num())
+	SkillTreeManager->UpdateInfosArrayFromInternalIdToNodeMap(SkillInfosArray);
 	SkillTreeManager->PrintTreeByLevelInLog(Root);
 	
 }
@@ -331,6 +336,10 @@ void APSLCharacter::PostInitializeComponents()
 	if (Properties)
 	{
 		Properties->Character = this;
+	}
+	if (Build)
+	{
+		Build->Character = this;
 	}
 
 }

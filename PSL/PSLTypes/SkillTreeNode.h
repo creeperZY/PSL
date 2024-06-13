@@ -4,7 +4,6 @@
 #include "SkillTreeNode.generated.h"
 
 class UGameplayEffect;
-class UImage;
 
 USTRUCT(BlueprintType)
 struct FSkillInfo
@@ -12,7 +11,7 @@ struct FSkillInfo
 	GENERATED_BODY()
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	UImage* SkillImage;
+	UTexture2D* SkillImage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FString SkillName;
@@ -38,12 +37,12 @@ struct FSkillInfo
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	int32 FromSkillId = 0;
 
-	/*bool operator == (const FSkillInfo& Other) const
+	bool operator == (const FSkillInfo& Other) const
 	{
 		if (Other.SkillId == SkillId)
 			return true;
 		return false;
-	}*/
+	}
 	//FSkillInfo(int32 SkillId, int32 FromSkillId, int32 CurrentSkillLevel = 0, int32 MaxSkillLevel = 0) :
 	//SkillId(SkillId), FromSkillId(FromSkillId){}
 };
@@ -106,16 +105,22 @@ public:
 	
 	USkillTreeManager(){}
 
-	
-	USkillTreeNode* BuildTree(TArray<FSkillInfo>& SkillInfosArray);
-
-	//USkillTreeNode* GetRoot() const { return Root; }
+	// Notice: parameter is a copy, so just use character's index, it's ok
+	USkillTreeNode* BuildTree(TArray<FSkillInfo> SkillInfosArray); 
+	USkillTreeNode* GetNodeFromId(const int32 Id);
+	// Can partially update SkillInfosArray
+	void UpdateInfosArrayFromStartTreeNode(USkillTreeNode* StartNode, TArray<FSkillInfo>& SkillInfosArray); 
+	void UpdateInfosArrayFromInternalIdToNodeMap(TArray<FSkillInfo>& SkillInfosArray);
+	// Random traversal in tree, to randomly add skill points
+	// void RandomTraversalInTree(USkillTreeNode* StartNode, int32 Steps);
+	USkillTreeNode* GetRoot() const { return Root; }
 	void PrintTreeByLevelInLog(USkillTreeNode* StartNode) const;
 
 
 private:
-	//PROPERTY()
-	//USkillTreeNode* Root = nullptr;
-	
+	UPROPERTY()
+	USkillTreeNode* Root = nullptr;
+	UPROPERTY()
+	TMap<int32, USkillTreeNode*> IdToNodeMap;
 	
 };
