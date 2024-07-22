@@ -451,7 +451,7 @@ void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 		}
 		
 		FVector End = Start + CrosshairWorldDirection * TRACE_LENGTH;
-		TraceEnd = End; //xxx
+		
 
 		
 		if (Character && Character->GetCombat())
@@ -470,7 +470,52 @@ void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 				ECollisionChannel::ECC_Visibility
 				,Params
 			);
+
+			// weapon down when near wall
+			if (Character->GetEquippedWeapon())
+			{
+				const USkeletalMeshSocket* HandSocket = Character->GetMesh()->GetSocketByName(FName("RightHandSocketRifle"));
+				const FTransform HandSocketTransform = HandSocket->GetSocketTransform(Character->GetMesh());
+				
+				const USkeletalMeshSocket* AmmoEjectSocket = Character->GetEquippedWeapon()->GetWeaponMesh()->GetSocketByName(FName("AmmoEject"));
+				const FTransform AmmoEjectSocketTransform = AmmoEjectSocket->GetSocketTransform(Character->GetEquippedWeapon()->GetWeaponMesh());
+
+				const USkeletalMeshSocket* MuzzleFlashSocket = Character->GetEquippedWeapon()->GetWeaponMesh()->GetSocketByName(FName("MuzzleFlash"));
+				const FTransform MuzzleFlashSocketTransform = MuzzleFlashSocket->GetSocketTransform(Character->GetEquippedWeapon()->GetWeaponMesh());
+
+
+				FVector NearStart = MuzzleFlashSocketTransform.GetLocation();
+				FVector NearEnd = NearStart + (1.0f * Character->GetActorForwardVector()) * (MuzzleFlashSocketTransform.GetLocation() - AmmoEjectSocketTransform.GetLocation()).Size();
+				
+				DrawDebugSphere(GetWorld(), NearStart, 2.f, 12, FColor::Blue, false);
+				DrawDebugSphere(GetWorld(), NearEnd, 2.f, 12, FColor::Green, false);
+				FHitResult NearHitResult;
+				//params ignore ememy when near
+				GetWorld()->LineTraceSingleByChannel(
+					NearHitResult,
+					NearStart,
+					NearEnd,
+					ECollisionChannel::ECC_Visibility
+					,Params
+				);
+				if (NearHitResult.bBlockingHit)
+				{
+					bNearWall = true;
+				}else
+				{
+					bNearWall = false;
+				}
+
+				if (bNearWall)
+				{
+					//End = MuzzleFlashSocketTransform.GetRotation().GetForwardVector() * TRACE_LENGTH;
+				} 
+				
+			}
+			
 		}
+
+		TraceEnd = End; //xxx
 	}
 }
 

@@ -285,6 +285,7 @@ public:
 	EEquippedPoseType GetEquippedPoseType();
 	bool IsAiming() const;
 	bool IsSprinting() const;
+	bool IsNearWall() const;
 	bool CanSprint() const;
 
 	AWeapon* GetEquippedWeapon();

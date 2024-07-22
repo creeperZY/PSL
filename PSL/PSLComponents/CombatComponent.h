@@ -151,7 +151,7 @@ private:
 	 * Aiming (FOV set up in character)
 	*/
 	bool bAiming = false;
-
+	
 	
 	
 	/*
@@ -170,7 +170,12 @@ private:
 	 * Sprinting
 	 */
 	bool bSprinting = false;
-	
+
+
+	/*
+	 * Hold weapon near wall
+	 */
+	bool bNearWall = false;
 	
 	ECombatState CombatState = ECombatState::ECS_Unoccupied;
 

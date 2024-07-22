@@ -29,7 +29,8 @@ void UPSLAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	
 	FVector Velocity = PSLCharacter->GetVelocity();
 	Velocity.Z = 0.f;
-	Speed = Velocity.Size();
+	//Speed = Velocity.Size();
+	Speed = FMath::FInterpTo(Speed, Velocity.Size(), DeltaTime, 15.f);
 
 	bIsInAir = PSLCharacter->GetCharacterMovement()->IsFalling();
 	bIsAccelerating = PSLCharacter->GetCharacterMovement()->GetCurrentAcceleration().Size() > 0.f ? true : false;
@@ -58,6 +59,7 @@ void UPSLAnimInstance::NativeUpdateAnimation(float DeltaTime)
 
 	AO_Yaw = PSLCharacter->GetAO_Yaw();
 	AO_Pitch = PSLCharacter->GetAO_Pitch();
+
 	
 	if (bWeaponEquipped && EquippedWeapon && EquippedWeapon->GetWeaponMesh() && PSLCharacter->GetMesh())
 	{

@@ -832,6 +832,10 @@ bool APSLCharacter::IsSprinting() const
 	return (Combat && Combat->bSprinting);
 }
 
+bool APSLCharacter::IsNearWall() const
+{
+	return (Combat && Combat->bNearWall);
+}
 
 AWeapon* APSLCharacter::GetEquippedWeapon()
 {
