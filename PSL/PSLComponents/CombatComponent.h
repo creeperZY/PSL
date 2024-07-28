@@ -56,6 +56,10 @@ protected:
 	void FinishEquip();
 	UFUNCTION(BlueprintCallable)
 	void FinishSwapAttachWeapons();
+	UFUNCTION(BlueprintCallable)
+	void SwapUnequippedPartFinished();
+	UFUNCTION(BlueprintCallable)
+	void SwapEquippedPartFinished();
 
 	void UnequipWeapon(AWeapon* WeaponToUnequip);
 	UFUNCTION(BlueprintCallable)
@@ -99,7 +103,7 @@ protected:
 	float CalcThrowGrenadeMontagePlayRate();
 	UFUNCTION(BlueprintCallable)
 	void ThrowGrenadeFinished();
-	
+
 	
 	/*
 	 * Melee Attack
