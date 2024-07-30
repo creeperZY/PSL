@@ -55,8 +55,12 @@ void UCombatComponent::PickupWeapon(AWeapon* WeaponToEquip)
 	if (Character == nullptr || WeaponToEquip == nullptr) return;
 	if (CombatState != ECombatState::ECS_Unoccupied && CombatState != ECombatState::ECS_Sprinting) return;
 
-	EquipWeapon(WeaponToEquip);
+	if (Character->bUseMocapAnimations) {
 
+	}
+	else {
+		EquipWeapon(WeaponToEquip);
+	}
 }
 
 void UCombatComponent::HolsterWeapon()
