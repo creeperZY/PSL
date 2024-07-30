@@ -26,6 +26,8 @@ public:
 	APSLCharacter();
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void InitAbilityActorInfo() override;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bUseMocapAnimations = false;
 
 public:
 	void PlayFireMontage(bool bAiming);

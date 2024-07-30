@@ -251,16 +251,44 @@ void APSLCharacter::PlayEquipMontage(AWeapon* WeaponToEquip)
 		//AnimInstance->Montage_SetPlayRate()
 
 		FName SectionName;
-		switch (WeaponToEquip->GetEquippedPoseType())
+		if (bUseMocapAnimations)
 		{
-		case EEquippedPoseType::EEPT_RiflePose:
-			SectionName = FName("RifleEquip");
-			break;
-		case EEquippedPoseType::EEPT_PistolPose:
-			SectionName = FName("PistolEquip");
-			break;
+			if (IsAiming())
+			{
+				if (bIsCrouched)
+				{
+				
+				}
+				else
+				{
+				
+				}
+			}
+			else
+			{
+				if (bIsCrouched)
+				{
+				
+				}
+				else
+				{
+				
+				}
+			}
 		}
-
+		else
+		{
+			switch (WeaponToEquip->GetEquippedPoseType())
+			{
+			case EEquippedPoseType::EEPT_RiflePose:
+				SectionName = FName("RifleEquip");
+				break;
+			case EEquippedPoseType::EEPT_PistolPose:
+				SectionName = FName("PistolEquip");
+				break;
+			}
+		}
+		
 		AnimInstance->Montage_JumpToSection(SectionName);
 	}
 }

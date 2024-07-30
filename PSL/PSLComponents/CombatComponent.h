@@ -57,9 +57,9 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void FinishSwapAttachWeapons();
 	UFUNCTION(BlueprintCallable)
-	void SwapUnequippedPartFinished();
+	void SwapUnequippedAttach();
 	UFUNCTION(BlueprintCallable)
-	void SwapEquippedPartFinished();
+	void SwapEquippedAttach();
 
 	void UnequipWeapon(AWeapon* WeaponToUnequip);
 	UFUNCTION(BlueprintCallable)

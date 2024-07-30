@@ -280,6 +280,7 @@ void UCombatComponent::PlayReloadSliderAnimation()
 
 void UCombatComponent::EquipFirstWeapon()
 {
+
 	if (FirstWeapon)
 	{
 		if (EquippedWeapon == FirstWeapon && EquippedWeapon)
@@ -360,14 +361,35 @@ void UCombatComponent::FinishSwapAttachWeapons()
 	
 }
 
-void UCombatComponent::SwapUnequippedPartFinished()
+void UCombatComponent::SwapUnequippedAttach()
 {
+	if (!FirstWeapon || !SecondWeapon) return;
+	if (TempWeapon == FirstWeapon && TempWeapon)
+	{
+		EquipWeaponToSlot2(SecondWeapon);
+		//EquipWeaponToRightHand(FirstWeapon);
+	}
+	else if (TempWeapon == SecondWeapon && TempWeapon)
+	{
+		EquipWeaponToSlot1(FirstWeapon);
+		//EquipWeaponToRightHand(SecondWeapon);
+	}
 	
 }
 
-void UCombatComponent::SwapEquippedPartFinished()
+void UCombatComponent::SwapEquippedAttach()
 {
-	
+	if (!FirstWeapon || !SecondWeapon) return;
+	if (TempWeapon == FirstWeapon && TempWeapon)
+	{
+		//EquipWeaponToSlot2(SecondWeapon);
+		EquipWeaponToRightHand(FirstWeapon);
+	}
+	else if (TempWeapon == SecondWeapon && TempWeapon)
+	{
+		//EquipWeaponToSlot1(FirstWeapon);
+		EquipWeaponToRightHand(SecondWeapon);
+	}
 }
 
 void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
