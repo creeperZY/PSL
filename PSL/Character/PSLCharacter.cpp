@@ -740,12 +740,8 @@ void APSLCharacter::EquipFirstButtonPressed()
 	if (GetCharacterMovement()->IsFalling()) return;
 	if (Combat && Combat->FirstWeapon)
 	{
-		if (bUseMocapAnimations){
-			Combat->EquipFirstWeapon();
-		} else {
-			TurnBeforeEquip();
-			Combat->EquipFirstWeapon();
-		}
+		TurnBeforeEquip();
+		Combat->EquipFirstWeapon();
 	}
 }
 
@@ -754,12 +750,8 @@ void APSLCharacter::EquipSecondButtonPressed()
 	if (GetCharacterMovement()->IsFalling()) return;
 	if (Combat && Combat->SecondWeapon)
 	{
-		if (bUseMocapAnimations){
-			Combat->EquipSecondWeapon();
-		} else {
-			TurnBeforeEquip();
-			Combat->EquipSecondWeapon();
-		}
+		TurnBeforeEquip();
+		Combat->EquipSecondWeapon();
 	}
 }
 

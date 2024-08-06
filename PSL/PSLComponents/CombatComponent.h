@@ -46,7 +46,6 @@ protected:
 	void AttachActorToPelvis2(AActor* ActorToAttach);
 	void PlayEquipWeaponSound(AWeapon* WeaponToEquip);
 	void EquipWeaponToRightHand(AWeapon* WeaponToEquip);
-	void EquipWeaponToCorrectSlot(AWeapon* WeaponToEquip);
 	void EquipWeaponToSlot1(AWeapon* WeaponToEquip);
 	void EquipWeaponToSlot2(AWeapon* WeaponToEquip);
 	void EquipFirstWeapon();
@@ -54,14 +53,21 @@ protected:
 	
 	void EquipWeapon(AWeapon* WeaponToEquip);
 	void SwapWeapon(AWeapon* WeaponToEquip);
+	void EquipWeaponToCorrectSlot(AWeapon* WeaponToEquip); // Mocap
 	UFUNCTION(BlueprintCallable)
 	void FinishEquip();
 	UFUNCTION(BlueprintCallable)
 	void FinishSwapAttachWeapons();
 	UFUNCTION(BlueprintCallable)
-	void SwapUnequippedAttach();
+	void SwapUnequippedAttach(); // Mocap
 	UFUNCTION(BlueprintCallable)
-	void SwapEquippedAttach();
+	void SwapEquippedAttach(); // Mocap
+	UFUNCTION(BlueprintCallable)
+	void EquippedAttach(AWeapon* WeaponToEquip); // Mocap
+	UFUNCTION(BlueprintCallable)
+	void UnequippedAttach(AWeapon* WeaponToEquip); // Mocap
+
+
 
 	void UnequipWeapon(AWeapon* WeaponToUnequip);
 	UFUNCTION(BlueprintCallable)

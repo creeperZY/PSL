@@ -37,7 +37,7 @@ public:
 	void PlayEquipMontage(AWeapon* WeaponToEquip);
 	void PlayUnequipMontage(AWeapon* WeaponToUnequip);
 	void PlayMeleeAttackMontage();
-	void PlaySwapMontage(AWeapon* WeaponToEquip);
+	void PlaySwapMontage(AWeapon* WeaponToEquip); // Mocap
 	
 protected:
 	/** Called for movement input */
