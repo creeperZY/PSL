@@ -188,14 +188,44 @@ void APSLCharacter::PlayFireMontage(bool bAiming)
 		AnimInstance->Montage_Play(FireWeaponMontage);
 		FName SectionName;
 		
-		switch (Combat->EquippedWeapon->GetEquippedPoseType())
-		{
-		case EEquippedPoseType::EEPT_RiflePose:
-			SectionName = bAiming ? FName("RifleAim") : FName("RifleHip");
-			break;
-		case EEquippedPoseType::EEPT_PistolPose:
-			SectionName = bAiming ? FName("PistolAim") : FName("PistolHip");
-			break;
+		if (bUseMocapAnimations){
+			if (IsAiming())
+			{
+				if (bIsCrouched)
+				{
+					switch (Combat->EquippedWeapon->GetEquippedPoseType())
+					{
+					case EEquippedPoseType::EEPT_RiflePose:
+						SectionName = FName("RifleFireCrouch");
+						break;
+					case EEquippedPoseType::EEPT_PistolPose:
+						SectionName = FName("PistolFireCrouch");
+						break;
+					}
+				}
+				else
+				{
+					switch (Combat->EquippedWeapon->GetEquippedPoseType())
+					{
+					case EEquippedPoseType::EEPT_RiflePose:
+						SectionName = FName("RifleFireStand");
+						break;
+					case EEquippedPoseType::EEPT_PistolPose:
+						SectionName = FName("PistolFireStand");
+						break;
+					}				
+				}
+			}
+		} else {
+			switch (Combat->EquippedWeapon->GetEquippedPoseType())
+			{
+			case EEquippedPoseType::EEPT_RiflePose:
+				SectionName = bAiming ? FName("RifleAim") : FName("RifleHip");
+				break;
+			case EEquippedPoseType::EEPT_PistolPose:
+				SectionName = bAiming ? FName("PistolAim") : FName("PistolHip");
+				break;
+			}
 		}
 
 		AnimInstance->Montage_JumpToSection(SectionName);
@@ -211,17 +241,73 @@ void APSLCharacter::PlayReloadMontage()
 	{
 		AnimInstance->Montage_Play(ReloadMontage);
 		FName SectionName;
-		
-		switch (Combat->EquippedWeapon->GetEquippedPoseType())
-		{
-		case EEquippedPoseType::EEPT_RiflePose:
-			SectionName = FName("ReloadRifle");
-			break;
-		case EEquippedPoseType::EEPT_PistolPose:
-			SectionName = FName("ReloadPistol");
-			break;
-		}
 
+		if (bUseMocapAnimations){
+			if (IsAiming())
+			{
+				if (bIsCrouched)
+				{
+					switch (Combat->EquippedWeapon->GetEquippedPoseType())
+					{
+					case EEquippedPoseType::EEPT_RiflePose:
+						SectionName = FName("RifleAimReloadCrouch");
+						break;
+					case EEquippedPoseType::EEPT_PistolPose:
+						SectionName = FName("PistolAimReloadStand");
+						break;
+					}
+				}
+				else
+				{
+					switch (Combat->EquippedWeapon->GetEquippedPoseType())
+					{
+					case EEquippedPoseType::EEPT_RiflePose:
+						SectionName = FName("RifleAimReloadStand");
+						break;
+					case EEquippedPoseType::EEPT_PistolPose:
+						SectionName = FName("PistolAimReloadStand");
+						break;
+					}				
+				}
+			}
+			else
+			{
+				if (bIsCrouched)
+				{
+					switch (Combat->EquippedWeapon->GetEquippedPoseType())
+					{
+					case EEquippedPoseType::EEPT_RiflePose:
+						SectionName = FName("RifleRelaxedReloadCrouch");
+						break;
+					case EEquippedPoseType::EEPT_PistolPose:
+						SectionName = FName("PistolRelaxedReloadStand");
+						break;
+					}					
+				}
+				else
+				{
+					switch (Combat->EquippedWeapon->GetEquippedPoseType())
+					{
+					case EEquippedPoseType::EEPT_RiflePose:
+						SectionName = FName("RifleRelaxedReloadStand");
+						break;
+					case EEquippedPoseType::EEPT_PistolPose:
+						SectionName = FName("PistolRelaxedReloadStand");
+						break;
+					}				
+				}
+			}
+		} else {
+			switch (Combat->EquippedWeapon->GetEquippedPoseType())
+			{
+			case EEquippedPoseType::EEPT_RiflePose:
+				SectionName = FName("ReloadRifle");
+				break;
+			case EEquippedPoseType::EEPT_PistolPose:
+				SectionName = FName("ReloadPistol");
+				break;
+			}
+		}
 		AnimInstance->Montage_JumpToSection(SectionName);
 	}
 }
@@ -257,22 +343,54 @@ void APSLCharacter::PlayEquipMontage(AWeapon* WeaponToEquip)
 			{
 				if (bIsCrouched)
 				{
-				
+					switch (WeaponToEquip->GetEquippedPoseType())
+					{
+					case EEquippedPoseType::EEPT_RiflePose:
+						SectionName = FName("RifleCrouchAimEquip");
+						break;
+					case EEquippedPoseType::EEPT_PistolPose:
+						SectionName = FName("PistolCrouchAimEquip");
+						break;
+					}
 				}
 				else
 				{
-				
+					switch (WeaponToEquip->GetEquippedPoseType())
+					{
+					case EEquippedPoseType::EEPT_RiflePose:
+						SectionName = FName("RifleStandAimEquip");
+						break;
+					case EEquippedPoseType::EEPT_PistolPose:
+						SectionName = FName("PistolStandAimEquip");
+						break;
+					}				
 				}
 			}
 			else
 			{
 				if (bIsCrouched)
 				{
-				
+					switch (WeaponToEquip->GetEquippedPoseType())
+					{
+					case EEquippedPoseType::EEPT_RiflePose:
+						SectionName = FName("RifleCrouchRelaxedEquip");
+						break;
+					case EEquippedPoseType::EEPT_PistolPose:
+						SectionName = FName("PistolStandRelaxedEquip");
+						break;
+					}					
 				}
 				else
 				{
-				
+					switch (WeaponToEquip->GetEquippedPoseType())
+					{
+					case EEquippedPoseType::EEPT_RiflePose:
+						SectionName = FName("RifleStandRelaxedEquip");
+						break;
+					case EEquippedPoseType::EEPT_PistolPose:
+						SectionName = FName("PistolStandRelaxedEquip");
+						break;
+					}				
 				}
 			}
 		}
@@ -303,14 +421,74 @@ void APSLCharacter::PlayUnequipMontage(AWeapon* WeaponToUnequip)
 		//AnimInstance->Montage_SetPlayRate()
 
 		FName SectionName;
-		switch (WeaponToUnequip->GetEquippedPoseType())
+
+		if (bUseMocapAnimations)
 		{
-		case EEquippedPoseType::EEPT_RiflePose:
-			SectionName = FName("RifleUnequip");
-			break;
-		case EEquippedPoseType::EEPT_PistolPose:
-			SectionName = FName("PistolUnequip");
-			break;
+			if (IsAiming())
+			{
+				if (bIsCrouched)
+				{
+					switch (WeaponToUnequip->GetEquippedPoseType())
+					{
+					case EEquippedPoseType::EEPT_RiflePose:
+						SectionName = FName("RifleCrouchAimHolster");
+						break;
+					case EEquippedPoseType::EEPT_PistolPose:
+						SectionName = FName("PistolCrouchAimHolster");
+						break;
+					}
+				}
+				else
+				{
+					switch (WeaponToUnequip->GetEquippedPoseType())
+					{
+					case EEquippedPoseType::EEPT_RiflePose:
+						SectionName = FName("RifleStandAimHolster");
+						break;
+					case EEquippedPoseType::EEPT_PistolPose:
+						SectionName = FName("PistolStandAimHolster");
+						break;
+					}				
+				}
+			}
+			else
+			{
+				if (bIsCrouched)
+				{
+					switch (WeaponToUnequip->GetEquippedPoseType())
+					{
+					case EEquippedPoseType::EEPT_RiflePose:
+						SectionName = FName("RifleCrouchRelaxedHolster");
+						break;
+					case EEquippedPoseType::EEPT_PistolPose:
+						SectionName = FName("PistolStandRelaxedHolster");
+						break;
+					}					
+				}
+				else
+				{
+					switch (WeaponToUnequip->GetEquippedPoseType())
+					{
+					case EEquippedPoseType::EEPT_RiflePose:
+						SectionName = FName("RifleStandRelaxedEquip");
+						break;
+					case EEquippedPoseType::EEPT_PistolPose:
+						SectionName = FName("PistolStandRelaxedEquip");
+						break;
+					}				
+				}
+			}
+		}
+		else{
+			switch (WeaponToUnequip->GetEquippedPoseType())
+			{
+			case EEquippedPoseType::EEPT_RiflePose:
+				SectionName = FName("RifleUnequip");
+				break;
+			case EEquippedPoseType::EEPT_PistolPose:
+				SectionName = FName("PistolUnequip");
+				break;
+			}
 		}
 
 		AnimInstance->Montage_JumpToSection(SectionName);
@@ -326,20 +504,94 @@ void APSLCharacter::PlayMeleeAttackMontage()
 		AnimInstance->Montage_Play(MeleeAttackMontage);
 		FName SectionName;
 		
-		switch (Combat->EquippedWeapon->GetEquippedPoseType())
-		{
-		case EEquippedPoseType::EEPT_RiflePose:
-			SectionName = FName("RifleMelee");
-			break;
-		case EEquippedPoseType::EEPT_PistolPose:
-			SectionName = FName("PistolMelee");
-			break;
-		}
+		if (bUseMocapAnimations){
 
+		} else {
+			switch (Combat->EquippedWeapon->GetEquippedPoseType())
+			{
+			case EEquippedPoseType::EEPT_RiflePose:
+				SectionName = FName("RifleMelee");
+				break;
+			case EEquippedPoseType::EEPT_PistolPose:
+				SectionName = FName("PistolMelee");
+				break;
+			}
+		}
 		AnimInstance->Montage_JumpToSection(SectionName);
 	}
 }
 
+void APSLCharacter::PlaySwapMontage(AWeapon* WeaponToEquip){
+	if(Combat == nullptr || Combat->EquippedWeapon == nullptr) return;
+	if (WeaponToEquip == nullptr) return;
+	if (Combat->FirstWeapon || Combat->SecondWeapon) return;
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && SwapWeaponMontage)
+	{
+		AnimInstance->Montage_Play(SwapWeaponMontage);
+		FName SectionName;
+		
+		if (bUseMocapAnimations){
+			if (IsAiming())
+			{
+				if (bIsCrouched)
+				{
+					switch (WeaponToEquip->GetEquippedPoseType())
+					{
+					case EEquippedPoseType::EEPT_RiflePose:
+						SectionName = FName("PistolAimToRifleAimCrouch");
+						break;
+					case EEquippedPoseType::EEPT_PistolPose:
+						SectionName = FName("RifleAimToPistolAimCrouch");
+						break;
+					}
+				}
+				else
+				{
+					switch (WeaponToEquip->GetEquippedPoseType())
+					{
+					case EEquippedPoseType::EEPT_RiflePose:
+						SectionName = FName("PistolAimToRifleAimStand");
+						break;
+					case EEquippedPoseType::EEPT_PistolPose:
+						SectionName = FName("RifleAimToPistolAimStand");
+						break;
+					}				
+				}
+			}
+			else
+			{
+				if (bIsCrouched)
+				{
+					switch (WeaponToEquip->GetEquippedPoseType())
+					{
+					case EEquippedPoseType::EEPT_RiflePose:
+						SectionName = FName("PistolRelaxedToRifleRelaxedCrouch");
+						break;
+					case EEquippedPoseType::EEPT_PistolPose:
+						SectionName = FName("RifleRelaxedToPistolRelaxedCrouch");
+						break;
+					}					
+				}
+				else
+				{
+					switch (WeaponToEquip->GetEquippedPoseType())
+					{
+					case EEquippedPoseType::EEPT_RiflePose:
+						SectionName = FName("PistolRelaxedToRifleRelaxedStand");
+						break;
+					case EEquippedPoseType::EEPT_PistolPose:
+						SectionName = FName("RifleRelaxedToPistolRelaxedStand");
+						break;
+					}				
+				}
+			}
+		} else {
+
+		}
+		AnimInstance->Montage_JumpToSection(SectionName);
+	}
+}
 
 void APSLCharacter::Tick(float DeltaSeconds)
 {
@@ -488,8 +740,12 @@ void APSLCharacter::EquipFirstButtonPressed()
 	if (GetCharacterMovement()->IsFalling()) return;
 	if (Combat && Combat->FirstWeapon)
 	{
-		TurnBeforeEquip();
-		Combat->EquipFirstWeapon();
+		if (bUseMocapAnimations){
+			Combat->EquipFirstWeapon();
+		} else {
+			TurnBeforeEquip();
+			Combat->EquipFirstWeapon();
+		}
 	}
 }
 
@@ -498,8 +754,12 @@ void APSLCharacter::EquipSecondButtonPressed()
 	if (GetCharacterMovement()->IsFalling()) return;
 	if (Combat && Combat->SecondWeapon)
 	{
-		TurnBeforeEquip();
-		Combat->EquipSecondWeapon();
+		if (bUseMocapAnimations){
+			Combat->EquipSecondWeapon();
+		} else {
+			TurnBeforeEquip();
+			Combat->EquipSecondWeapon();
+		}
 	}
 }
 

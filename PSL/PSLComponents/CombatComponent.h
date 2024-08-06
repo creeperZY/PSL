@@ -46,12 +46,14 @@ protected:
 	void AttachActorToPelvis2(AActor* ActorToAttach);
 	void PlayEquipWeaponSound(AWeapon* WeaponToEquip);
 	void EquipWeaponToRightHand(AWeapon* WeaponToEquip);
+	void EquipWeaponToCorrectSlot(AWeapon* WeaponToEquip);
 	void EquipWeaponToSlot1(AWeapon* WeaponToEquip);
 	void EquipWeaponToSlot2(AWeapon* WeaponToEquip);
 	void EquipFirstWeapon();
 	void EquipSecondWeapon();
 	
 	void EquipWeapon(AWeapon* WeaponToEquip);
+	void SwapWeapon(AWeapon* WeaponToEquip);
 	UFUNCTION(BlueprintCallable)
 	void FinishEquip();
 	UFUNCTION(BlueprintCallable)

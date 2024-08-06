@@ -37,6 +37,7 @@ public:
 	void PlayEquipMontage(AWeapon* WeaponToEquip);
 	void PlayUnequipMontage(AWeapon* WeaponToUnequip);
 	void PlayMeleeAttackMontage();
+	void PlaySwapMontage(AWeapon* WeaponToEquip);
 	
 protected:
 	/** Called for movement input */
@@ -167,6 +168,8 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Combat Montage")
 	class UAnimMontage* MeleeAttackMontage;
 	
+	UPROPERTY(EditAnywhere, Category = "Combat Montage")
+	class UAnimMontage* SwapWeaponMontage;
 
 	/*
 	 * Render X-ray on screen
