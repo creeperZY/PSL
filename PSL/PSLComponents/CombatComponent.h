@@ -63,9 +63,9 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void SwapEquippedAttach(); // Mocap
 	UFUNCTION(BlueprintCallable)
-	void EquippedAttach(AWeapon* WeaponToEquip); // Mocap
+	void EquippedAttach(); // Mocap
 	UFUNCTION(BlueprintCallable)
-	void UnequippedAttach(AWeapon* WeaponToEquip); // Mocap
+	void UnequippedAttach(); // Mocap
 
 
 

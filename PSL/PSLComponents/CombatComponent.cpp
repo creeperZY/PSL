@@ -56,12 +56,16 @@ void UCombatComponent::EquipWeaponToCorrectSlot(AWeapon* WeaponToEquip){
 	if (WeaponToEquip->GetEquippedPoseType() == EEquippedPoseType::EEPT_RiflePose) {
 		if (FirstWeapon) {
 			//drop
+			FirstWeapon->Dropped();
+			FirstWeapon = nullptr;
 		}
 		EquipWeaponToSlot1(WeaponToEquip);
 		
 	} else if (WeaponToEquip->GetEquippedPoseType() == EEquippedPoseType::EEPT_PistolPose) {
 		if (SecondWeapon) {
 			//drop
+			SecondWeapon->Dropped();
+			SecondWeapon = nullptr;
 		}
 		EquipWeaponToSlot2(WeaponToEquip);
 		
@@ -73,7 +77,7 @@ void UCombatComponent::EquipWeaponToCorrectSlot(AWeapon* WeaponToEquip){
 void UCombatComponent::PickupWeapon(AWeapon* WeaponToEquip)
 {
 	if (Character == nullptr || WeaponToEquip == nullptr) return;
-	if (CombatState != ECombatState::ECS_Unoccupied && CombatState != ECombatState::ECS_Sprinting) return;
+	if (CombatState != ECombatState::ECS_Unoccupied) return;
 	if (WeaponToEquip == nullptr) return;
 	
 	EquipWeapon(WeaponToEquip);
@@ -315,7 +319,14 @@ void UCombatComponent::EquipFirstWeapon()
 	if (FirstWeapon)
 	{
 		if (Character->bUseMocapAnimations){
-
+			if (EquippedWeapon == FirstWeapon && EquippedWeapon)
+			{
+				UnequipWeapon(EquippedWeapon);
+			}
+			else
+			{
+				EquipWeapon(FirstWeapon);
+			}
 		} else {
 			if (EquippedWeapon == FirstWeapon && EquippedWeapon)
 			{
@@ -335,7 +346,14 @@ void UCombatComponent::EquipSecondWeapon()
 	if (SecondWeapon)
 	{
 		if (Character->bUseMocapAnimations){
-
+			if (EquippedWeapon == SecondWeapon && EquippedWeapon)
+			{
+				UnequipWeapon(EquippedWeapon);
+			}
+			else
+			{
+				EquipWeapon(SecondWeapon);
+			}
 		}else{
 			if (EquippedWeapon == SecondWeapon && EquippedWeapon)
 			{
@@ -433,7 +451,7 @@ void UCombatComponent::SwapEquippedAttach()
 }
 
 
-void UCombatComponent::EquippedAttach(AWeapon* WeaponToEquip){
+void UCombatComponent::EquippedAttach(){
 	if (Character->bUseMocapAnimations) {
 		if (TempWeapon == FirstWeapon && TempWeapon)
 		{
@@ -446,7 +464,7 @@ void UCombatComponent::EquippedAttach(AWeapon* WeaponToEquip){
 	}
 }
 
-void UCombatComponent::UnequippedAttach(AWeapon* WeaponToEquip){
+void UCombatComponent::UnequippedAttach(){
 	if (Character->bUseMocapAnimations) {
 		if (EquippedWeapon == FirstWeapon && EquippedWeapon)
 		{
@@ -462,7 +480,7 @@ void UCombatComponent::UnequippedAttach(AWeapon* WeaponToEquip){
 
 void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 {
-	if (CombatState != ECombatState::ECS_Unoccupied && CombatState != ECombatState::ECS_Sprinting || Character == nullptr) return;
+	if (CombatState != ECombatState::ECS_Unoccupied || Character == nullptr) return;
 	if (WeaponToEquip == nullptr) return;	
 	TempWeapon = WeaponToEquip;
 	if (Character->bUseMocapAnimations) {
@@ -474,11 +492,11 @@ void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 
 void UCombatComponent::SwapWeapon(AWeapon* WeaponToEquip)
 {
-	if (CombatState != ECombatState::ECS_Unoccupied && CombatState != ECombatState::ECS_Sprinting || Character == nullptr) return;
+	if (CombatState != ECombatState::ECS_Unoccupied || Character == nullptr) return;
 	if (WeaponToEquip == nullptr) return;
 	if (!Character->bUseMocapAnimations) return;
 
-	TempWeapon = WeaponToEquip
+	TempWeapon = WeaponToEquip;
 	CombatState = ECombatState::ECS_SwappingWeapons;
 	Character->PlaySwapMontage(WeaponToEquip);
 	
@@ -494,7 +512,7 @@ void UCombatComponent::FinishEquip()
 
 void UCombatComponent::UnequipWeapon(AWeapon* WeaponToUnequip)
 {
-	if (CombatState != ECombatState::ECS_Unoccupied && CombatState != ECombatState::ECS_Sprinting || Character == nullptr) return;
+	if (CombatState != ECombatState::ECS_Unoccupied || Character == nullptr) return;
 	
 	CombatState = ECombatState::ECS_SwappingWeapons;
 	Character->PlayUnequipMontage(WeaponToUnequip);

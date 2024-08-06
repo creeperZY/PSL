@@ -470,10 +470,10 @@ void APSLCharacter::PlayUnequipMontage(AWeapon* WeaponToUnequip)
 					switch (WeaponToUnequip->GetEquippedPoseType())
 					{
 					case EEquippedPoseType::EEPT_RiflePose:
-						SectionName = FName("RifleStandRelaxedEquip");
+						SectionName = FName("RifleStandRelaxedHolster");
 						break;
 					case EEquippedPoseType::EEPT_PistolPose:
-						SectionName = FName("PistolStandRelaxedEquip");
+						SectionName = FName("PistolStandRelaxedHolster");
 						break;
 					}				
 				}
